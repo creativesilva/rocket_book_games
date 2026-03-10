@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Fast & Fluent" />
+  <meta name="theme-color" content="#f8fafc" />
   <title>Fast & Fluent Reading Practice</title>
   <style>
     :root {
@@ -24,15 +28,27 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
+      width: 100%;
+      min-height: 100%;
       margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body {
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      padding-right: max(12px, env(safe-area-inset-right));
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      padding-left: max(12px, env(safe-area-inset-left));
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -47,6 +63,7 @@
     .app {
       width: min(100%, 430px);
       min-height: min(92vh, 860px);
+      min-height: min(92dvh, 860px);
       background: var(--card);
       border-radius: 30px;
       box-shadow: var(--shadow);
@@ -129,9 +146,9 @@
     }
 
     .home-logo {
-      width: min(42vw, 130px);
+      width: min(68vw, 220px);
       height: auto;
-      margin: 8px 0 12px 0;
+      margin: 8px 0 16px 0;
       object-fit: contain;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
     }
@@ -326,7 +343,7 @@
       }
 
       .home-logo {
-        width: min(46vw, 120px);
+        width: min(70vw, 210px);
       }
     }
   </style>
