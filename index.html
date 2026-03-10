@@ -7,6 +7,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Fast & Fluent" />
   <meta name="theme-color" content="#f8fafc" />
+  <link rel="apple-touch-icon" sizes="180x180" href="shaw-logo.png" />
+  <link rel="icon" type="image/png" href="shaw-logo.png" />
   <title>Fast & Fluent Reading Practice</title>
   <style>
     :root {
@@ -277,7 +279,7 @@
     .result-title {
       font-size: clamp(30px, 8vw, 52px);
       font-weight: 900;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       line-height: 1.06;
       color: var(--text);
     }
@@ -285,7 +287,7 @@
     .result-time {
       font-size: clamp(28px, 7vw, 44px);
       font-weight: 900;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
       color: var(--green);
       line-height: 1.1;
     }
@@ -295,30 +297,23 @@
     }
 
     .result-text {
-      font-size: 20px;
-      line-height: 1.4;
-      max-width: 330px;
-      margin: 0 auto 18px auto;
+      font-size: 18px;
+      line-height: 1.35;
+      max-width: 320px;
+      margin: 0 auto 14px auto;
       color: #243047;
     }
 
     .celebration-img {
-      width: min(62vw, 240px);
-      max-height: 280px;
+      width: min(58vw, 220px);
+      max-height: 240px;
       object-fit: contain;
       height: auto;
       border-radius: 24px;
-      margin-top: 10px;
+      margin-top: 6px;
       box-shadow: 0 12px 28px rgba(0,0,0,.14);
       background: #fff;
       padding: 6px;
-    }
-
-    .note {
-      font-size: 14px;
-      opacity: .8;
-      margin-top: 12px;
-      color: inherit;
     }
 
     @media (max-width: 390px) {
@@ -344,6 +339,15 @@
 
       .home-logo {
         width: min(70vw, 210px);
+      }
+
+      .result-text {
+        font-size: 17px;
+      }
+
+      .celebration-img {
+        width: min(60vw, 210px);
+        max-height: 220px;
       }
     }
   </style>
@@ -389,7 +393,7 @@
       <div class="result-title">Great Job, Reader!</div>
       <div class="result-time" id="finalTime">Final Time: 00:00.0</div>
       <div class="result-text">
-        You finished all 10 sentences. Nice work! Write your time on your sheet and keep growing as a strong reader.
+        You finished all 10 sentences. Write your time on your sheet.
       </div>
       <img
         id="celebrationImg"
@@ -398,10 +402,8 @@
         alt="Celebration image"
       />
       <div class="buttons">
-        <button class="start-btn" id="playAgainBtn" type="button">Play Again</button>
-        <button class="reset-btn" id="finishResetBtn" type="button">Reset</button>
+        <button class="start-btn" id="playAgainBtn" type="button">Back to Home</button>
       </div>
-      <div class="note">Keep up the great reading, Ms. Canby’s class.</div>
     </div>
   </div>
 
@@ -460,7 +462,6 @@
     const doneBtn = document.getElementById("doneBtn");
     const resetBtn = document.getElementById("resetBtn");
     const playAgainBtn = document.getElementById("playAgainBtn");
-    const finishResetBtn = document.getElementById("finishResetBtn");
 
     let currentDeck = [];
     let currentIndex = 0;
@@ -527,7 +528,7 @@
       if (gameScreen.classList.contains("active")) {
         progressPill.textContent = `Sentence ${currentIndex + 1} of ${currentDeck.length}`;
       } else if (finishScreen.classList.contains("active")) {
-        progressPill.textContent = "Complete";
+        progressPill.textContent = "";
       } else {
         progressPill.textContent = "Sentence 0 of 10";
       }
@@ -609,8 +610,7 @@
     startShuffleBtn.addEventListener("click", () => launchGame(true));
     doneBtn.addEventListener("click", advanceSentence);
     resetBtn.addEventListener("click", resetGame);
-    playAgainBtn.addEventListener("click", () => launchGame(false));
-    finishResetBtn.addEventListener("click", resetGame);
+    playAgainBtn.addEventListener("click", resetGame);
 
     celebrationImg.src = getRandomCelebrationImage();
     updateTopBar();
