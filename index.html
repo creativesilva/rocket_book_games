@@ -5,31 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="Fast & Fluent" />
+  <meta name="apple-mobile-web-app-title" content="Rocket Book" />
   <meta name="theme-color" content="#f8fafc" />
-  <link rel="apple-touch-icon" sizes="180x180" href="shaw-logo.png" />
-  <link rel="icon" type="image/png" href="shaw-logo.png" />
-  <title>Fast & Fluent Reading Practice</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="rocket-book-icon.png" />
+  <link rel="icon" type="image/png" href="rocket-book-icon.png" />
+  <title>Rocket Book</title>
   <style>
     :root {
       --bg1: #fff7ed;
       --bg2: #eff6ff;
-      --card: rgba(255,255,255,0.92);
+      --card: rgba(255,255,255,0.94);
       --text: #172033;
       --muted: #5f6b85;
       --green: #16a34a;
-      --yellow: #facc15;
+      --yellow: #f59e0b;
       --orange: #fb923c;
       --pink: #ec4899;
       --blue: #3b82f6;
       --purple: #8b5cf6;
+      --red: #ef4444;
       --shadow: 0 18px 40px rgba(0,0,0,0.12);
     }
-
     * {
       box-sizing: border-box;
     }
-
     html,
     body {
       width: 100%;
@@ -38,7 +37,6 @@
       padding: 0;
       overflow-x: hidden;
     }
-
     body {
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
@@ -61,7 +59,6 @@
         radial-gradient(circle at bottom right, rgba(139,92,246,0.18), transparent 22%),
         linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%);
     }
-
     .app {
       width: min(100%, 430px);
       min-height: min(92vh, 860px);
@@ -77,7 +74,6 @@
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.85);
     }
-
     .app::before {
       content: "";
       position: absolute;
@@ -92,12 +88,20 @@
           rgba(59,130,246,0.06) 80%,
           rgba(139,92,246,0.06) 100%);
     }
-
-    .hard-mode {
-      background: linear-gradient(180deg, #ff5a1f 0%, #e11d48 100%);
-      color: #ffffff;
+    .screen {
+      flex: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      padding: 10px 4px;
+      position: relative;
+      z-index: 1;
     }
-
+    .screen.active {
+      display: flex;
+    }
     .topbar {
       display: flex;
       flex-direction: column;
@@ -110,14 +114,12 @@
       text-align: center;
       min-height: 96px;
     }
-
     .progress-text {
       font-size: 20px;
       font-weight: 900;
       line-height: 1.1;
       color: #111827;
     }
-
     .timer-text {
       font-size: 46px;
       font-weight: 900;
@@ -125,57 +127,42 @@
       color: #111827;
       letter-spacing: -1px;
     }
-
-    .hard-mode .progress-text,
-    .hard-mode .timer-text {
-      color: #ffffff;
-    }
-
-    .screen {
-      flex: 1;
+    .timer-text.hidden {
       display: none;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      flex-direction: column;
-      padding: 10px 4px;
-      position: relative;
-      z-index: 1;
     }
-
-    .screen.active {
-      display: flex;
-    }
-
-    .home-logo {
+    .home-portrait {
       width: min(44vw, 140px);
       height: auto;
       margin: 8px 0 14px 0;
       object-fit: contain;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
     }
-
+    .rocket-logo {
+      width: min(42vw, 150px);
+      height: auto;
+      margin: 2px 0 12px 0;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
+    }
     .badge {
       display: inline-block;
       padding: 8px 14px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 800;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       color: #fff;
       background: linear-gradient(90deg, var(--pink), var(--purple), var(--blue));
       box-shadow: 0 10px 20px rgba(139,92,246,0.20);
     }
-
     .title {
       font-size: clamp(34px, 8vw, 54px);
       font-weight: 900;
       line-height: 1.03;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       letter-spacing: -0.6px;
       color: var(--text);
     }
-
     .subtitle {
       font-size: clamp(20px, 4.8vw, 26px);
       line-height: 1.2;
@@ -183,59 +170,35 @@
       margin-bottom: 10px;
       font-weight: 700;
     }
-
-    .start-note {
-      font-size: 16px;
-      line-height: 1.45;
+    .small-note {
+      font-size: 15px;
+      line-height: 1.4;
       color: var(--muted);
       max-width: 330px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
-
-    .sentence-wrap {
-      width: 100%;
-      min-height: 260px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px 6px;
-    }
-
-    .sentence {
-      font-size: clamp(28px, 7vw, 44px);
-      font-weight: 800;
-      line-height: 1.35;
-      max-width: 100%;
-      margin: 0 auto;
-      color: var(--text);
-    }
-
-    .sentence u {
-      text-decoration-thickness: 2px;
-      text-underline-offset: 5px;
-    }
-
-    .mode-label {
+    .micro-note {
+      font-size: 12px;
+      line-height: 1.2;
+      color: var(--muted);
       margin-top: 10px;
-      font-size: 18px;
-      font-weight: 800;
-      color: #b91c1c;
-      min-height: 26px;
     }
-
-    .hard-mode .mode-label {
-      color: #fff7b3;
-    }
-
-    .buttons {
+    .menu-buttons,
+    .buttons,
+    .color-grid {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 22px;
       width: 100%;
     }
-
+    .menu-buttons,
+    .buttons {
+      margin-top: 18px;
+    }
+    .color-grid {
+      margin-top: 10px;
+    }
     button {
       border: 0;
       border-radius: 18px;
@@ -246,36 +209,79 @@
       min-width: 120px;
       transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
     }
-
     button:active {
       transform: scale(0.98);
     }
-
-    .start-btn,
-    .done-btn {
+    .primary-btn {
       background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
       color: #ffffff;
       box-shadow: 0 10px 20px rgba(34,197,94,0.22);
     }
-
-    .shuffle-btn {
+    .secondary-btn {
       background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 100%);
       color: #2b1a00;
       box-shadow: 0 10px 20px rgba(245,158,11,0.20);
     }
-
-    .reset-btn {
+    .neutral-btn {
       background: linear-gradient(180deg, #dbe2ea 0%, #c4ccd8 100%);
       color: #1f2937;
     }
-
-    .hard-mode .shuffle-btn {
-      background: linear-gradient(180deg, #7a0000 0%, #4f0000 100%);
-      color: #ffffff;
-      border: 2px solid #ffd2c7;
-      box-shadow: 0 0 14px rgba(255, 140, 0, 0.35);
+    .red-btn {
+      background: linear-gradient(180deg, #f87171 0%, #ef4444 100%);
+      color: #fff;
     }
-
+    .orange-btn {
+      background: linear-gradient(180deg, #fdba74 0%, #fb923c 100%);
+      color: #fff;
+    }
+    .yellow-btn {
+      background: linear-gradient(180deg, #fde68a 0%, #facc15 100%);
+      color: #3b2f00;
+    }
+    .green-btn {
+      background: linear-gradient(180deg, #86efac 0%, #22c55e 100%);
+      color: #fff;
+    }
+    .blue-btn {
+      background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
+      color: #fff;
+    }
+    .sentence-wrap,
+    .word-wrap {
+      width: 100%;
+      min-height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 6px;
+    }
+    .sentence,
+    .rainbow-word {
+      font-size: clamp(28px, 7vw, 44px);
+      font-weight: 800;
+      line-height: 1.32;
+      max-width: 100%;
+      margin: 0 auto;
+      color: var(--text);
+    }
+    .sentence u {
+      text-decoration-thickness: 2px;
+      text-underline-offset: 5px;
+    }
+    .mode-label {
+      margin-top: 8px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #b91c1c;
+      min-height: 24px;
+    }
+    .rainbow-subtitle {
+      font-size: clamp(18px, 4vw, 22px);
+      line-height: 1.2;
+      color: #374151;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
     .result-title {
       font-size: clamp(30px, 8vw, 52px);
       font-weight: 900;
@@ -283,7 +289,6 @@
       line-height: 1.06;
       color: var(--text);
     }
-
     .result-time {
       font-size: clamp(28px, 7vw, 44px);
       font-weight: 900;
@@ -291,63 +296,58 @@
       color: var(--green);
       line-height: 1.1;
     }
-
-    .hard-mode .result-time {
-      color: #ffffff;
-    }
-
     .result-text {
       font-size: 18px;
       line-height: 1.35;
       max-width: 320px;
-      margin: 0 auto 14px auto;
+      margin: 0 auto 12px auto;
       color: #243047;
     }
-
     .celebration-img {
-      width: min(58vw, 220px);
-      max-height: 240px;
+      width: min(52vw, 190px);
+      max-height: 190px;
       object-fit: contain;
       height: auto;
       border-radius: 24px;
-      margin-top: 6px;
+      margin-top: 4px;
       box-shadow: 0 12px 28px rgba(0,0,0,.14);
       background: #fff;
       padding: 6px;
     }
-
+    .compact-buttons {
+      margin-top: 16px;
+    }
     @media (max-width: 390px) {
       button {
         width: 100%;
       }
-
-      .buttons {
+      .menu-buttons,
+      .buttons,
+      .color-grid {
         flex-direction: column;
       }
-
-      .sentence-wrap {
-        min-height: 240px;
+      .sentence-wrap,
+      .word-wrap {
+        min-height: 220px;
       }
-
       .timer-text {
         font-size: 40px;
       }
-
       .progress-text {
         font-size: 18px;
       }
-
-      .home-logo {
+      .home-portrait {
         width: min(46vw, 135px);
       }
-
+      .rocket-logo {
+        width: min(48vw, 145px);
+      }
       .result-text {
         font-size: 17px;
       }
-
       .celebration-img {
-        width: min(60vw, 210px);
-        max-height: 220px;
+        width: min(56vw, 180px);
+        max-height: 180px;
       }
     }
   </style>
@@ -355,60 +355,113 @@
 <body>
   <div class="app" id="app">
     <div class="topbar" id="topbar">
-      <div class="progress-text" id="progressPill">Sentence 0 of 10</div>
-      <div class="timer-text" id="timerPill">00:00.0</div>
+      <div class="progress-text" id="progressText">Choose a Game</div>
+      <div class="timer-text hidden" id="timerText">00:00.0</div>
     </div>
 
-    <div class="screen active" id="startScreen">
-      <img
-        src="shaw-logo.png"
-        alt="School logo"
-        class="home-logo"
-      />
+    <div class="screen active" id="homeScreen">
+      <img src="canby.png" alt="Ms. Canby portrait" class="home-portrait" />
       <div class="badge">Ms. Canby’s Reading Practice</div>
-      <div class="title">Fast &amp; Fluent</div>
-      <div class="subtitle">Wonders Unit 5 Week 1</div>
-      <div class="start-note">
-        Welcome, readers! Read each sentence out loud. Tap Start to go in order, or tap Shuffle to mix the sentences before the timer begins.
+      <img src="rocket-book-icon.png" alt="Rocket Book logo" class="rocket-logo" />
+      <div class="title">Rocket Book</div>
+      <div class="small-note">
+        Pick a reading game to begin.
       </div>
-      <div class="buttons">
-        <button class="start-btn" id="startBtn" type="button">Start</button>
-        <button class="shuffle-btn" id="startShuffleBtn" type="button">Shuffle</button>
+      <div class="menu-buttons">
+        <button class="primary-btn" id="goFastBtn" type="button">Fast &amp; Fluent</button>
+        <button class="secondary-btn" id="goRainbowBtn" type="button">Rainbow Reading</button>
+      </div>
+      <div class="micro-note">Designed by CreativeSilva</div>
+    </div>
+
+    <div class="screen" id="fastHomeScreen">
+      <div class="badge">Fast &amp; Fluent</div>
+      <div class="title">Fast &amp; Fluent</div>
+      <div class="subtitle" id="fastHomeTitle">Wonders Unit 5 Week 1</div>
+      <div class="small-note">
+        Read each sentence out loud. Tap Start to go in order, or tap Shuffle to mix the sentences before the timer begins.
+      </div>
+      <div class="menu-buttons">
+        <button class="primary-btn" id="fastStartBtn" type="button">Start</button>
+        <button class="secondary-btn" id="fastShuffleBtn" type="button">Shuffle</button>
+        <button class="neutral-btn" id="fastBackBtn" type="button">Back</button>
       </div>
     </div>
 
-    <div class="screen" id="gameScreen">
+    <div class="screen" id="fastGameScreen">
       <div class="sentence-wrap">
         <div class="sentence" id="sentenceText"></div>
       </div>
-      <div class="mode-label" id="modeLabel"></div>
-      <div class="buttons">
-        <button class="reset-btn" id="resetBtn" type="button">Reset</button>
-        <button class="done-btn" id="doneBtn" type="button">Done</button>
+      <div class="mode-label" id="fastModeLabel"></div>
+      <div class="buttons compact-buttons">
+        <button class="neutral-btn" id="fastResetBtn" type="button">Reset</button>
+        <button class="primary-btn" id="fastDoneBtn" type="button">Done</button>
+      </div>
+    </div>
+
+    <div class="screen" id="rainbowHomeScreen">
+      <div class="badge">Rainbow Reading</div>
+      <div class="title">Rainbow Reading</div>
+      <div class="rainbow-subtitle">Choose a color list</div>
+      <div class="color-grid">
+        <button class="red-btn" data-color="Red" type="button">Red</button>
+        <button class="orange-btn" data-color="Orange" type="button">Orange</button>
+        <button class="yellow-btn" data-color="Yellow" type="button">Yellow</button>
+        <button class="green-btn" data-color="Green" type="button">Green</button>
+        <button class="blue-btn" data-color="Blue" type="button">Blue</button>
+        <button class="neutral-btn" id="rainbowBackBtn" type="button">Back</button>
+      </div>
+    </div>
+
+    <div class="screen" id="rainbowModeScreen">
+      <div class="badge">Rainbow Reading</div>
+      <div class="title" id="rainbowModeTitle">Red List</div>
+      <div class="small-note">
+        Practice your words in order, or shuffle them for a mixed-up challenge.
+      </div>
+      <div class="menu-buttons">
+        <button class="primary-btn" id="rainbowStartBtn" type="button">Start</button>
+        <button class="secondary-btn" id="rainbowShuffleBtn" type="button">Shuffle</button>
+        <button class="neutral-btn" id="rainbowModeBackBtn" type="button">Back</button>
+      </div>
+    </div>
+
+    <div class="screen" id="rainbowGameScreen">
+      <div class="word-wrap">
+        <div class="rainbow-word" id="rainbowWordText"></div>
+      </div>
+      <div class="mode-label" id="rainbowModeLabel"></div>
+      <div class="buttons compact-buttons">
+        <button class="neutral-btn" id="rainbowResetBtn" type="button">Reset</button>
+        <button class="primary-btn" id="rainbowDoneBtn" type="button">Done</button>
       </div>
     </div>
 
     <div class="screen" id="finishScreen">
-      <div class="badge">Ms. Canby’s Reading Practice</div>
-      <div class="result-title">Great Job, Reader!</div>
-      <div class="result-time" id="finalTime">Final Time: 00:00.0</div>
-      <div class="result-text">
-        You finished all 10 sentences. Write your time on your sheet.
-      </div>
-      <img
-        id="celebrationImg"
-        class="celebration-img"
-        src="giphy.gif"
-        alt="Celebration image"
-      />
-      <div class="buttons">
-        <button class="start-btn" id="playAgainBtn" type="button">Back to Home</button>
+      <div class="badge" id="finishBadge">Reading Practice</div>
+      <div class="result-title" id="finishTitle">Great Job, Reader!</div>
+      <div class="result-time" id="finishTime">Final Time: 00:00.0</div>
+      <div class="result-text" id="finishText">You finished your practice.</div>
+      <img id="celebrationImg" class="celebration-img" src="giphy.gif" alt="Celebration image" />
+      <div class="buttons compact-buttons">
+        <button class="primary-btn" id="backHomeBtn" type="button">Back to Home</button>
       </div>
     </div>
   </div>
 
   <script>
-    const sentences = [
+    /*
+      EASY UPDATE SECTION
+
+      1. Update the Fast & Fluent title below.
+      2. Update the Fast & Fluent sentences below.
+      3. Update the Rainbow lists below.
+      4. Add more celebration GIF filenames to celebrationImages below.
+    */
+
+    const fastTitle = "Wonders Unit 5 Week 1";
+
+    const fastSentences = [
       'Her <u>cart</u> is full of food.',
       'The <u>barn</u> is old and red.',
       'It is fun to make <u>art</u>.',
@@ -420,6 +473,24 @@
       'I have <u>four</u> cups.',
       '<u>None</u> of us are ready to go.'
     ];
+
+    const rainbowLists = {
+      Red: [
+        "I","can","the","we","see","a","like","to","and","go","you","do","my","are","he","with","is","little","she","was"
+      ],
+      Orange: [
+        "for","have","of","they","said","want","here","me","this","what","too","has","play","where","look","good","who","come","does","help"
+      ],
+      Yellow: [
+        "school","down","out","very","be","pull","move","two","again","new","there","use","could","live","one","then","three","eat","under","all","call","day","her","want","around"
+      ],
+      Green: [
+        "by","many","place","walk","away","now","some","today","why","way","grow","pretty","should","together","water","green","any","from","happy","once","upon","so","ago","boy","girl"
+      ],
+      Blue: [
+        "how","old","people","after","buy","done","every","soon","work","animal","about","carry","eight","give","our","blue","into","or","small","other","find","food","more","over","because"
+      ]
+    };
 
     const celebrationImages = [
       "giphy.gif",
@@ -444,32 +515,48 @@
       "giphy-20.gif"
     ];
 
-    const app = document.getElementById("app");
-    const topbar = document.getElementById("topbar");
-    const startScreen = document.getElementById("startScreen");
-    const gameScreen = document.getElementById("gameScreen");
-    const finishScreen = document.getElementById("finishScreen");
+    const screens = {
+      home: document.getElementById("homeScreen"),
+      fastHome: document.getElementById("fastHomeScreen"),
+      fastGame: document.getElementById("fastGameScreen"),
+      rainbowHome: document.getElementById("rainbowHomeScreen"),
+      rainbowMode: document.getElementById("rainbowModeScreen"),
+      rainbowGame: document.getElementById("rainbowGameScreen"),
+      finish: document.getElementById("finishScreen")
+    };
 
-    const progressPill = document.getElementById("progressPill");
-    const timerPill = document.getElementById("timerPill");
+    const progressText = document.getElementById("progressText");
+    const timerText = document.getElementById("timerText");
+
+    const fastHomeTitle = document.getElementById("fastHomeTitle");
     const sentenceText = document.getElementById("sentenceText");
-    const modeLabel = document.getElementById("modeLabel");
-    const finalTime = document.getElementById("finalTime");
+    const fastModeLabel = document.getElementById("fastModeLabel");
+
+    const rainbowModeTitle = document.getElementById("rainbowModeTitle");
+    const rainbowWordText = document.getElementById("rainbowWordText");
+    const rainbowModeLabel = document.getElementById("rainbowModeLabel");
+
+    const finishBadge = document.getElementById("finishBadge");
+    const finishTitle = document.getElementById("finishTitle");
+    const finishTime = document.getElementById("finishTime");
+    const finishText = document.getElementById("finishText");
     const celebrationImg = document.getElementById("celebrationImg");
 
-    const startBtn = document.getElementById("startBtn");
-    const startShuffleBtn = document.getElementById("startShuffleBtn");
-    const doneBtn = document.getElementById("doneBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const playAgainBtn = document.getElementById("playAgainBtn");
+    fastHomeTitle.textContent = fastTitle;
 
-    let currentDeck = [];
-    let currentIndex = 0;
-    let hardMode = false;
+    let currentAppMode = "home";
 
-    let timerInterval = null;
-    let startTime = null;
-    let elapsedMs = 0;
+    let fastDeck = [];
+    let fastIndex = 0;
+    let fastHardMode = false;
+    let fastTimerInterval = null;
+    let fastStartTime = null;
+    let fastElapsedMs = 0;
+
+    let rainbowCurrentColor = "Red";
+    let rainbowDeck = [];
+    let rainbowIndex = 0;
+    let rainbowShuffled = false;
 
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -491,130 +578,214 @@
       const minutes = Math.floor(totalTenths / 600);
       const seconds = Math.floor((totalTenths % 600) / 10);
       const tenths = totalTenths % 10;
-
       const mm = String(minutes).padStart(2, "0");
       const ss = String(seconds).padStart(2, "0");
-
       return `${mm}:${ss}.${tenths}`;
     }
 
-    function updateTimer() {
-      if (!startTime) return;
-      elapsedMs = Date.now() - startTime;
-      timerPill.textContent = formatTime(elapsedMs);
+    function showScreen(screenKey) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[screenKey].classList.add("active");
+      currentAppMode = screenKey;
+      updateHeader();
     }
 
-    function startTimer() {
-      startTime = Date.now();
-      elapsedMs = 0;
-      timerPill.textContent = "00:00.0";
-      clearInterval(timerInterval);
-      timerInterval = setInterval(updateTimer, 100);
-    }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      updateTimer();
-    }
-
-    function showScreen(screen) {
-      startScreen.classList.remove("active");
-      gameScreen.classList.remove("active");
-      finishScreen.classList.remove("active");
-      screen.classList.add("active");
-    }
-
-    function updateTopBar() {
-      if (gameScreen.classList.contains("active")) {
-        progressPill.textContent = `Sentence ${currentIndex + 1} of ${currentDeck.length}`;
-      } else if (finishScreen.classList.contains("active")) {
-        progressPill.textContent = "";
-      } else {
-        progressPill.textContent = "Sentence 0 of 10";
+    function updateHeader() {
+      if (currentAppMode === "home") {
+        progressText.textContent = "Choose a Game";
+        timerText.classList.add("hidden");
+      } else if (currentAppMode === "fastHome") {
+        progressText.textContent = "Fast & Fluent";
+        timerText.classList.add("hidden");
+      } else if (currentAppMode === "fastGame") {
+        progressText.textContent = `Sentence ${fastIndex + 1} of ${fastDeck.length}`;
+        timerText.classList.remove("hidden");
+      } else if (currentAppMode === "rainbowHome") {
+        progressText.textContent = "Rainbow Reading";
+        timerText.classList.add("hidden");
+      } else if (currentAppMode === "rainbowMode") {
+        progressText.textContent = `${rainbowCurrentColor} List`;
+        timerText.classList.add("hidden");
+      } else if (currentAppMode === "rainbowGame") {
+        progressText.textContent = `${rainbowCurrentColor} ${rainbowIndex + 1} of ${rainbowDeck.length}`;
+        timerText.classList.add("hidden");
+      } else if (currentAppMode === "finish") {
+        progressText.textContent = "";
+        timerText.classList.add("hidden");
       }
     }
 
-    function updateModeStyle() {
-      if (hardMode) {
-        app.classList.add("hard-mode");
-        modeLabel.textContent = "Ultra Super Duper Hard Mode";
-      } else {
-        app.classList.remove("hard-mode");
-        modeLabel.textContent = "";
-      }
+    function updateFastTimer() {
+      if (!fastStartTime) return;
+      fastElapsedMs = Date.now() - fastStartTime;
+      timerText.textContent = formatTime(fastElapsedMs);
     }
 
-    function showCurrentSentence() {
-      sentenceText.innerHTML = currentDeck[currentIndex];
-      updateTopBar();
-      updateModeStyle();
+    function startFastTimer() {
+      fastStartTime = Date.now();
+      fastElapsedMs = 0;
+      timerText.textContent = "00:00.0";
+      clearInterval(fastTimerInterval);
+      fastTimerInterval = setInterval(updateFastTimer, 100);
     }
 
-    function buildSequentialDeck() {
-      currentDeck = [...sentences];
-      currentIndex = 0;
-      hardMode = false;
+    function stopFastTimer() {
+      clearInterval(fastTimerInterval);
+      updateFastTimer();
     }
 
-    function buildShuffledDeck() {
-      currentDeck = shuffleArray([...sentences]);
-      currentIndex = 0;
-      hardMode = true;
+    function buildFastSequentialDeck() {
+      fastDeck = [...fastSentences];
+      fastIndex = 0;
+      fastHardMode = false;
     }
 
-    function launchGame(shuffleFirst = false) {
+    function buildFastShuffledDeck() {
+      fastDeck = shuffleArray([...fastSentences]);
+      fastIndex = 0;
+      fastHardMode = true;
+    }
+
+    function updateFastModeLabel() {
+      fastModeLabel.textContent = fastHardMode ? "Ultra Super Duper Hard Mode" : "";
+    }
+
+    function showFastSentence() {
+      sentenceText.innerHTML = fastDeck[fastIndex];
+      updateFastModeLabel();
+      updateHeader();
+    }
+
+    function launchFastGame(shuffleFirst = false) {
       if (shuffleFirst) {
-        buildShuffledDeck();
+        buildFastShuffledDeck();
       } else {
-        buildSequentialDeck();
+        buildFastSequentialDeck();
       }
-      topbar.style.display = "flex";
-      showScreen(gameScreen);
-      showCurrentSentence();
-      startTimer();
+      showScreen("fastGame");
+      showFastSentence();
+      startFastTimer();
     }
 
-    function advanceSentence() {
-      currentIndex++;
-
-      if (currentIndex >= currentDeck.length) {
-        stopTimer();
-        finalTime.textContent = `Final Time: ${formatTime(elapsedMs)}`;
+    function advanceFastSentence() {
+      fastIndex++;
+      if (fastIndex >= fastDeck.length) {
+        stopFastTimer();
+        finishBadge.textContent = "Fast & Fluent";
+        finishTitle.textContent = "Great Job, Reader!";
+        finishTime.textContent = `Final Time: ${formatTime(fastElapsedMs)}`;
+        finishTime.style.display = "block";
+        finishText.textContent = "You finished all 10 sentences. Write your time on your sheet.";
         celebrationImg.src = getRandomCelebrationImage();
-        topbar.style.display = "none";
-        showScreen(finishScreen);
-        updateTopBar();
-        updateModeStyle();
+        showScreen("finish");
         return;
       }
-
-      showCurrentSentence();
+      showFastSentence();
     }
 
-    function resetGame() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      startTime = null;
-      elapsedMs = 0;
-      hardMode = false;
-      currentDeck = [];
-      currentIndex = 0;
-      timerPill.textContent = "00:00.0";
-      topbar.style.display = "flex";
-      showScreen(startScreen);
-      updateTopBar();
-      updateModeStyle();
+    function setRainbowColor(color) {
+      rainbowCurrentColor = color;
+      rainbowModeTitle.textContent = `${color} List`;
+      showScreen("rainbowMode");
     }
 
-    startBtn.addEventListener("click", () => launchGame(false));
-    startShuffleBtn.addEventListener("click", () => launchGame(true));
-    doneBtn.addEventListener("click", advanceSentence);
-    resetBtn.addEventListener("click", resetGame);
-    playAgainBtn.addEventListener("click", resetGame);
+    function buildRainbowDeck(shuffleFirst = false) {
+      rainbowDeck = [...rainbowLists[rainbowCurrentColor]];
+      if (shuffleFirst) {
+        rainbowDeck = shuffleArray(rainbowDeck);
+      }
+      rainbowIndex = 0;
+      rainbowShuffled = shuffleFirst;
+    }
+
+    function updateRainbowModeLabel() {
+      rainbowModeLabel.textContent = rainbowShuffled ? "Shuffled Order" : "In Order";
+    }
+
+    function showRainbowWord() {
+      rainbowWordText.textContent = rainbowDeck[rainbowIndex];
+      updateRainbowModeLabel();
+      updateHeader();
+    }
+
+    function launchRainbowGame(shuffleFirst = false) {
+      buildRainbowDeck(shuffleFirst);
+      showScreen("rainbowGame");
+      showRainbowWord();
+    }
+
+    function advanceRainbowWord() {
+      rainbowIndex++;
+      if (rainbowIndex >= rainbowDeck.length) {
+        finishBadge.textContent = "Rainbow Reading";
+        finishTitle.textContent = `${rainbowCurrentColor} Complete!`;
+        finishTime.style.display = "none";
+        finishText.textContent = `You finished the ${rainbowCurrentColor.toLowerCase()} list. Great reading!`;
+        celebrationImg.src = getRandomCelebrationImage();
+        showScreen("finish");
+        return;
+      }
+      showRainbowWord();
+    }
+
+    function resetFastGame() {
+      clearInterval(fastTimerInterval);
+      fastTimerInterval = null;
+      fastStartTime = null;
+      fastElapsedMs = 0;
+      timerText.textContent = "00:00.0";
+      fastDeck = [];
+      fastIndex = 0;
+      fastHardMode = false;
+      showScreen("fastHome");
+    }
+
+    function resetRainbowGame() {
+      rainbowDeck = [];
+      rainbowIndex = 0;
+      rainbowShuffled = false;
+      showScreen("rainbowMode");
+    }
+
+    function goHome() {
+      clearInterval(fastTimerInterval);
+      fastTimerInterval = null;
+      fastStartTime = null;
+      fastElapsedMs = 0;
+      timerText.textContent = "00:00.0";
+      fastDeck = [];
+      fastIndex = 0;
+      fastHardMode = false;
+      rainbowDeck = [];
+      rainbowIndex = 0;
+      rainbowShuffled = false;
+      showScreen("home");
+    }
+
+    document.getElementById("goFastBtn").addEventListener("click", () => showScreen("fastHome"));
+    document.getElementById("goRainbowBtn").addEventListener("click", () => showScreen("rainbowHome"));
+
+    document.getElementById("fastStartBtn").addEventListener("click", () => launchFastGame(false));
+    document.getElementById("fastShuffleBtn").addEventListener("click", () => launchFastGame(true));
+    document.getElementById("fastBackBtn").addEventListener("click", goHome);
+    document.getElementById("fastDoneBtn").addEventListener("click", advanceFastSentence);
+    document.getElementById("fastResetBtn").addEventListener("click", resetFastGame);
+
+    document.getElementById("rainbowBackBtn").addEventListener("click", goHome);
+    document.getElementById("rainbowModeBackBtn").addEventListener("click", () => showScreen("rainbowHome"));
+    document.getElementById("rainbowStartBtn").addEventListener("click", () => launchRainbowGame(false));
+    document.getElementById("rainbowShuffleBtn").addEventListener("click", () => launchRainbowGame(true));
+    document.getElementById("rainbowDoneBtn").addEventListener("click", advanceRainbowWord);
+    document.getElementById("rainbowResetBtn").addEventListener("click", resetRainbowGame);
+
+    document.querySelectorAll("[data-color]").forEach(button => {
+      button.addEventListener("click", () => setRainbowColor(button.dataset.color));
+    });
+
+    document.getElementById("backHomeBtn").addEventListener("click", goHome);
 
     celebrationImg.src = getRandomCelebrationImage();
-    updateTopBar();
-    updateModeStyle();
+    updateHeader();
   </script>
 </body>
 </html>
