@@ -11,10 +11,10 @@
   <meta name="apple-mobile-web-app-title" content="Rocket Book" />
   <meta name="theme-color" content="#f8fafc" />
 
-  <link rel="apple-touch-icon" href="rocket_book_logo.png?v=8" />
-  <link rel="icon" type="image/png" sizes="192x192" href="rocket_book_logo.png?v=8" />
-  <link rel="icon" type="image/png" sizes="512x512" href="rocket_book_logo.png?v=8" />
-  <link rel="shortcut icon" href="rocket_book_logo.png?v=8" />
+  <link rel="apple-touch-icon" href="rocket_book_logo.png?v=9" />
+  <link rel="icon" type="image/png" sizes="192x192" href="rocket_book_logo.png?v=9" />
+  <link rel="icon" type="image/png" sizes="512x512" href="rocket_book_logo.png?v=9" />
+  <link rel="shortcut icon" href="rocket_book_logo.png?v=9" />
 
   <title>Rocket Book</title>
 
@@ -22,7 +22,6 @@
     :root {
       --bg1: #fff7ed;
       --bg2: #eff6ff;
-      --card: rgba(255,255,255,0.95);
       --text: #172033;
       --muted: #5f6b85;
       --green: #16a34a;
@@ -139,7 +138,7 @@
       justify-content: center;
       text-align: center;
       flex-direction: column;
-      padding: 6px 4px 0 4px;
+      padding: 8px 4px 0 4px;
       position: relative;
       z-index: 1;
     }
@@ -189,22 +188,12 @@
       overflow: hidden;
     }
 
-    .home-logo {
+    .brand-logo {
       width: min(44vw, 145px);
       max-width: 145px;
       max-height: 145px;
       height: auto;
-      margin: 2px 0 10px 0;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
-    }
-
-    .game-logo {
-      width: min(74vw, 284px);
-      max-width: 284px;
-      max-height: 236px;
-      height: auto;
-      margin: 0 0 6px 0;
+      margin: 0 0 12px 0;
       object-fit: contain;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
     }
@@ -512,16 +501,10 @@
         font-size: 18px;
       }
 
-      .home-logo {
+      .brand-logo {
         width: min(46vw, 130px);
         max-width: 130px;
         max-height: 130px;
-      }
-
-      .game-logo {
-        width: min(74vw, 255px);
-        max-width: 255px;
-        max-height: 210px;
       }
 
       .result-text {
@@ -563,7 +546,7 @@
     </div>
 
     <div class="screen active" id="homeScreen">
-      <img src="rocket_book_logo.png" alt="Rocket Book logo" class="home-logo" />
+      <img src="rocket_book_logo.png" alt="Rocket Book logo" class="brand-logo" />
       <div class="title">Rocket Book</div>
       <div class="small-note">
         Pick a reading game to begin.
@@ -576,7 +559,8 @@
     </div>
 
     <div class="screen" id="fastHomeScreen">
-      <img src="fast_and_fluent_logo.png" alt="Fast and Fluent logo" class="game-logo" />
+      <img src="fast_and_fluent_logo.png" alt="Fast and Fluent logo" class="brand-logo" />
+      <div class="title">Fast &amp; Fluent</div>
       <div class="subtitle" id="fastHomeTitle">Wonders Unit 5 Week 1</div>
       <div class="small-note">
         Read each sentence out loud. Tap Start to go in order, or tap Shuffle for Ultra Super Duper Hard Mode.
@@ -600,7 +584,8 @@
     </div>
 
     <div class="screen" id="rainbowHomeScreen">
-      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="game-logo" />
+      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo" />
+      <div class="title">Rainbow Reader</div>
       <div class="rainbow-subtitle">Choose a color list</div>
       <div class="color-grid">
         <button class="red-btn" data-color="Red" type="button">Red</button>
@@ -613,8 +598,9 @@
     </div>
 
     <div class="screen" id="rainbowModeScreen">
-      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="game-logo" />
-      <div class="title" id="rainbowModeTitle">Red List</div>
+      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo" />
+      <div class="title">Rainbow Reader</div>
+      <div class="subtitle" id="rainbowModeTitle">Red List</div>
       <div class="small-note">
         Practice your words in order, or tap Shuffle for a mixed-up challenge.
       </div>
