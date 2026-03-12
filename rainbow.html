@@ -1,360 +1,1003 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Rainbow Reader</title>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Rainbow Reader">
+  <meta name="theme-color" content="#f8fafc">
+  <link rel="apple-touch-icon" href="rainbow_reader_logo.png?v=7">
+  <link rel="icon" type="image/png" sizes="192x192" href="rainbow_reader_logo.png?v=7">
+  <link rel="icon" type="image/png" sizes="512x512" href="rainbow_reader_logo.png?v=7">
+  <link rel="shortcut icon" href="rainbow_reader_logo.png?v=7">
+  <title>Rainbow Reader</title>
 
-<style>
+  <style>
+    :root {
+      --text: #172033;
+      --muted: #5f6b85;
+      --shadow: 0 18px 40px rgba(0,0,0,0.12);
+      --soft-shadow: 0 12px 28px rgba(0,0,0,0.16);
+    }
 
-body{
-margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:linear-gradient(180deg,#fff7ed,#eff6ff);
-display:flex;
-align-items:center;
-justify-content:center;
-height:100vh;
-}
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-.app{
-width:430px;
-max-width:100%;
-border-radius:30px;
-background:white;
-padding:20px;
-box-shadow:0 20px 40px rgba(0,0,0,.12);
-text-align:center;
-}
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      touch-action: pan-y;
+    }
 
-.screen{
-display:none;
-flex-direction:column;
-align-items:center;
-}
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-right: max(14px, env(safe-area-inset-right));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-left: max(14px, env(safe-area-inset-left));
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior-y: contain;
+      background:
+        radial-gradient(circle at top left, rgba(251,146,60,0.22), transparent 24%),
+        radial-gradient(circle at top right, rgba(59,130,246,0.20), transparent 24%),
+        radial-gradient(circle at bottom left, rgba(236,72,153,0.18), transparent 22%),
+        radial-gradient(circle at bottom right, rgba(139,92,246,0.18), transparent 22%),
+        linear-gradient(180deg, #fff7ed 0%, #eff6ff 100%);
+    }
 
-.screen.active{
-display:flex;
-}
+    .app,
+    button,
+    img,
+    select {
+      touch-action: manipulation;
+    }
 
-.logo{
-width:140px;
-margin-bottom:10px;
-}
+    .app {
+      width: min(100%, 430px);
+      min-height: min(86vh, 800px);
+      min-height: min(86dvh, 800px);
+      background: rgba(255,255,255,0.95);
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 18px 18px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.85);
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
 
-.title{
-font-size:44px;
-font-weight:900;
-}
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg,
+          rgba(239,68,68,0.08) 0%,
+          rgba(251,146,60,0.08) 20%,
+          rgba(250,204,21,0.08) 40%,
+          rgba(34,197,94,0.08) 60%,
+          rgba(59,130,246,0.08) 80%,
+          rgba(139,92,246,0.08) 100%);
+      transition: opacity 0.25s ease;
+    }
 
-.subtitle{
-font-size:22px;
-color:#374151;
-margin-bottom:10px;
-}
+    .app.theme-red {
+      background: radial-gradient(circle at center, #fff0f3 0%, #ffd7de 56%, #f05252 100%);
+      border-color: rgba(239,68,68,0.24);
+    }
 
-.note{
-font-size:15px;
-color:#5f6b85;
-margin-bottom:10px;
-max-width:300px;
-}
+    .app.theme-orange {
+      background: radial-gradient(circle at center, #fff7ef 0%, #ffe1c2 56%, #fb923c 100%);
+      border-color: rgba(251,146,60,0.24);
+    }
 
-select{
-width:260px;
-padding:15px;
-font-size:18px;
-font-weight:800;
-border-radius:22px;
-border:0;
-background:#f3f4f6;
-margin-bottom:10px;
-}
+    .app.theme-yellow {
+      background: radial-gradient(circle at center, #fffdec 0%, #fde68a 56%, #facc15 100%);
+      border-color: rgba(250,204,21,0.24);
+    }
 
-.segment{
-width:260px;
-display:grid;
-grid-template-columns:1fr 1fr;
-border-radius:22px;
-overflow:hidden;
-margin-top:12px;
-}
+    .app.theme-green {
+      background: radial-gradient(circle at center, #f3fff4 0%, #bbf7d0 56%, #22c55e 100%);
+      border-color: rgba(34,197,94,0.24);
+    }
 
-button{
-border:0;
-padding:14px;
-font-size:16px;
-font-weight:800;
-cursor:pointer;
-}
+    .app.theme-blue {
+      background: radial-gradient(circle at center, #eef8ff 0%, #bfdbfe 56%, #3b82f6 100%);
+      border-color: rgba(59,130,246,0.24);
+    }
 
-.green{
-background:linear-gradient(#7fd97d,#4fbb61);
-color:white;
-}
+    .app.theme-purple {
+      background: radial-gradient(circle at center, #f7f2ff 0%, #ddd6fe 56%, #8b5cf6 100%);
+      border-color: rgba(139,92,246,0.24);
+    }
 
-.yellow{
-background:linear-gradient(#f4d45c,#e9aa1f);
-}
+    .app.theme-brown {
+      background: radial-gradient(circle at center, #fbf5ee 0%, #e7d0bc 56%, #8b5e3c 100%);
+      border-color: rgba(139,94,60,0.24);
+    }
 
-.red{
-background:linear-gradient(#f47a7a,#e54c4c);
-color:white;
-}
+    .app.theme-pink {
+      background: radial-gradient(circle at center, #fff1f8 0%, #fbcfe8 56%, #ec4899 100%);
+      border-color: rgba(236,72,153,0.24);
+    }
 
-.gray{
-background:#d1d5db;
-}
+    .app.theme-gray {
+      background: radial-gradient(circle at center, #ffffff 0%, #d1d5db 56%, #9ca3af 100%);
+      border-color: rgba(156,163,175,0.24);
+    }
 
-.word{
-font-size:70px;
-font-weight:900;
-margin:20px 0;
-}
+    .app.theme-choice {
+      background: radial-gradient(circle at center,
+        #fffef5 0%,
+        #fff2a8 15%,
+        #ffc4e9 30%,
+        #bdefff 45%,
+        #c8ffb5 60%,
+        #ffd08a 78%,
+        #ff73cf 100%);
+      border-color: rgba(245,158,11,0.24);
+    }
 
-.stats{
-font-weight:900;
-margin-bottom:10px;
-}
+    .app.shuffle-mode {
+      box-shadow: 0 20px 42px rgba(185,28,28,0.22);
+    }
 
-.reset{
-margin-top:8px;
-}
+    .screen {
+      flex: 1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      flex-direction: column;
+      padding: 8px 4px 0 4px;
+      position: relative;
+      z-index: 1;
+    }
 
-</style>
+    .screen.active {
+      display: flex;
+    }
+
+    .topbar {
+      min-height: 42px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-logo {
+      width: min(44vw, 145px);
+      max-width: 145px;
+      max-height: 145px;
+      height: auto;
+      margin: 0 0 12px 0;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
+    }
+
+    .title {
+      font-size: clamp(34px, 8vw, 52px);
+      font-weight: 900;
+      line-height: 1.03;
+      margin-bottom: 8px;
+      letter-spacing: -0.6px;
+      color: var(--text);
+    }
+
+    .subtitle {
+      font-size: clamp(19px, 4.8vw, 25px);
+      line-height: 1.2;
+      color: #374151;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .small-note {
+      font-size: 15px;
+      line-height: 1.38;
+      color: var(--muted);
+      max-width: 320px;
+      margin-bottom: 12px;
+    }
+
+    .selector-note {
+      font-size: 15px;
+      line-height: 1.35;
+      color: var(--muted);
+      max-width: 300px;
+      margin-bottom: 10px;
+    }
+
+    .menu-buttons,
+    .buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      min-width: 120px;
+      transition: transform 0.08s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .primary-btn {
+      background: linear-gradient(180deg, #79cc69 0%, #4aa84f 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(74,168,79,0.22);
+    }
+
+    .secondary-btn {
+      background: linear-gradient(180deg, #f4d45c 0%, #e9aa1f 100%);
+      color: #2b1a00;
+      box-shadow: 0 10px 20px rgba(233,170,31,0.20);
+    }
+
+    .shuffle-hard-btn {
+      background: linear-gradient(180deg, #ff7a32 0%, #e11d48 55%, #b91c1c 100%);
+      color: #ffffff;
+      box-shadow: 0 10px 22px rgba(225,29,72,0.28);
+    }
+
+    .neutral-btn {
+      background: linear-gradient(180deg, #dbe2ea 0%, #c4ccd8 100%);
+      color: #1f2937;
+    }
+
+    .missed-btn {
+      background: linear-gradient(180deg, #f47a7a 0%, #e54c4c 100%);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(229,76,76,0.22);
+    }
+
+    .selector-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .selector {
+      width: 260px;
+      max-width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 0;
+      border-radius: 22px;
+      padding: 15px 18px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #172033;
+      background: linear-gradient(180deg, #ffffff 0%, #edf2f7 100%);
+      box-shadow: 0 10px 20px rgba(148,163,184,0.18);
+      text-align: center;
+      text-align-last: center;
+      outline: none;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .selector.red-theme {
+      background: linear-gradient(180deg, #f47a7a 0%, #e54c4c 100%);
+      color: #fff;
+    }
+
+    .selector.orange-theme {
+      background: linear-gradient(180deg, #f8b269 0%, #ef9742 100%);
+      color: #fff;
+    }
+
+    .selector.yellow-theme {
+      background: linear-gradient(180deg, #f7e27d 0%, #e7c93a 100%);
+      color: #2b2400;
+    }
+
+    .selector.green-theme {
+      background: linear-gradient(180deg, #7fd97d 0%, #4fbb61 100%);
+      color: #fff;
+    }
+
+    .selector.blue-theme {
+      background: linear-gradient(180deg, #8fb9ff 0%, #5c8df0 100%);
+      color: #fff;
+    }
+
+    .selector.purple-theme {
+      background: linear-gradient(180deg, #c6a7ff 0%, #9567f1 100%);
+      color: #fff;
+    }
+
+    .selector.brown-theme {
+      background: linear-gradient(180deg, #c78e5c 0%, #96633c 100%);
+      color: #fff;
+    }
+
+    .selector.pink-theme {
+      background: linear-gradient(180deg, #f6a8d1 0%, #e772b3 100%);
+      color: #fff;
+    }
+
+    .selector.gray-theme {
+      background: linear-gradient(180deg, #d7dbe1 0%, #a8b0bb 100%);
+      color: #111827;
+    }
+
+    .selector.choice-theme {
+      background: linear-gradient(90deg,
+        #ff6b6b 0%,
+        #ffb347 18%,
+        #ffe066 34%,
+        #7ee787 50%,
+        #6cb6ff 66%,
+        #b794f4 82%,
+        #ff7bd5 100%);
+      color: #172033;
+    }
+
+    .segmented-actions {
+      width: 260px;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(148,163,184,0.18);
+      margin-top: 14px;
+    }
+
+    .segment-btn {
+      min-width: 0;
+      border-radius: 0;
+      padding: 14px 12px;
+      font-size: 16px;
+      box-shadow: none;
+    }
+
+    .segment-left {
+      border-right: 1px solid rgba(255,255,255,0.35);
+    }
+
+    .word-wrap {
+      width: 100%;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+    }
+
+    .rainbow-word {
+      font-size: clamp(58px, 15vw, 88px);
+      font-weight: 900;
+      line-height: 1;
+      max-width: 100%;
+      margin: 0 auto;
+      color: var(--text);
+      letter-spacing: -0.8px;
+    }
+
+    .mode-label {
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #b91c1c;
+      min-height: 20px;
+    }
+
+    .rainbow-stats-top {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      width: 100%;
+      margin: 2px 0 0 0;
+      font-size: 18px;
+      font-weight: 900;
+      color: #1f2937;
+    }
+
+    .rainbow-stats-top .missed-text {
+      color: #dc2626;
+    }
+
+    .rainbow-stats-top .correct-text {
+      color: #58a64d;
+    }
+
+    .rainbow-button-row {
+      width: 260px;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(148,163,184,0.18);
+      margin-top: 8px;
+      margin-bottom: 6px;
+    }
+
+    .rainbow-small-btn {
+      min-width: 0;
+      padding: 14px 14px;
+      font-size: 16px;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .rainbow-reset-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 0;
+    }
+
+    .rainbow-reset-btn {
+      width: 180px;
+      max-width: 100%;
+      min-width: 0;
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 999px;
+    }
+
+    .result-title {
+      font-size: clamp(30px, 8vw, 50px);
+      font-weight: 900;
+      margin-bottom: 8px;
+      line-height: 1.04;
+      color: var(--text);
+    }
+
+    .result-text {
+      font-size: 17px;
+      line-height: 1.32;
+      max-width: 310px;
+      margin: 0 auto 10px auto;
+      color: #243047;
+    }
+
+    .celebration-img {
+      width: min(46vw, 170px);
+      max-height: 170px;
+      object-fit: cover;
+      height: auto;
+      border-radius: 22px;
+      margin-top: 2px;
+      box-shadow: var(--soft-shadow);
+      background: transparent;
+      padding: 0;
+      border: 0;
+      display: block;
+    }
+
+    .compact-buttons {
+      margin-top: 12px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    @media (max-width: 390px) {
+      .brand-logo {
+        width: min(46vw, 130px);
+        max-width: 130px;
+        max-height: 130px;
+      }
+
+      .selector,
+      .segmented-actions,
+      .rainbow-button-row {
+        width: 240px;
+      }
+
+      .result-text {
+        font-size: 16px;
+      }
+
+      .celebration-img {
+        width: min(50vw, 160px);
+        max-height: 160px;
+      }
+
+      .rainbow-word {
+        font-size: clamp(52px, 14vw, 74px);
+      }
+
+      .rainbow-stats-top {
+        font-size: 17px;
+        gap: 12px;
+      }
+
+      .rainbow-reset-btn {
+        width: 168px;
+        font-size: 15px;
+        padding: 11px 14px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="app">
-
-<!-- HOME -->
-
-<div class="screen active" id="home">
-
-<img src="rainbow_reader_logo.png" class="logo">
-
-<div class="title">Rainbow Reader</div>
-<div class="subtitle">Choose a color list</div>
-<div class="note">Tap the button below to select a color list.</div>
-
-<select id="colorSelect">
-<option>Red</option>
-<option>Orange</option>
-<option>Yellow</option>
-<option>Green</option>
-<option>Blue</option>
-<option>Purple</option>
-<option>Brown</option>
-<option>Pink</option>
-<option>Gray</option>
-<option>Your Choice</option>
-</select>
-
-<div class="segment">
-<button class="gray" id="homeBtn">Home</button>
-<button class="green" id="continueBtn">Continue</button>
-</div>
-
-</div>
-
-
-<!-- MODE -->
-
-<div class="screen" id="mode">
-
-<img src="rainbow_reader_logo.png" class="logo">
-
-<div class="title">Rainbow Reader</div>
-<div class="subtitle" id="modeTitle"></div>
-
-<div class="note">Practice your words in order, or tap Shuffle for a mixed-up challenge.</div>
-
-<div class="segment">
-<button class="red" id="shuffleBtn">Shuffle</button>
-<button class="green" id="startBtn">Start</button>
-</div>
-
-<button class="gray" id="modeHome">Home</button>
-
-</div>
-
-
-<!-- GAME -->
-
-<div class="screen" id="game">
-
-<div class="word" id="word"></div>
-
-<div class="stats">
-<span id="progress"></span>
-<span style="color:red"> Missed <span id="missed">0</span></span>
-<span style="color:green"> Correct <span id="correct">0</span></span>
-</div>
-
-<div class="segment">
-<button class="red" id="missBtn">Missed</button>
-<button class="green" id="correctBtn">Correct</button>
-</div>
-
-<button class="gray reset" id="resetBtn">Reset</button>
-
-</div>
-
-
-<!-- FINISH -->
-
-<div class="screen" id="finish">
-
-<h1 id="finishTitle"></h1>
-
-<img id="celebrationImg" width="160">
-
-<div class="segment">
-<button class="yellow" id="anotherBtn">Another List</button>
-<button class="green" id="againBtn">Read Again</button>
-</div>
-
-<button class="gray" id="finishHome">Home</button>
-
-</div>
-
-</div>
-
-
-<audio id="rainbowMusic" src="rainbow_music.mp3" loop></audio>
-<audio id="celebrationSound" src="celebration_sound.mp3"></audio>
-
-
-<script>
-
-const lists={
-Red:["I","can","the","we","see","a","like","to","and","go"],
-Orange:["for","have","of","they","said","want","here","me","this","what"],
-Yellow:["school","down","out","very","be","pull","move","two","again","new"],
-Green:["by","many","place","walk","away","now","some","today","why","way"],
-Blue:["how","old","people","after","buy","done","every","soon","work","animal"],
-Purple:["start","warm","caught","flew","know","laugh","listen","were","found","hard"],
-Brown:["through","began","guess","learn","right","sure","color","early","instead","nothing"],
-Pink:["brother","father","mother","friend","picture","been","month","children","their","year"],
-Gray:["word","which","better","sister","write","number","year","thing","good","sound"],
-"Your Choice":["follow","change","animal","might","paper","earth","sentence","different","America","between"]
-}
-
-let deck=[]
-let index=0
-let correct=0
-let missed=0
-let missedQueue=[]
-
-const screens={
-home:document.getElementById("home"),
-mode:document.getElementById("mode"),
-game:document.getElementById("game"),
-finish:document.getElementById("finish")
-}
-
-const music=document.getElementById("rainbowMusic")
-const celebration=document.getElementById("celebrationSound")
-
-function show(s){
-Object.values(screens).forEach(x=>x.classList.remove("active"))
-screens[s].classList.add("active")
-}
-
-function startGame(shuffle=false){
-
-music.currentTime=0
-music.play()
-
-let color=document.getElementById("colorSelect").value
-deck=[...lists[color]]
-
-if(shuffle){
-deck.sort(()=>Math.random()-0.5)
-}
-
-index=0
-correct=0
-missed=0
-missedQueue=[]
-
-show("game")
-nextWord()
-}
-
-function nextWord(){
-
-if(index>=deck.length){
-
-if(missedQueue.length>0){
-deck=[...missedQueue]
-missedQueue=[]
-index=0
-}else{
-finish()
-return
-}
-
-}
-
-document.getElementById("word").textContent=deck[index]
-document.getElementById("progress").textContent=index+" of "+deck.length
-document.getElementById("correct").textContent=correct
-document.getElementById("missed").textContent=missed
-
-}
-
-function markCorrect(){
-correct++
-index++
-nextWord()
-}
-
-function markMiss(){
-missed++
-missedQueue.push(deck[index])
-index++
-nextWord()
-}
-
-function finish(){
-
-music.pause()
-
-celebration.currentTime=0
-celebration.play()
-
-document.getElementById("finishTitle").textContent="List Complete!"
-
-show("finish")
-
-}
-
-document.getElementById("continueBtn").onclick=()=>{
-let color=document.getElementById("colorSelect").value
-document.getElementById("modeTitle").textContent=color+" List"
-show("mode")
-}
-
-document.getElementById("shuffleBtn").onclick=()=>startGame(true)
-document.getElementById("startBtn").onclick=()=>startGame(false)
-
-document.getElementById("correctBtn").onclick=markCorrect
-document.getElementById("missBtn").onclick=markMiss
-
-document.getElementById("resetBtn").onclick=()=>{
-music.pause()
-show("mode")
-}
-
-document.getElementById("modeHome").onclick=()=>show("home")
-document.getElementById("homeBtn").onclick=()=>show("home")
-document.getElementById("finishHome").onclick=()=>show("home")
-document.getElementById("anotherBtn").onclick=()=>show("home")
-document.getElementById("againBtn").onclick=()=>show("mode")
-
-</script>
-
+  <div class="app" id="app">
+    <div class="topbar"></div>
+
+    <div class="screen active" id="rainbowHomeScreen">
+      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo">
+      <div class="title">Rainbow Reader</div>
+      <div class="subtitle">Choose a color list</div>
+      <div class="selector-note">Tap the button below to select a color list.</div>
+
+      <div class="selector-wrap">
+        <select class="selector" id="rainbowListSelect">
+          <option value="Red">Red</option>
+          <option value="Orange">Orange</option>
+          <option value="Yellow">Yellow</option>
+          <option value="Green">Green</option>
+          <option value="Blue">Blue</option>
+          <option value="Purple">Purple</option>
+          <option value="Brown">Brown</option>
+          <option value="Pink">Pink</option>
+          <option value="Gray">Gray</option>
+          <option value="Your Choice">Your Choice</option>
+        </select>
+      </div>
+
+      <div class="segmented-actions">
+        <button class="neutral-btn segment-btn segment-left" id="rainbowBackBtn" type="button">Home</button>
+        <button class="primary-btn segment-btn" id="rainbowPickBtn" type="button">Continue</button>
+      </div>
+    </div>
+
+    <div class="screen" id="rainbowModeScreen">
+      <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo">
+      <div class="title">Rainbow Reader</div>
+      <div class="subtitle" id="rainbowModeTitle">Red List</div>
+      <div class="small-note">
+        Practice your words in order, or tap Shuffle for a mixed-up challenge.
+      </div>
+
+      <div class="segmented-actions">
+        <button class="shuffle-hard-btn segment-btn segment-left" id="rainbowShuffleBtn" type="button">Shuffle</button>
+        <button class="primary-btn segment-btn" id="rainbowStartBtn" type="button">Start</button>
+      </div>
+
+      <div class="menu-buttons">
+        <button class="neutral-btn" id="rainbowModeBackBtn" type="button">Home</button>
+      </div>
+    </div>
+
+    <div class="screen" id="rainbowGameScreen">
+      <div class="word-wrap">
+        <div class="rainbow-word" id="rainbowWordText"></div>
+      </div>
+
+      <div class="rainbow-stats-top">
+        <span id="rainbowProgressTop">Red 0 of 20</span>
+        <span class="missed-text" id="rainbowMissedCount">Missed: 0</span>
+        <span class="correct-text" id="rainbowCorrectCount">Correct: 0</span>
+      </div>
+
+      <div class="mode-label" id="rainbowModeLabel"></div>
+
+      <div class="rainbow-button-row">
+        <button class="missed-btn rainbow-small-btn segment-left" id="rainbowMissedBtn" type="button">Missed</button>
+        <button class="primary-btn rainbow-small-btn" id="rainbowCorrectBtn" type="button">Correct</button>
+      </div>
+
+      <div class="rainbow-reset-wrap">
+        <button class="neutral-btn rainbow-reset-btn" id="rainbowResetBtn" type="button">Reset</button>
+      </div>
+    </div>
+
+    <div class="screen" id="finishScreen">
+      <div class="result-title" id="finishTitle">Great Job, Reader!</div>
+      <div class="result-text" id="finishText">You finished your practice.</div>
+      <img id="celebrationImg" class="celebration-img" src="giphy.gif" alt="Celebration image">
+      <div class="compact-buttons" id="finishButtons"></div>
+    </div>
+  </div>
+
+  <audio id="celebrationSound" preload="auto">
+    <source src="celebration_sound.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="rainbowMusic" preload="auto" loop>
+    <source src="rainbow_music.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const rainbowLists = {
+      Red: [
+        "I","can","the","we","see","a","like","to","and","go","you","do","my","are","he","with","is","little","she","was"
+      ],
+      Orange: [
+        "for","have","of","they","said","want","here","me","this","what","too","has","play","where","look","good","who","come","does","help"
+      ],
+      Yellow: [
+        "school","down","out","very","be","pull","move","two","again","new","there","use","could","live","one","then","three","eat","under","all","call","day","her","want","around"
+      ],
+      Green: [
+        "by","many","place","walk","away","now","some","today","why","way","grow","pretty","should","together","water","green","any","from","happy","once","upon","so","ago","boy","girl"
+      ],
+      Blue: [
+        "how","old","people","after","buy","done","every","soon","work","animal","about","carry","eight","give","our","blue","into","or","small","other","find","food","more","over","because"
+      ],
+      Purple: [
+        "start","warm","caught","flew","know","laugh","listen","were","found","hard","near","woman","would","write","four","large","none","only","put","round","another","climb","full","great","poor"
+      ],
+      Brown: [
+        "through","began","guess","learn","right","sure","color","early","instead","nothing","oh","thought","above","build","fall","knew","money","toward","answer","brought","busy","door","eyes","enough","love"
+      ],
+      Pink: [
+        "brother","father","mother","friend","picture","been","month","children","their","year","question","before","heard","push","your","tomorrow","favorite","few","gone","surprise","wonder","young","saw","eye","front"
+      ],
+      Gray: [
+        "word","which","better","sister","write","number","year","thing","good","sound","think","right","move","page","world","city","light","head","few","along","close","both","begin","often","while"
+      ],
+      "Your Choice": [
+        "follow","change","animal","might","paper","earth","sentence","different","America","between","country","always","ground","example","important","something","together","family","myself","children","walked","believe","beautiful","bridge","hundred"
+      ]
+    };
+
+    const maxCelebrationNumber = 40;
+    const celebrationImages = ["giphy.gif"];
+    for (let i = 1; i <= maxCelebrationNumber; i++) {
+      celebrationImages.push(`giphy-${i}.gif`);
+    }
+
+    const app = document.getElementById("app");
+    const rainbowListSelect = document.getElementById("rainbowListSelect");
+    const rainbowModeTitle = document.getElementById("rainbowModeTitle");
+    const rainbowWordText = document.getElementById("rainbowWordText");
+    const rainbowModeLabel = document.getElementById("rainbowModeLabel");
+    const rainbowProgressTop = document.getElementById("rainbowProgressTop");
+    const rainbowMissedCount = document.getElementById("rainbowMissedCount");
+    const rainbowCorrectCount = document.getElementById("rainbowCorrectCount");
+    const finishTitle = document.getElementById("finishTitle");
+    const finishText = document.getElementById("finishText");
+    const celebrationImg = document.getElementById("celebrationImg");
+    const finishButtons = document.getElementById("finishButtons");
+    const celebrationSound = document.getElementById("celebrationSound");
+    const rainbowMusic = document.getElementById("rainbowMusic");
+
+    const screens = {
+      home: document.getElementById("rainbowHomeScreen"),
+      mode: document.getElementById("rainbowModeScreen"),
+      game: document.getElementById("rainbowGameScreen"),
+      finish: document.getElementById("finishScreen")
+    };
+
+    const colorThemes = {
+      Red: { selector: "red-theme", app: "theme-red" },
+      Orange: { selector: "orange-theme", app: "theme-orange" },
+      Yellow: { selector: "yellow-theme", app: "theme-yellow" },
+      Green: { selector: "green-theme", app: "theme-green" },
+      Blue: { selector: "blue-theme", app: "theme-blue" },
+      Purple: { selector: "purple-theme", app: "theme-purple" },
+      Brown: { selector: "brown-theme", app: "theme-brown" },
+      Pink: { selector: "pink-theme", app: "theme-pink" },
+      Gray: { selector: "gray-theme", app: "theme-gray" },
+      "Your Choice": { selector: "choice-theme", app: "theme-choice" }
+    };
+
+    let currentMode = "home";
+    let rainbowCurrentColor = "Red";
+    let rainbowDeck = [];
+    let rainbowIndex = 0;
+    let rainbowShuffled = false;
+    let rainbowCorrectCountValue = 0;
+    let rainbowMissedCountValue = 0;
+    let rainbowPendingMissed = [];
+    let rainbowSeenWords = new Set();
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+      return arr;
+    }
+
+    function getRandomCelebrationImage() {
+      const randomIndex = Math.floor(Math.random() * celebrationImages.length);
+      return celebrationImages[randomIndex];
+    }
+
+    function playCelebrationSound() {
+      if (!celebrationSound) return;
+      celebrationSound.currentTime = 0;
+      celebrationSound.play().catch(() => {});
+    }
+
+    function stopCelebrationSound() {
+      if (!celebrationSound) return;
+      celebrationSound.pause();
+      celebrationSound.currentTime = 0;
+    }
+
+    function playRainbowMusic() {
+      if (!rainbowMusic) return;
+      rainbowMusic.currentTime = 0;
+      rainbowMusic.play().catch(() => {});
+    }
+
+    function stopRainbowMusic() {
+      if (!rainbowMusic) return;
+      rainbowMusic.pause();
+      rainbowMusic.currentTime = 0;
+    }
+
+    function clearAppThemes() {
+      app.classList.remove(
+        "theme-red",
+        "theme-orange",
+        "theme-yellow",
+        "theme-green",
+        "theme-blue",
+        "theme-purple",
+        "theme-brown",
+        "theme-pink",
+        "theme-gray",
+        "theme-choice",
+        "shuffle-mode"
+      );
+    }
+
+    function applyAppTheme(color, useShuffle = false) {
+      clearAppThemes();
+      const theme = colorThemes[color];
+      if (theme) {
+        app.classList.add(theme.app);
+      }
+      if (useShuffle) {
+        app.classList.add("shuffle-mode");
+      }
+    }
+
+    function updateSelectorTheme() {
+      rainbowListSelect.className = "selector";
+      const theme = colorThemes[rainbowListSelect.value];
+      if (theme) {
+        rainbowListSelect.classList.add(theme.selector);
+      }
+    }
+
+    function resetRainbowState() {
+      rainbowDeck = [];
+      rainbowIndex = 0;
+      rainbowShuffled = false;
+      rainbowCorrectCountValue = 0;
+      rainbowMissedCountValue = 0;
+      rainbowPendingMissed = [];
+      rainbowSeenWords = new Set();
+    }
+
+    function showScreen(screenKey) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[screenKey].classList.add("active");
+      currentMode = screenKey;
+      updateHeader();
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+
+    function updateHeader() {
+      if (currentMode === "home") {
+        clearAppThemes();
+        stopRainbowMusic();
+      } else if (currentMode === "mode") {
+        applyAppTheme(rainbowCurrentColor, false);
+        stopRainbowMusic();
+      } else if (currentMode === "game") {
+        applyAppTheme(rainbowCurrentColor, rainbowShuffled);
+        playRainbowMusic();
+      } else if (currentMode === "finish") {
+        applyAppTheme(rainbowCurrentColor, false);
+        stopRainbowMusic();
+      }
+    }
+
+    function setSelectedColor() {
+      rainbowCurrentColor = rainbowListSelect.value;
+      rainbowModeTitle.textContent = `${rainbowCurrentColor} List`;
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      showScreen("mode");
+    }
+
+    function buildRainbowDeck(shuffleFirst = false) {
+      rainbowDeck = [...rainbowLists[rainbowCurrentColor]];
+      if (shuffleFirst) {
+        rainbowDeck = shuffleArray(rainbowDeck);
+      }
+      rainbowIndex = 0;
+      rainbowShuffled = shuffleFirst;
+      rainbowCorrectCountValue = 0;
+      rainbowMissedCountValue = 0;
+      rainbowPendingMissed = [];
+      rainbowSeenWords = new Set();
+    }
+
+    function updateRainbowStats() {
+      const totalCount = rainbowLists[rainbowCurrentColor].length;
+      rainbowProgressTop.textContent = `${rainbowCurrentColor} ${rainbowCorrectCountValue} of ${totalCount}`;
+      rainbowMissedCount.textContent = `Missed: ${rainbowMissedCountValue}`;
+      rainbowCorrectCount.textContent = `Correct: ${rainbowCorrectCountValue}`;
+    }
+
+    function updateRainbowModeLabel() {
+      rainbowModeLabel.textContent = rainbowShuffled ? "Shuffle Mode" : "In Order";
+    }
+
+    function showRainbowWord() {
+      rainbowWordText.textContent = rainbowDeck[rainbowIndex];
+      updateRainbowStats();
+      updateRainbowModeLabel();
+      updateHeader();
+    }
+
+    function launchRainbowGame(shuffleFirst = false) {
+      stopCelebrationSound();
+      buildRainbowDeck(shuffleFirst);
+      showScreen("game");
+      showRainbowWord();
+    }
+
+    function buildFinishButtons() {
+      finishButtons.innerHTML = "";
+
+      const splitPill = document.createElement("div");
+      splitPill.className = "segmented-actions";
+
+      const anotherBtn = document.createElement("button");
+      anotherBtn.type = "button";
+      anotherBtn.className = "secondary-btn segment-btn segment-left";
+      anotherBtn.textContent = "Another List";
+      anotherBtn.addEventListener("click", () => {
+        stopCelebrationSound();
+        stopRainbowMusic();
+        resetRainbowState();
+        showScreen("home");
+      });
+
+      const readAgainBtn = document.createElement("button");
+      readAgainBtn.type = "button";
+      readAgainBtn.className = "primary-btn segment-btn";
+      readAgainBtn.textContent = "Read Again";
+      readAgainBtn.addEventListener("click", () => {
+        stopCelebrationSound();
+        stopRainbowMusic();
+        resetRainbowState();
+        showScreen("mode");
+      });
+
+      splitPill.appendChild(anotherBtn);
+      splitPill.appendChild(readAgainBtn);
+
+      const homeBtn = document.createElement("button");
+      homeBtn.type = "button";
+      homeBtn.className = "neutral-btn";
+      homeBtn.textContent = "Home";
+      homeBtn.addEventListener("click", () => {
+        stopCelebrationSound();
+        stopRainbowMusic();
+        resetRainbowState();
+        showScreen("home");
+      });
+
+      finishButtons.appendChild(splitPill);
+      finishButtons.appendChild(homeBtn);
+    }
+
+    function goToNextRainbowWord() {
+      rainbowIndex++;
+      if (rainbowIndex >= rainbowDeck.length) {
+        if (rainbowPendingMissed.length > 0) {
+          const retryWords = [...rainbowPendingMissed];
+          rainbowPendingMissed = [];
+          rainbowDeck = rainbowShuffled ? shuffleArray(retryWords) : retryWords;
+          rainbowIndex = 0;
+        } else {
+          finishTitle.textContent = `${rainbowCurrentColor} Complete!`;
+          finishText.textContent = `Correct: ${rainbowCorrectCountValue}. Missed: ${rainbowMissedCountValue}. Great reading!`;
+          celebrationImg.src = getRandomCelebrationImage();
+          buildFinishButtons();
+          stopRainbowMusic();
+          playCelebrationSound();
+          showScreen("finish");
+          return;
+        }
+      }
+      showRainbowWord();
+    }
+
+    function markRainbowCorrect() {
+      rainbowCorrectCountValue++;
+      goToNextRainbowWord();
+    }
+
+    function markRainbowMissed() {
+      const currentWord = rainbowDeck[rainbowIndex];
+      if (!rainbowSeenWords.has(currentWord)) {
+        rainbowSeenWords.add(currentWord);
+        rainbowMissedCountValue++;
+      }
+      rainbowPendingMissed.push(currentWord);
+      goToNextRainbowWord();
+    }
+
+    function resetRainbowGame() {
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      showScreen("mode");
+    }
+
+    document.getElementById("rainbowPickBtn").addEventListener("click", setSelectedColor);
+
+    document.getElementById("rainbowBackBtn").addEventListener("click", () => {
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      showScreen("home");
+    });
+
+    document.getElementById("rainbowModeBackBtn").addEventListener("click", () => {
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      showScreen("home");
+    });
+
+    document.getElementById("rainbowStartBtn").addEventListener("click", () => launchRainbowGame(false));
+    document.getElementById("rainbowShuffleBtn").addEventListener("click", () => launchRainbowGame(true));
+    document.getElementById("rainbowCorrectBtn").addEventListener("click", markRainbowCorrect);
+    document.getElementById("rainbowMissedBtn").addEventListener("click", markRainbowMissed);
+    document.getElementById("rainbowResetBtn").addEventListener("click", resetRainbowGame);
+    rainbowListSelect.addEventListener("change", updateSelectorTheme);
+
+    celebrationImg.src = getRandomCelebrationImage();
+    updateSelectorTheme();
+    updateHeader();
+  </script>
 </body>
 </html>
