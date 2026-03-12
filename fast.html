@@ -29,6 +29,7 @@
       --hard2: #e11d48;
       --hard3: #b91c1c;
       --shadow: 0 18px 40px rgba(0,0,0,0.12);
+      --soft-shadow: 0 12px 28px rgba(0,0,0,0.16);
     }
 
     * {
@@ -91,7 +92,7 @@
       position: relative;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.85);
-      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
     }
 
     .app::before {
@@ -107,7 +108,50 @@
           rgba(34,197,94,0.06) 60%,
           rgba(59,130,246,0.06) 80%,
           rgba(139,92,246,0.06) 100%);
-      transition: opacity 0.25s ease;
+      transition: opacity 0.35s ease;
+    }
+
+    .app.normal-play {
+      background:
+        radial-gradient(circle at 15% 20%, rgba(255,172,92,0.32), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(114,184,255,0.26), transparent 30%),
+        radial-gradient(circle at 18% 82%, rgba(255,145,186,0.22), transparent 30%),
+        radial-gradient(circle at 82% 84%, rgba(149,102,255,0.18), transparent 30%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.72), rgba(255,255,255,0.90) 58%, rgba(245,247,252,0.96) 100%);
+      border-color: rgba(255,255,255,0.92);
+      box-shadow: 0 22px 44px rgba(79,70,229,0.08);
+    }
+
+    .app.normal-play::before {
+      opacity: 0;
+    }
+
+    .app.normal-play::after {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 28%, rgba(255,139,61,0.22), transparent 18%),
+        radial-gradient(circle at 78% 24%, rgba(90,174,255,0.22), transparent 18%),
+        radial-gradient(circle at 30% 75%, rgba(255,122,175,0.16), transparent 18%),
+        radial-gradient(circle at 70% 76%, rgba(133,92,248,0.15), transparent 18%),
+        radial-gradient(circle at 52% 52%, rgba(255,255,255,0.32), transparent 28%);
+      filter: blur(26px);
+      animation: auroraFloat 16s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes auroraFloat {
+      0% {
+        transform: translate3d(-2%, 0%, 0) scale(1);
+      }
+      50% {
+        transform: translate3d(2%, -1.5%, 0) scale(1.04);
+      }
+      100% {
+        transform: translate3d(-1%, 2%, 0) scale(1.02);
+      }
     }
 
     .app.hard-mode {
@@ -122,6 +166,11 @@
           rgba(255,90,31,0.10) 0%,
           rgba(225,29,72,0.10) 55%,
           rgba(185,28,28,0.10) 100%);
+      opacity: 1;
+    }
+
+    .app.hard-mode::after {
+      display: none;
     }
 
     .screen {
@@ -242,9 +291,9 @@
     }
 
     .primary-btn {
-      background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+      background: linear-gradient(180deg, #79cc69 0%, #4aa84f 100%);
       color: #ffffff;
-      box-shadow: 0 10px 20px rgba(34,197,94,0.22);
+      box-shadow: 0 10px 20px rgba(74,168,79,0.22);
     }
 
     .shuffle-hard-btn {
@@ -258,22 +307,57 @@
       color: #1f2937;
     }
 
+    .segmented-actions {
+      width: 260px;
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(148,163,184,0.18);
+      margin-top: 14px;
+      margin-bottom: 10px;
+    }
+
+    .segment-btn {
+      border: 0;
+      min-width: 0;
+      border-radius: 0;
+      padding: 15px 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.08s ease, opacity 0.15s ease;
+      box-shadow: none;
+    }
+
+    .segment-btn:active {
+      transform: scale(0.98);
+    }
+
+    .segment-left {
+      border-right: 1px solid rgba(255,255,255,0.35);
+    }
+
     .sentence-wrap {
       width: 100%;
-      min-height: 210px;
+      min-height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 6px;
+      padding: 10px 10px;
     }
 
     .sentence {
-      font-size: clamp(28px, 7vw, 44px);
-      font-weight: 800;
-      line-height: 1.28;
+      font-size: clamp(30px, 7.6vw, 52px);
+      font-weight: 900;
+      line-height: 1.18;
       max-width: 100%;
       margin: 0 auto;
       color: var(--text);
+      position: relative;
+      z-index: 2;
     }
 
     .sentence u {
@@ -291,6 +375,19 @@
 
     .app.hard-mode .mode-label {
       color: #9f1239;
+    }
+
+    .single-home-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    .single-home-btn {
+      width: 180px;
+      max-width: 100%;
+      min-width: 0;
     }
 
     .result-title {
@@ -337,7 +434,7 @@
 
     @media (max-width: 390px) {
       .sentence-wrap {
-        min-height: 190px;
+        min-height: 220px;
       }
 
       .timer-text {
@@ -362,6 +459,19 @@
         width: min(50vw, 160px);
         max-height: 160px;
       }
+
+      .segmented-actions {
+        width: 240px;
+      }
+
+      .segment-btn {
+        font-size: 15px;
+        padding: 14px 12px;
+      }
+
+      .single-home-btn {
+        width: 168px;
+      }
     }
   </style>
 </head>
@@ -379,10 +489,14 @@
       <div class="small-note">
         Read each sentence out loud. Tap Start to go in order, or tap Shuffle for Ultra Super Duper Hard Mode.
       </div>
-      <div class="menu-buttons">
-        <button class="primary-btn" id="fastStartBtn" type="button">Start</button>
-        <button class="shuffle-hard-btn" id="fastShuffleBtn" type="button">Shuffle</button>
-        <button class="neutral-btn" id="fastBackBtn" type="button">Home</button>
+
+      <div class="segmented-actions">
+        <button class="shuffle-hard-btn segment-btn segment-left" id="fastShuffleBtn" type="button">Shuffle</button>
+        <button class="primary-btn segment-btn" id="fastStartBtn" type="button">Start</button>
+      </div>
+
+      <div class="single-home-wrap">
+        <button class="neutral-btn single-home-btn" id="fastBackBtn" type="button">Home</button>
       </div>
     </div>
 
@@ -391,9 +505,10 @@
         <div class="sentence" id="sentenceText"></div>
       </div>
       <div class="mode-label" id="fastModeLabel"></div>
-      <div class="buttons compact-buttons">
-        <button class="neutral-btn" id="fastResetBtn" type="button">Reset</button>
-        <button class="primary-btn" id="fastDoneBtn" type="button">Done</button>
+
+      <div class="segmented-actions">
+        <button class="neutral-btn segment-btn segment-left" id="fastResetBtn" type="button">Reset</button>
+        <button class="primary-btn segment-btn" id="fastDoneBtn" type="button">Done</button>
       </div>
     </div>
 
@@ -499,10 +614,11 @@
     }
 
     function setHardMode(isHard) {
+      app.classList.remove("hard-mode", "normal-play");
       if (isHard) {
         app.classList.add("hard-mode");
-      } else {
-        app.classList.remove("hard-mode");
+      } else if (currentMode === "game") {
+        app.classList.add("normal-play");
       }
     }
 
@@ -518,7 +634,7 @@
       if (currentMode === "home") {
         progressText.textContent = "";
         timerText.classList.add("hidden");
-        setHardMode(false);
+        app.classList.remove("hard-mode", "normal-play");
       } else if (currentMode === "game") {
         progressText.textContent = `Sentence ${fastIndex + 1} of ${fastDeck.length}`;
         timerText.classList.remove("hidden");
@@ -526,7 +642,7 @@
       } else {
         progressText.textContent = "";
         timerText.classList.add("hidden");
-        setHardMode(false);
+        app.classList.remove("hard-mode", "normal-play");
       }
     }
 
@@ -625,7 +741,7 @@
       fastDeck = [];
       fastIndex = 0;
       fastHardMode = false;
-      setHardMode(false);
+      app.classList.remove("hard-mode", "normal-play");
       showScreen("home");
     }
 
