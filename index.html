@@ -125,17 +125,18 @@
       align-items: center;
       justify-content: center;
       min-height: 42px;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       position: relative;
       z-index: 1;
       text-align: center;
     }
 
     .progress-text {
-      font-size: 19px;
+      font-size: clamp(28px, 7vw, 46px);
       font-weight: 900;
-      line-height: 1.1;
+      line-height: 1.02;
       color: #111827;
+      letter-spacing: -0.6px;
     }
 
     .brand-logo {
@@ -143,18 +144,9 @@
       max-width: 145px;
       max-height: 145px;
       height: auto;
-      margin: 0 0 14px 0;
+      margin: 0 0 16px 0;
       object-fit: contain;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,0.10));
-    }
-
-    .title {
-      font-size: clamp(34px, 8vw, 52px);
-      font-weight: 900;
-      line-height: 1.03;
-      margin-bottom: 8px;
-      letter-spacing: -0.6px;
-      color: var(--text);
     }
 
     .small-note {
@@ -241,18 +233,22 @@
         font-size: 15px;
         padding: 14px 12px;
       }
+
+      .progress-text {
+        font-size: clamp(26px, 7vw, 40px);
+      }
     }
   </style>
 </head>
 <body>
   <div class="app">
     <div class="topbar">
-      <div class="progress-text">Rocket Book Games</div>
+      <div class="progress-text">Rocket Book<br>Games</div>
     </div>
 
     <div class="screen">
       <img src="rocket_book_logo.png" alt="Rocket Book logo" class="brand-logo" />
-      <div class="title">Rocket Book</div>
+
       <div class="small-note">
         Tap a reading game to begin.
       </div>
@@ -266,7 +262,7 @@
         </button>
       </div>
 
-      <div class="micro-note">Created for Mr. Canby’s friends</div>
+      <div class="micro-note">Created for Ms. Canby’s friends</div>
       <div class="micro-note">
         Designed by
         <a
