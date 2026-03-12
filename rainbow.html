@@ -975,12 +975,12 @@
 
     document.getElementById("rainbowPickBtn").addEventListener("click", setSelectedColor);
 
-    document.getElementById("rainbowBackBtn").addEventListener("click", () => {
-      stopCelebrationSound();
-      stopRainbowMusic();
-      resetRainbowState();
-      showScreen("home");
-    });
+  document.getElementById("rainbowBackBtn").addEventListener("click", () => {
+  stopCelebrationSound();
+  stopRainbowMusic();
+  resetRainbowState();
+  window.location.href = "index.html";
+});
 
     document.getElementById("rainbowModeBackBtn").addEventListener("click", () => {
       stopCelebrationSound();
