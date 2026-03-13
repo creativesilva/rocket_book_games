@@ -642,6 +642,14 @@
     <source src="rainbow_music.mp3" type="audio/mpeg">
   </audio>
 
+  <audio id="correctSound" preload="auto">
+    <source src="correct.mp3" type="audio/mpeg">
+  </audio>
+
+  <audio id="missedSound" preload="auto">
+    <source src="quack.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
     const rainbowLists = {
       Red: [
@@ -696,6 +704,8 @@
     const finishButtons = document.getElementById("finishButtons");
     const celebrationSound = document.getElementById("celebrationSound");
     const rainbowMusic = document.getElementById("rainbowMusic");
+    const correctSound = document.getElementById("correctSound");
+    const missedSound = document.getElementById("missedSound");
 
     const screens = {
       home: document.getElementById("rainbowHomeScreen"),
@@ -726,6 +736,16 @@
     let rainbowMissedCountValue = 0;
     let rainbowPendingMissed = [];
     let rainbowSeenWords = new Set();
+
+    if (rainbowMusic) {
+      rainbowMusic.volume = 0.18;
+    }
+    if (correctSound) {
+      correctSound.volume = 0.65;
+    }
+    if (missedSound) {
+      missedSound.volume = 0.5;
+    }
 
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -765,6 +785,18 @@
       if (!rainbowMusic) return;
       rainbowMusic.pause();
       rainbowMusic.currentTime = 0;
+    }
+
+    function playCorrectSound() {
+      if (!correctSound) return;
+      correctSound.currentTime = 0;
+      correctSound.play().catch(() => {});
+    }
+
+    function playMissedSound() {
+      if (!missedSound) return;
+      missedSound.currentTime = 0;
+      missedSound.play().catch(() => {});
     }
 
     function clearAppThemes() {
@@ -952,11 +984,13 @@
     }
 
     function markRainbowCorrect() {
+      playCorrectSound();
       rainbowCorrectCountValue++;
       goToNextRainbowWord();
     }
 
     function markRainbowMissed() {
+      playMissedSound();
       const currentWord = rainbowDeck[rainbowIndex];
       if (!rainbowSeenWords.has(currentWord)) {
         rainbowSeenWords.add(currentWord);
@@ -975,12 +1009,12 @@
 
     document.getElementById("rainbowPickBtn").addEventListener("click", setSelectedColor);
 
-  document.getElementById("rainbowBackBtn").addEventListener("click", () => {
-  stopCelebrationSound();
-  stopRainbowMusic();
-  resetRainbowState();
-  window.location.href = "index.html";
-});
+    document.getElementById("rainbowBackBtn").addEventListener("click", () => {
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      window.location.href = "index.html";
+    });
 
     document.getElementById("rainbowModeBackBtn").addEventListener("click", () => {
       stopCelebrationSound();
