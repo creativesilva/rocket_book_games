@@ -520,12 +520,12 @@
       <div class="title">Fast &amp; Fluent</div>
       <div class="subtitle" id="fastHomeTitle">Variant Vowel /o/</div>
       <div class="small-note">
-        Read each sentence out loud. Tap Start to go in order, or tap Shuffle for Ultra Super Duper Hard Mode.
+        Read each sentence out loud. Easy goes in order with emoji hints. Hard shuffles everything and removes the hints!
       </div>
 
       <div class="segmented-actions">
-        <button class="shuffle-hard-btn segment-btn segment-left" id="fastShuffleBtn" type="button">Shuffle</button>
-        <button class="primary-btn segment-btn" id="fastStartBtn" type="button">Start</button>
+        <button class="shuffle-hard-btn segment-btn segment-left" id="fastShuffleBtn" type="button">Hard</button>
+        <button class="primary-btn segment-btn" id="fastStartBtn" type="button">Easy</button>
       </div>
 
       <div class="single-home-wrap">
@@ -565,17 +565,19 @@
   <script>
     const fastTitle = "Words With str, spr, spl, scr";
 
-    const fastSentences = [
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">🎳</span><span class=\"sentence-text\">Was that hit a <u>strike</u>?</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">🧴💨</span><span class=\"sentence-text\">I will <u>spray</u> my hair.</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">💦💦</span><span class=\"sentence-text\">Do not <u>splash</u> in the pool.</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">✂️</span><span class=\"sentence-text\">We will <u>split</u> the bill.</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">🦵🩹</span><span class=\"sentence-text\">Did he <u>scrape</u> his knee?</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">👧👧👧</span><span class=\"sentence-text\">I have <u>three</u> sisters.</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">💡</span><span class=\"sentence-text\">Do you <u>know</u> the answer?</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">✏️</span><span class=\"sentence-text\">She can <u>write</u> her name now.</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">🫵</span><span class=\"sentence-text\">What is <u>your</u> address?</span>",
-      "<span class=\"sentence-emoji\" aria-hidden=\"true\">👂</span><span class=\"sentence-text\">I <u>heard</u> a funny joke.</span>"
+    // Each entry: emoji hints representing the WHOLE sentence, and the sentence text.
+    // Easy mode = in-order with emojis. Hard mode = shuffled, no emojis.
+    const fastSentenceData = [
+      { emoji: "🎳⚡🏆",  text: "Was that hit a <u>strike</u>?" },
+      { emoji: "💇🧴💨",  text: "I will <u>spray</u> my hair." },
+      { emoji: "🚫🏊💦",  text: "Do not <u>splash</u> in the pool." },
+      { emoji: "🧾✂️💵",  text: "We will <u>split</u> the bill." },
+      { emoji: "🧒🦵🩹",  text: "Did he <u>scrape</u> his knee?" },
+      { emoji: "👧👧👧",  text: "I have <u>three</u> sisters." },
+      { emoji: "🤔💡✋",  text: "Do you <u>know</u> the answer?" },
+      { emoji: "👧✏️📝",  text: "She can <u>write</u> her name now." },
+      { emoji: "🏠📮🫵",  text: "What is <u>your</u> address?" },
+      { emoji: "👂😂🤣",  text: "I <u>heard</u> a funny joke." },
     ];
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
@@ -781,19 +783,25 @@
     }
 
     function buildFastSequentialDeck() {
-      fastDeck = [...fastSentences];
+      // Easy mode: in order, full emoji hints for the whole sentence
+      fastDeck = fastSentenceData.map(d =>
+        `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`
+      );
       fastIndex = 0;
       fastHardMode = false;
     }
 
     function buildFastShuffledDeck() {
-      fastDeck = shuffleArray([...fastSentences]);
+      // Hard mode: shuffled, NO emoji hints
+      fastDeck = shuffleArray(fastSentenceData.map(d =>
+        `<span class="sentence-text">${d.text}</span>`
+      ));
       fastIndex = 0;
       fastHardMode = true;
     }
 
     function updateFastModeLabel() {
-      fastModeLabel.textContent = fastHardMode ? "Ultra Super Duper Hard Mode" : "";
+      fastModeLabel.textContent = fastHardMode ? "Hard Mode — No Hints!" : "";
     }
 
     function showFastSentence() {
@@ -859,7 +867,7 @@
         }
         buildFinishButtons();
         playCelebrationSound();
-        try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); r.push({game:'Fast & Fluent',date:new Date().toISOString(),correct:fastSentences.length,total:fastSentences.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
+        try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); r.push({game:'Fast & Fluent',date:new Date().toISOString(),correct:fastSentenceData.length,total:fastSentenceData.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
         showScreen("finish");
         return;
       }

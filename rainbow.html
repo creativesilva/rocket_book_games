@@ -395,7 +395,7 @@
 
     .word-wrap {
       width: 100%;
-      min-height: 100px;
+      min-height: 160px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -410,6 +410,19 @@
       margin: 0 auto;
       color: var(--text);
       letter-spacing: -0.8px;
+      text-align: center;
+    }
+
+    .word-emoji {
+      display: block;
+      font-size: clamp(38px, 10vw, 56px);
+      line-height: 1;
+      margin: 0 auto 10px auto;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.10));
+    }
+
+    .word-label {
+      display: block;
     }
 
     .mode-label {
@@ -648,12 +661,12 @@
     <div class="screen active" id="rainbowHomeScreen">
       <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo">
       <div class="title">Rainbow Reader</div>
-      <div class="subtitle">Choose a word list</div>
-      <div class="selector-note">Tap the button below to select a word list.</div>
+      <div class="subtitle">Pick your color</div>
+      <div class="selector-note">Choose a word list, then tap Continue.</div>
 
       <div class="selector-wrap">
         <select class="selector" id="rainbowListSelect">
-          <option value="Unit 6 Week 2">Unit 6 Week 2</option>
+          <option value="Wonders">Wonders</option>
           <option value="Red">Red</option>
           <option value="Orange">Orange</option>
           <option value="Yellow">Yellow</option>
@@ -678,12 +691,12 @@
       <div class="title">Rainbow Reader</div>
       <div class="subtitle" id="rainbowModeTitle">Unit 6 Week 2 List</div>
       <div class="small-note">
-        Practice your words in order, or tap Shuffle for a mixed-up challenge.
+        Easy shows emoji hints in order. Hard shuffles the words and removes all hints!
       </div>
 
       <div class="segmented-actions">
-        <button class="shuffle-hard-btn segment-btn segment-left" id="rainbowShuffleBtn" type="button">Shuffle</button>
-        <button class="primary-btn segment-btn" id="rainbowStartBtn" type="button">Start</button>
+        <button class="shuffle-hard-btn segment-btn segment-left" id="rainbowShuffleBtn" type="button">Hard</button>
+        <button class="primary-btn segment-btn" id="rainbowStartBtn" type="button">Easy</button>
       </div>
 
       <div class="menu-buttons">
@@ -749,7 +762,7 @@
 
   <script>
     const rainbowLists = {
-      "Unit 6 Week 2": [
+      "Wonders": [
         "brother","father","friend","love","mother","picture"
       ],
       Red: [
@@ -782,6 +795,252 @@
       "Your Choice": [
         "follow","change","animal","might","paper","earth","sentence","different","America","between","country","always","ground","example","important","something","together","family","myself","children","walked","believe","beautiful","bridge","hundred"
       ]
+    };
+
+    // Emoji hints for each word — shown in Easy mode above the word (2-3 emojis per word).
+    // Hard mode shows only the plain word with no hints.
+    const wordEmojiMap = {
+      // Wonders list
+      "brother": "👦🤝",
+      "father":  "👨👔",
+      "friend":  "🤝😊",
+      "love":    "❤️💕",
+      "mother":  "👩❤️",
+      "picture": "📷🖼️",
+      // Red list
+      "I":       "🙋👤",
+      "can":     "💪✅",
+      "the":     "📖👆",
+      "we":      "👥✌️",
+      "see":     "👀🔍",
+      "a":       "1️⃣",
+      "like":    "👍❤️",
+      "to":      "➡️",
+      "and":     "➕🤝",
+      "go":      "🏃💨",
+      "you":     "🫵",
+      "do":      "✅💪",
+      "my":      "🫵💙",
+      "are":     "✨🌟",
+      "he":      "👦",
+      "with":    "🤝➕",
+      "is":      "⭐✅",
+      "little":  "🤏🐜",
+      "she":     "👧",
+      "was":     "⏮️📅",
+      // Orange list
+      "for":     "🎁👉",
+      "have":    "🤲✅",
+      "of":      "📦🔗",
+      "they":    "👥",
+      "said":    "💬🗣️",
+      "want":    "⭐💫",
+      "here":    "📍👈",
+      "me":      "🙋",
+      "this":    "👇📦",
+      "what":    "❓🤔",
+      "too":     "➕2️⃣",
+      "has":     "🤲",
+      "play":    "🎮🎲",
+      "where":   "🗺️❓",
+      "look":    "👀",
+      "good":    "👍😊",
+      "who":     "❓👤",
+      "come":    "👋🤗",
+      "does":    "✅❓",
+      "help":    "🆘🤝",
+      // Yellow list
+      "school":  "🏫📚",
+      "down":    "⬇️",
+      "out":     "🚪➡️",
+      "very":    "💥⭐",
+      "be":      "🌟✨",
+      "pull":    "💪⬆️",
+      "move":    "🏃➡️",
+      "two":     "2️⃣✌️",
+      "again":   "🔄↩️",
+      "new":     "✨🆕",
+      "there":   "📍➡️",
+      "use":     "🔧✅",
+      "could":   "💭✅",
+      "live":    "🏠❤️",
+      "one":     "1️⃣☝️",
+      "then":    "➡️⏭️",
+      "three":   "3️⃣✌️",
+      "eat":     "🍽️😋",
+      "under":   "⬇️📦",
+      "all":     "🌍✅",
+      "call":    "📞📣",
+      "day":     "☀️🌤️",
+      "her":     "👧",
+      "around":  "🔄🌀",
+      // Green list
+      "by":      "➡️📍",
+      "many":    "🔢💫",
+      "place":   "📍🗺️",
+      "walk":    "🚶",
+      "away":    "👋🚶💨",
+      "now":     "⏰✅",
+      "some":    "🤏",
+      "today":   "📅☀️",
+      "why":     "❓🤔",
+      "way":     "🛣️➡️",
+      "grow":    "🌱🌳",
+      "pretty":  "🌸✨",
+      "should":  "💭✅",
+      "together":"🤝👥",
+      "water":   "💧🌊",
+      "green":   "🟢🌿🍀",
+      "any":     "🔢❓",
+      "from":    "📍⬅️",
+      "happy":   "😊🌟",
+      "once":    "1️⃣⏰",
+      "upon":    "⬆️📖",
+      "so":      "💫✨",
+      "ago":     "⏮️📅",
+      "boy":     "👦",
+      "girl":    "👧",
+      // Blue list
+      "how":     "❓💭",
+      "old":     "👴⏰",
+      "people":  "👥🌍",
+      "after":   "⏭️➡️",
+      "buy":     "🛒💰",
+      "done":    "✅🎉",
+      "every":   "🔄✅",
+      "soon":    "⏰💨",
+      "work":    "💼🔧",
+      "animal":  "🦁🐾",
+      "about":   "💭❓",
+      "carry":   "💪🎒",
+      "eight":   "8️⃣",
+      "give":    "🎁🤲",
+      "our":     "👥❤️",
+      "blue":    "🔵💙",
+      "into":    "⬇️🚪",
+      "or":      "⚖️❓",
+      "small":   "🤏🐜",
+      "other":   "🔄",
+      "find":    "🔍🔎",
+      "food":    "🍎🍕",
+      "more":    "➕⬆️",
+      "over":    "⬆️↗️",
+      "because": "💡❓",
+      // Purple list
+      "start":   "🚀▶️",
+      "warm":    "🌡️☀️🧤",
+      "caught":  "🪤🎣",
+      "flew":    "✈️🦅💨",
+      "know":    "💡🧠",
+      "laugh":   "😂🤣",
+      "listen":  "👂🎵",
+      "were":    "⏮️",
+      "found":   "🔍✅",
+      "hard":    "💪🪨",
+      "near":    "📍👆",
+      "woman":   "👩",
+      "would":   "💭✅",
+      "write":   "✏️📝",
+      "four":    "4️⃣",
+      "large":   "🐘⬆️",
+      "none":    "0️⃣❌",
+      "only":    "☝️1️⃣",
+      "put":     "📦👇",
+      "round":   "⭕🔄",
+      "another": "➕1️⃣",
+      "climb":   "🧗⬆️",
+      "full":    "🍽️✅",
+      "great":   "⭐🌟💪",
+      "poor":    "😔💸",
+      // Brown list
+      "through": "➡️🚪",
+      "began":   "▶️⏮️",
+      "guess":   "💭❓🤔",
+      "learn":   "📚🧠",
+      "right":   "➡️✅",
+      "sure":    "✅💯",
+      "color":   "🎨🌈",
+      "early":   "🌅⏰",
+      "instead": "🔄↩️",
+      "nothing": "0️⃣❌",
+      "oh":      "😮😲",
+      "thought": "💭🧠",
+      "above":   "⬆️",
+      "build":   "🔨🏗️",
+      "fall":    "🍂⬇️",
+      "knew":    "🧠💡",
+      "money":   "💰💵",
+      "toward":  "➡️📍",
+      "answer":  "💡✅",
+      "brought": "🤲➡️",
+      "busy":    "⚡💼🏃",
+      "door":    "🚪",
+      "eyes":    "👀",
+      "enough":  "✅💯",
+      // Pink list
+      "been":    "⏮️✅",
+      "month":   "📅🗓️",
+      "children":"👧👦",
+      "their":   "👥",
+      "year":    "📅🔄",
+      "question":"❓💭",
+      "before":  "⏮️",
+      "heard":   "👂🎵",
+      "push":    "💪➡️",
+      "your":    "🫵",
+      "tomorrow":"📅🌅",
+      "favorite":"⭐❤️",
+      "few":     "🤏",
+      "gone":    "💨👋",
+      "surprise":"🎉😲",
+      "wonder":  "🤔💫",
+      "young":   "👶🌱",
+      "saw":     "👀⏮️",
+      "eye":     "👁️",
+      "front":   "⬆️📍",
+      // Gray list
+      "word":    "📝💬",
+      "which":   "❓⚖️",
+      "better":  "⬆️✨",
+      "sister":  "👧❤️",
+      "number":  "🔢",
+      "thing":   "📦",
+      "sound":   "🔊🎵",
+      "think":   "💭🧠",
+      "page":    "📄",
+      "world":   "🌍🌎",
+      "city":    "🏙️",
+      "light":   "💡☀️",
+      "head":    "👤🧠",
+      "along":   "🚶➡️",
+      "close":   "🚪❌",
+      "both":    "2️⃣✅",
+      "begin":   "▶️🚀",
+      "often":   "🔄⏰",
+      "while":   "⏳",
+      // Your Choice list
+      "follow":  "🚶➡️👣",
+      "change":  "🔄✨",
+      "might":   "💭💪",
+      "paper":   "📄✏️",
+      "earth":   "🌍",
+      "sentence":"📝✏️",
+      "different":"🔄⚖️",
+      "America": "🇺🇸🗽",
+      "between": "↔️",
+      "country": "🌎🏳️",
+      "always":  "🔄⭐",
+      "ground":  "🌿⬇️",
+      "example": "💡👇",
+      "important":"⭐❗",
+      "something":"📦💭",
+      "family":  "👨‍👩‍👧‍👦❤️",
+      "myself":  "🫵💪",
+      "walked":  "🚶✅",
+      "believe": "💭❤️",
+      "beautiful":"🌸✨💫",
+      "bridge":  "🌉",
+      "hundred": "💯🔢",
     };
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
@@ -828,12 +1087,12 @@
       Brown: { selector: "brown-theme", app: "theme-brown" },
       Pink: { selector: "pink-theme", app: "theme-pink" },
       Gray: { selector: "gray-theme", app: "theme-gray" },
-      "Unit 6 Week 2": { selector: "choice-theme", app: "theme-choice" },
+      "Wonders": { selector: "choice-theme", app: "theme-choice" },
       "Your Choice": { selector: "choice-theme", app: "theme-choice" }
     };
 
     let currentMode = "home";
-    let rainbowCurrentColor = "Unit 6 Week 2";
+    let rainbowCurrentColor = "Wonders";
     let rainbowDeck = [];
     let rainbowIndex = 0;
     let rainbowShuffled = false;
@@ -1052,11 +1311,19 @@
     }
 
     function updateRainbowModeLabel() {
-      rainbowModeLabel.textContent = rainbowShuffled ? "Shuffle Mode" : "In Order";
+      rainbowModeLabel.textContent = rainbowShuffled ? "Hard Mode — No Hints!" : "Easy Mode";
     }
 
     function showRainbowWord() {
-      rainbowWordText.textContent = rainbowDeck[rainbowIndex];
+      const word = rainbowDeck[rainbowIndex];
+      // Easy mode: show emoji hints above the word. Hard (shuffled): word only.
+      const emojis = !rainbowShuffled ? (wordEmojiMap[word] || wordEmojiMap[word.toLowerCase()] || null) : null;
+      if (emojis) {
+        rainbowWordText.innerHTML =
+          `<span class="word-emoji">${emojis}</span><span class="word-label">${word}</span>`;
+      } else {
+        rainbowWordText.textContent = word;
+      }
       updateRainbowStats();
       updateRainbowModeLabel();
       updateHeader();
