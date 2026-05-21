@@ -504,6 +504,25 @@
     }
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
+
+    /* Portrait-only lock */
+    .rotate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #172033;
+      color: #fff;
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    @media (orientation: landscape) {
+      .rotate-overlay { display: flex; }
+    }
   </style>
   <link rel="manifest" href="manifest.webmanifest?v=20260428a" />
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
@@ -539,9 +558,10 @@
       </div>
       <div class="mode-label" id="fastModeLabel"></div>
 
-      <div class="segmented-actions">
+      <div class="segmented-actions" style="grid-template-columns:1fr 1fr 1fr">
         <button class="neutral-btn segment-btn segment-left" id="fastResetBtn" type="button">Reset</button>
-        <button class="primary-btn segment-btn" id="fastDoneBtn" type="button">Done</button>
+        <button class="primary-btn segment-btn segment-left" id="fastDoneBtn" type="button">Done</button>
+        <button class="neutral-btn segment-btn" id="fastGameBackBtn" type="button">Back</button>
       </div>
     </div>
 
@@ -568,16 +588,16 @@
     // Each entry: emoji hints representing the WHOLE sentence, and the sentence text.
     // Easy mode = in-order with emojis. Hard mode = shuffled, no emojis.
     const fastSentenceData = [
-      { emoji: "🎳⚡🏆",  text: "Was that hit a <u>strike</u>?" },
-      { emoji: "💇🧴💨",  text: "I will <u>spray</u> my hair." },
-      { emoji: "🚫🏊💦",  text: "Do not <u>splash</u> in the pool." },
-      { emoji: "🧾✂️💵",  text: "We will <u>split</u> the bill." },
-      { emoji: "🧒🦵🩹",  text: "Did he <u>scrape</u> his knee?" },
-      { emoji: "👧👧👧",  text: "I have <u>three</u> sisters." },
-      { emoji: "🤔💡✋",  text: "Do you <u>know</u> the answer?" },
-      { emoji: "👧✏️📝",  text: "She can <u>write</u> her name now." },
-      { emoji: "🏠📮🫵",  text: "What is <u>your</u> address?" },
-      { emoji: "👂😂🤣",  text: "I <u>heard</u> a funny joke." },
+      { emoji: "🎳",      text: "Was that hit a <u>strike</u>?" },
+      { emoji: "💇🧴",   text: "I will <u>spray</u> my hair." },
+      { emoji: "🚫💦🏊", text: "Do not <u>splash</u> in the pool." },
+      { emoji: "🧾✂️",   text: "We will <u>split</u> the bill." },
+      { emoji: "🦵🩹",   text: "Did he <u>scrape</u> his knee?" },
+      { emoji: "👧👧👧", text: "I have <u>three</u> sisters." },
+      { emoji: "🤔💡",   text: "Do you <u>know</u> the answer?" },
+      { emoji: "✏️📝",   text: "She can <u>write</u> her name now." },
+      { emoji: "🏠📍",   text: "What is <u>your</u> address?" },
+      { emoji: "👂😂",   text: "I <u>heard</u> a funny joke." },
     ];
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
@@ -843,7 +863,7 @@
       readAgainBtn.type = "button";
       readAgainBtn.className = "primary-btn segment-btn";
       readAgainBtn.textContent = "Read Again";
-      readAgainBtn.addEventListener("click", () => resetFastGame());
+      readAgainBtn.addEventListener("click", () => backToFastHome());
 
       splitPill.appendChild(homeBtn);
       splitPill.appendChild(readAgainBtn);
@@ -874,7 +894,20 @@
       showFastSentence();
     }
 
+    // Reset stays in game — rebuilds deck in the same mode and restarts timer
     function resetFastGame() {
+      stopFastTimer();
+      if (fastHardMode) {
+        buildFastShuffledDeck();
+      } else {
+        buildFastSequentialDeck();
+      }
+      startFastTimer();
+      showFastSentence();
+    }
+
+    // Back — returns to the Fast & Fluent home screen (Easy / Hard selection)
+    function backToFastHome() {
       stopCelebrationSound();
       stopFastMusic();
       clearInterval(fastTimerInterval);
@@ -898,6 +931,7 @@
     });
     document.getElementById("fastDoneBtn").addEventListener("click", advanceFastSentence);
     document.getElementById("fastResetBtn").addEventListener("click", resetFastGame);
+    document.getElementById("fastGameBackBtn").addEventListener("click", backToFastHome);
 
     preloadGiphyCache();
     updateHeader();
@@ -913,6 +947,12 @@
       setTimeout(function() { document.getElementById('installBanner').style.display = 'block'; }, 2000);
     }
   </script>
+
+  <div class="rotate-overlay" aria-hidden="true">
+    <div style="font-size:64px">📱</div>
+    <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
+    <div style="font-size:15px;margin-top:8px;opacity:0.7">Fast &amp; Fluent works in portrait mode</div>
+  </div>
 
   <div class="install-banner" id="installBanner">
     <button class="close-banner" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
