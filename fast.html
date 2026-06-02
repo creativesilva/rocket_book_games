@@ -727,7 +727,67 @@
       };
     }
 
-    const playCorrectSound = createSoundPool("chime.wav", 0.8, 4);
+    // ── Instant chime via Web Audio API ──────────────────────────────────────
+    // Web Audio buffers play at near-zero latency with no seek delay.
+    // Falls back to an HTML Audio pool if Web Audio is unavailable.
+    const CHIME_SRC = "chime.m4a";
+    const CHIME_VOL = 0.8;
+    let _wac = null;       // AudioContext (created on first touch — iOS requirement)
+    let _chimeBuf = null;  // Decoded AudioBuffer (loaded once)
+
+    function _ensureWAC() {
+      if (!_wac) {
+        try { _wac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+      }
+      return _wac;
+    }
+
+    async function _loadChimeBuf() {
+      if (_chimeBuf) return;
+      const ctx = _ensureWAC();
+      if (!ctx) return;
+      try {
+        const raw = await (await fetch(CHIME_SRC)).arrayBuffer();
+        _chimeBuf = await ctx.decodeAudioData(raw);
+      } catch(e) {}
+    }
+
+    // HTML Audio fallback pool (if Web Audio unavailable)
+    const _chimeFallback = Array.from({ length: 4 }, () => {
+      const a = new Audio(CHIME_SRC);
+      a.preload = "auto";
+      return a;
+    });
+    let _chimeFbIdx = 0;
+
+    const playCorrectSound = function() {
+      const ctx = _ensureWAC();
+      // Resume if iOS suspended the context (backgrounding, phone call, etc.)
+      if (ctx && (ctx.state === "suspended" || ctx.state === "interrupted")) ctx.resume();
+      if (ctx && _chimeBuf) {
+        try {
+          const src = ctx.createBufferSource();
+          src.buffer = _chimeBuf;
+          const gain = ctx.createGain();
+          gain.gain.value = CHIME_VOL;
+          src.connect(gain);
+          gain.connect(ctx.destination);
+          src.start(0);
+          return;
+        } catch(e) {}
+      }
+      // Fallback: rotate HTML Audio elements (no currentTime reset needed)
+      const a = _chimeFallback[_chimeFbIdx++ % _chimeFallback.length];
+      a.volume = CHIME_VOL;
+      a.play().catch(() => {});
+    };
+
+    // iOS unlock: create AudioContext + decode buffer on first user touch
+    document.addEventListener("touchstart", function onFirstTouch() {
+      _loadChimeBuf();
+      document.removeEventListener("touchstart", onFirstTouch);
+    }, { once: true, passive: true });
+    // ─────────────────────────────────────────────────────────────────────────
 
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -909,6 +969,7 @@
       showScreen("game");
       showFastSentence();
       startFastTimer();
+      _loadChimeBuf(); // Ensure buffer is decoded before first Done tap
     }
 
     function buildFinishButtons() {
