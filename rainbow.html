@@ -794,6 +794,7 @@
   </audio>
 
   <script>
+    try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
     const rainbowLists = {
       Red: [
         "I","can","the","we","see","a","like","to","and","go","you","do","my","are","he","with","is","little","she","was"

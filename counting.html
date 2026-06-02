@@ -165,6 +165,25 @@
     }
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
+  
+    /* Portrait-only lock */
+    .rotate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #172033;
+      color: #fff;
+      z-index: 99999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    @media (orientation: landscape) {
+      .rotate-overlay { display: flex; }
+    }
   </style>
   <link rel="manifest" href="manifest.webmanifest?v=20260428a" />
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
@@ -210,6 +229,7 @@
   <audio id="celebrationSound" preload="auto"><source src="celebration_sound.mp3" type="audio/mpeg"></audio>
 
   <script>
+    try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
     const critterSets = [
       { target: "&#x1F41E;", targetName: "ladybugs", others: ["&#x1F98B;", "&#x1F41D;", "&#x1F40C;"] },
       { target: "&#x1F98B;", targetName: "butterflies", others: ["&#x1F41E;", "&#x1F41B;", "&#x1F422;"] },
@@ -436,5 +456,11 @@
     Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
   </div>
   <script src="app-shell.js?v=20260428a" defer></script>
+
+  <div class="rotate-overlay" aria-hidden="true">
+    <div style="font-size:64px">📱</div>
+    <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
+    <div style="font-size:15px;margin-top:8px;opacity:0.7">This game works best in portrait mode</div>
+  </div>
 </body>
 </html>

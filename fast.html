@@ -626,6 +626,7 @@
   </audio>
 
   <script>
+    try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
     const fastTitle = "Words With air, ear, are";
 
     // Each entry: emoji hints representing the WHOLE sentence, and the sentence text.
