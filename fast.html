@@ -505,6 +505,28 @@
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
 
+    /* Audio hint button — Easy mode only */
+    .audio-btn {
+      display: none;
+      background: rgba(255,255,255,0.88);
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #4aa84f;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.13);
+      margin: 2px auto 4px auto;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+      transition: transform 0.08s ease;
+    }
+    .audio-btn.visible { display: flex; }
+    .audio-btn:active { transform: scale(0.91); }
+
     /* Soft white fade at the bottom of the card so the gradient dissolves gently */
     .bottom-fade {
       position: absolute;
@@ -568,6 +590,11 @@
       <div class="sentence-wrap">
         <div class="sentence" id="sentenceText"></div>
       </div>
+      <button class="audio-btn" id="fastAudioBtn" type="button" aria-label="Play sentence">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="26" height="26">
+          <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+      </button>
       <div class="mode-label" id="fastModeLabel"></div>
 
       <div class="segmented-actions" style="grid-template-columns:1fr 1fr 1fr">
@@ -604,16 +631,16 @@
     // Each entry: emoji hints representing the WHOLE sentence, and the sentence text.
     // Easy mode = in-order with emojis. Hard mode = shuffled, no emojis.
     const fastSentenceData = [
-      { emoji: "🎟️🎡",   text: "My family went to the <u>fair</u>." },
-      { emoji: "👟👟",    text: "I lost a <u>pair</u> of shoes." },
-      { emoji: "⚫🐻",   text: "We saw a big, black <u>bear</u>." },
-      { emoji: "👗🤔",   text: "What should I <u>wear</u> today?" },
-      { emoji: "🔑❓",   text: "Do you have a <u>spare</u> key?" },
-      { emoji: "🍪🤝",   text: "Let's <u>share</u> a cookie." },
-      { emoji: "📦📦📦", text: "I stacked <u>three</u> boxes." },
-      { emoji: "💦🏊",   text: "Let's <u>splash</u> in the lake." },
-      { emoji: "🍨❤️",  text: "Vanilla is my <u>favorite</u> flavor." },
-      { emoji: "😱🎉🎂", text: "It is her <u>surprise</u> party!" },
+      { emoji: "🎟️🎡",   text: "My family went to the <u>fair</u>.",    audio: "fast_s01.m4a" },
+      { emoji: "👟👟",    text: "I lost a <u>pair</u> of shoes.",         audio: "fast_s02.m4a" },
+      { emoji: "⚫🐻",   text: "We saw a big, black <u>bear</u>.",        audio: "fast_s03.m4a" },
+      { emoji: "👗🤔",   text: "What should I <u>wear</u> today?",        audio: "fast_s04.m4a" },
+      { emoji: "🔑❓",   text: "Do you have a <u>spare</u> key?",         audio: "fast_s05.m4a" },
+      { emoji: "🍪🤝",   text: "Let's <u>share</u> a cookie.",            audio: "fast_s06.m4a" },
+      { emoji: "📦📦📦", text: "I stacked <u>three</u> boxes.",           audio: "fast_s07.m4a" },
+      { emoji: "💦🏊",   text: "Let's <u>splash</u> in the lake.",        audio: "fast_s08.m4a" },
+      { emoji: "🍨❤️",  text: "Vanilla is my <u>favorite</u> flavor.",   audio: "fast_s09.m4a" },
+      { emoji: "😱🎉🎂", text: "It is her <u>surprise</u> party!",        audio: "fast_s10.m4a" },
     ];
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
@@ -636,6 +663,8 @@
     const celebrationSound = document.getElementById("celebrationSound");
     const fastMusic = document.getElementById("fastMusic");
 
+    const fastAudioBtn = document.getElementById("fastAudioBtn");
+
     const screens = {
       home: document.getElementById("fastHomeScreen"),
       game: document.getElementById("fastGameScreen"),
@@ -643,6 +672,24 @@
     };
 
     fastHomeTitle.textContent = fastTitle;
+
+    // Sentence audio player
+    const sentenceAudio = new Audio();
+    sentenceAudio.preload = "none";
+
+    function playCurrentSentenceAudio() {
+      const entry = fastDeck[fastIndex];
+      if (!entry || !entry.audio) return;
+      sentenceAudio.pause();
+      sentenceAudio.src = entry.audio;
+      sentenceAudio.currentTime = 0;
+      sentenceAudio.play().catch(() => {});
+    }
+
+    function stopSentenceAudio() {
+      sentenceAudio.pause();
+      sentenceAudio.currentTime = 0;
+    }
 
     let currentMode = "home";
     let fastDeck = [];
@@ -819,19 +866,21 @@
     }
 
     function buildFastSequentialDeck() {
-      // Easy mode: in order, full emoji hints for the whole sentence
-      fastDeck = fastSentenceData.map(d =>
-        `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`
-      );
+      // Easy mode: in order, emoji hints + audio
+      fastDeck = fastSentenceData.map(d => ({
+        html: `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`,
+        audio: d.audio || null
+      }));
       fastIndex = 0;
       fastHardMode = false;
     }
 
     function buildFastShuffledDeck() {
-      // Hard mode: shuffled, NO emoji hints
-      fastDeck = shuffleArray(fastSentenceData.map(d =>
-        `<span class="sentence-text">${d.text}</span>`
-      ));
+      // Hard mode: shuffled, NO emoji hints, NO audio
+      fastDeck = shuffleArray(fastSentenceData.map(d => ({
+        html: `<span class="sentence-text">${d.text}</span>`,
+        audio: null
+      })));
       fastIndex = 0;
       fastHardMode = true;
     }
@@ -841,7 +890,10 @@
     }
 
     function showFastSentence() {
-      sentenceText.innerHTML = fastDeck[fastIndex];
+      const entry = fastDeck[fastIndex];
+      sentenceText.innerHTML = entry.html;
+      // Speaker button: visible only in easy mode when audio exists
+      fastAudioBtn.classList.toggle("visible", !fastHardMode && !!entry.audio);
       updateFastModeLabel();
       updateHeader();
       setScreenTreatment();
@@ -887,6 +939,7 @@
     }
 
     function advanceFastSentence() {
+      stopSentenceAudio();
       playCorrectSound();
       fastIndex++;
       if (fastIndex >= fastDeck.length) {
@@ -912,6 +965,7 @@
 
     // Reset stays in game — rebuilds deck in the same mode and restarts timer
     function resetFastGame() {
+      stopSentenceAudio();
       stopFastTimer();
       if (fastHardMode) {
         buildFastShuffledDeck();
@@ -924,6 +978,7 @@
 
     // Back — returns to the Fast & Fluent home screen (Easy / Hard selection)
     function backToFastHome() {
+      stopSentenceAudio();
       stopCelebrationSound();
       stopFastMusic();
       clearInterval(fastTimerInterval);
@@ -948,6 +1003,7 @@
     document.getElementById("fastDoneBtn").addEventListener("click", advanceFastSentence);
     document.getElementById("fastResetBtn").addEventListener("click", resetFastGame);
     document.getElementById("fastGameBackBtn").addEventListener("click", backToFastHome);
+    fastAudioBtn.addEventListener("click", playCurrentSentenceAudio);
 
     preloadGiphyCache();
     updateHeader();
