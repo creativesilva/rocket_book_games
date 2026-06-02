@@ -651,6 +651,18 @@
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
 
+    /* Soft white fade at the bottom of the card */
+    .bottom-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 170px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.92) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     /* Portrait-only lock */
     .rotate-overlay {
       display: none;
@@ -769,6 +781,8 @@
 
       <div class="compact-buttons" id="missedReportButtons"></div>
     </div>
+
+    <div class="bottom-fade" aria-hidden="true"></div>
   </div>
 
   <audio id="celebrationSound" preload="auto">

@@ -505,6 +505,18 @@
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
 
+    /* Soft white fade at the bottom of the card so the gradient dissolves gently */
+    .bottom-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 170px;
+      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.92) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     /* Portrait-only lock */
     .rotate-overlay {
       display: none;
@@ -560,8 +572,8 @@
 
       <div class="segmented-actions" style="grid-template-columns:1fr 1fr 1fr">
         <button class="neutral-btn segment-btn segment-left" id="fastResetBtn" type="button">Reset</button>
-        <button class="primary-btn segment-btn segment-left" id="fastDoneBtn" type="button">Done</button>
-        <button class="neutral-btn segment-btn" id="fastGameBackBtn" type="button">Back</button>
+        <button class="neutral-btn segment-btn segment-left" id="fastGameBackBtn" type="button">Back</button>
+        <button class="primary-btn segment-btn" id="fastDoneBtn" type="button">Done</button>
       </div>
     </div>
 
@@ -572,6 +584,10 @@
       <img id="celebrationImg" class="celebration-img" alt="Celebration image" />
       <div class="compact-buttons" id="finishButtons"></div>
     </div>
+
+    <!-- White fade at the bottom — sits behind screen content (z-index 0 < screen z-index 1)
+         but shows through transparent screen backgrounds to soften the gradient edge -->
+    <div class="bottom-fade" aria-hidden="true"></div>
   </div>
 
   <audio id="celebrationSound" preload="auto">
