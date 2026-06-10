@@ -308,6 +308,11 @@
       color: #1f2937;
     }
 
+    .practice-btn {
+      background: linear-gradient(180deg, #a5b4fc 0%, #6366f1 100%);
+      color: #ffffff;
+    }
+
     .segmented-actions {
       width: 260px;
       max-width: 100%;
@@ -618,8 +623,11 @@
         <button class="primary-btn segment-btn" id="fastStartBtn" type="button">Easy</button>
       </div>
 
-      <div class="single-home-wrap">
-        <button class="neutral-btn single-home-btn" id="fastBackBtn" type="button">Home</button>
+      <div class="single-home-wrap" id="practiceWrap">
+        <div class="segmented-actions" id="practicePill">
+          <button class="neutral-btn segment-btn segment-left" id="fastBackBtn" type="button">Home</button>
+          <button class="practice-btn segment-btn" id="fastPracticeBtn" type="button">Practice ✨</button>
+        </div>
       </div>
     </div>
 
@@ -718,6 +726,32 @@
       }
     ];
     let fastActiveListIndex = 0;
+
+    // ── Practice round tracking ─────────────────────────────────────────────
+    const PRACTICE_KEY = 'ff_practice_v1';
+    const MAX_PRACTICE = 2;
+    let fastPracticeMode = false;
+
+    function getPracticeUsed() {
+      return parseInt(localStorage.getItem(PRACTICE_KEY) || '0', 10);
+    }
+    function markPracticeUsed() {
+      localStorage.setItem(PRACTICE_KEY, String(Math.min(getPracticeUsed() + 1, MAX_PRACTICE)));
+    }
+    function updatePracticeUI() {
+      const pill = document.getElementById('practicePill');
+      const practiceBtn = document.getElementById('fastPracticeBtn');
+      const homeBtn = document.getElementById('fastBackBtn');
+      if (getPracticeUsed() >= MAX_PRACTICE) {
+        pill.style.gridTemplateColumns = '1fr';
+        practiceBtn.style.display = 'none';
+        homeBtn.style.borderRight = '0';
+      } else {
+        pill.style.gridTemplateColumns = '';
+        practiceBtn.style.display = '';
+        homeBtn.style.borderRight = '';
+      }
+    }
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
     const GIPHY_TAGS = ["great job animated cartoon", "gold star cartoon", "you did it animated", "confetti celebration animated", "thumbs up cartoon cute", "hooray cartoon", "super star animated sticker", "well done animated cute"];
@@ -973,7 +1007,11 @@
         stopFastMusic();
       } else if (currentMode === "game") {
         progressText.textContent = `Sentence ${fastIndex + 1} of ${fastDeck.length}`;
-        timerText.classList.remove("hidden");
+        if (fastPracticeMode) {
+          timerText.classList.add("hidden");
+        } else {
+          timerText.classList.remove("hidden");
+        }
         playFastMusic();
       } else {
         progressText.textContent = "";
@@ -1037,8 +1075,9 @@
       setScreenTreatment();
     }
 
-    function launchFastGame(shuffleFirst = false) {
+    function launchFastGame(shuffleFirst = false, isPractice = false) {
       stopCelebrationSound();
+      fastPracticeMode = isPractice;
       if (shuffleFirst) {
         buildFastShuffledDeck();
       } else {
@@ -1046,7 +1085,9 @@
       }
       showScreen("game");
       showFastSentence();
-      startFastTimer();
+      if (!fastPracticeMode) {
+        startFastTimer();
+      }
       _loadChimeBuf(); // Ensure buffer is decoded before first Done tap
     }
 
@@ -1066,14 +1107,20 @@
         window.location.href = "index.html";
       });
 
-      const readAgainBtn = document.createElement("button");
-      readAgainBtn.type = "button";
-      readAgainBtn.className = "primary-btn segment-btn";
-      readAgainBtn.textContent = "Read Again";
-      readAgainBtn.addEventListener("click", () => backToFastHome());
+      const actionBtn = document.createElement("button");
+      actionBtn.type = "button";
+      if (fastPracticeMode) {
+        actionBtn.className = "practice-btn segment-btn";
+        actionBtn.textContent = "Try Easy!";
+        actionBtn.addEventListener("click", () => launchFastGame(false, false));
+      } else {
+        actionBtn.className = "primary-btn segment-btn";
+        actionBtn.textContent = "Read Again";
+        actionBtn.addEventListener("click", () => backToFastHome());
+      }
 
       splitPill.appendChild(homeBtn);
-      splitPill.appendChild(readAgainBtn);
+      splitPill.appendChild(actionBtn);
       finishButtons.appendChild(splitPill);
     }
 
@@ -1082,11 +1129,19 @@
       playCorrectSound();
       fastIndex++;
       if (fastIndex >= fastDeck.length) {
-        stopFastTimer();
-        finishTitle.textContent = "Great Job, Reader!";
-        finishTime.textContent = `Final Time: ${formatTime(fastElapsedMs)}`;
-        finishTime.style.display = "block";
-        finishText.textContent = "Write down your time, then read again and try to beat it.";
+        if (fastPracticeMode) {
+          finishTitle.textContent = "Great Warm-Up, Reader!";
+          finishTime.style.display = "none";
+          finishText.textContent = "You practiced! Now try Easy mode and see how fast you can go.";
+          markPracticeUsed();
+        } else {
+          stopFastTimer();
+          finishTitle.textContent = "Great Job, Reader!";
+          finishTime.textContent = `Final Time: ${formatTime(fastElapsedMs)}`;
+          finishTime.style.display = "block";
+          finishText.textContent = "Write down your time, then read again and try to beat it.";
+          try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); var _s=fastLists[fastActiveListIndex].sentences; r.push({game:'Fast & Fluent',list:fastLists[fastActiveListIndex].title,date:new Date().toISOString(),correct:_s.length,total:_s.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
+        }
         if (window.RocketBookApp && window.RocketBookApp.showCelebrationImage) {
           window.RocketBookApp.showCelebrationImage(celebrationImg, getRandomCelebrationGif(), "rocket_book_logo.png");
         } else {
@@ -1095,7 +1150,6 @@
         }
         buildFinishButtons();
         playCelebrationSound();
-        try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); var _s=fastLists[fastActiveListIndex].sentences; r.push({game:'Fast & Fluent',list:fastLists[fastActiveListIndex].title,date:new Date().toISOString(),correct:_s.length,total:_s.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
         showScreen("finish");
         return;
       }
@@ -1111,7 +1165,9 @@
       } else {
         buildFastSequentialDeck();
       }
-      startFastTimer();
+      if (!fastPracticeMode) {
+        startFastTimer();
+      }
       showFastSentence();
     }
 
@@ -1128,12 +1184,15 @@
       fastDeck = [];
       fastIndex = 0;
       fastHardMode = false;
+      fastPracticeMode = false;
       app.classList.remove("hard-mode", "normal-play");
+      updatePracticeUI();
       showScreen("home");
     }
 
     document.getElementById("fastStartBtn").addEventListener("click", () => launchFastGame(false));
     document.getElementById("fastShuffleBtn").addEventListener("click", () => launchFastGame(true));
+    document.getElementById("fastPracticeBtn").addEventListener("click", () => launchFastGame(false, true));
     document.getElementById("fastBackBtn").addEventListener("click", () => {
       stopCelebrationSound();
       stopFastMusic();
@@ -1158,6 +1217,7 @@
     preloadGiphyCache();
     updateHeader();
     setScreenTreatment();
+    updatePracticeUI();
     // Prevent accidental scroll/zoom for young children (mobile only)
     document.addEventListener('touchmove', function(e) {
       if (!e.target.closest('.scrollable')) e.preventDefault();
