@@ -324,16 +324,16 @@
       <div class="age-toggle-wrap">
         <div class="age-toggle" id="ageToggle">
           <label id="labelGrade" class="active" onclick="switchMode('grade')">
-            <span class="toggle-emoji">&#x1F4DA;</span> 1st Grade
+            <span class="toggle-emoji">&#x1F4DA;</span> 2nd Grade
           </label>
           <label id="labelELC" onclick="switchMode('elc')">
-            <span class="toggle-emoji">&#x1F423;</span> ELC
+            <span class="toggle-emoji">&#x1F423;</span> TK
           </label>
           <div class="age-toggle-slider"></div>
         </div>
       </div>
 
-      <div class="age-subtitle" id="ageSubtitle">Wonders Unit 6 Week 2</div>
+      <div class="age-subtitle" id="ageSubtitle">Summer Reading</div>
 
       <div class="game-grid" id="gradeGames">
         <button class="game-tile tile-fast" onclick="window.location.href='fast.html'" type="button">
@@ -412,7 +412,7 @@
         labelELC.classList.add("active");
         gradeGames.style.display = "none";
         elcGames.style.display = "";
-        subtitle.textContent = "Early Learning Center";
+        subtitle.textContent = "Transitional Kindergarten";
         elcGames.querySelectorAll(".game-tile").forEach(function(t, i) {
           t.style.animation = "none";
           t.offsetHeight;
@@ -424,7 +424,7 @@
         labelGrade.classList.add("active");
         elcGames.style.display = "none";
         gradeGames.style.display = "";
-        subtitle.textContent = "Wonders Unit 6 Week 2";
+        subtitle.textContent = "Summer Reading";
         gradeGames.querySelectorAll(".game-tile").forEach(function(t, i) {
           t.style.animation = "none";
           t.offsetHeight;
