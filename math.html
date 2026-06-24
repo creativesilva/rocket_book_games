@@ -19,15 +19,23 @@
       --shadow: 0 18px 40px rgba(0,0,0,0.12);
     }
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    html { height: 100%; }
+    /* ── Match fast.html's exact html/body reset ───────────────────── */
+    html, body {
+      width: 100%; min-height: 100%; margin: 0; padding: 0;
+      overflow-x: hidden; overflow-y: auto; touch-action: pan-y;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
       color: var(--text);
       min-height: 100vh; min-height: 100dvh;
-      display: flex; align-items: flex-start; justify-content: center;
+      display: flex; align-items: stretch; justify-content: center;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-right: max(14px, env(safe-area-inset-right));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-left: max(14px, env(safe-area-inset-left));
       user-select: none; -webkit-user-select: none;
       -webkit-text-size-adjust: 100%;
       overscroll-behavior-y: contain;
@@ -41,56 +49,47 @@
 
     .app, button, img { touch-action: manipulation; }
 
-    /* ── Full-screen card ─────────────────────────────────────────── */
+    /* ── Card shell — matches fast.html exactly ────────────────────── */
     .app {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100dvh;
-      background: rgba(255,255,255,0.94);
+      width: min(100%, 430px);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      padding: 0 20px 24px;
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
       align-items: center;
       position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.85);
     }
 
-    /* Desktop: floating card */
-    @media (min-width: 440px) {
-      body { padding: 20px; align-items: center; }
-      .app {
-        min-height: auto;
-        max-height: 96dvh;
-        border-radius: 32px;
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(255,255,255,0.85);
-        overflow: hidden;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-      }
-    }
-
-    /* ── Topbar ───────────────────────────────────────────────────── */
+    /* ── Topbar ───────────────────────────────────────────────────────── */
     .topbar {
       width: 100%;
-      padding: max(18px, env(safe-area-inset-top)) 16px 0;
+      padding: 18px 0 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      min-height: calc(max(18px, env(safe-area-inset-top)) + 42px);
+      min-height: 56px;
       flex-shrink: 0;
     }
     .topbar-back {
       background: none; border: 0; border-radius: 12px;
-      padding: 8px 10px 8px 6px;
+      padding: 8px 8px 8px 2px;
       font-size: 16px; font-weight: 800; color: var(--muted);
-      display: flex; align-items: center; gap: 4px;
+      display: flex; align-items: center; gap: 2px;
       opacity: 0; pointer-events: none;
       transition: opacity 0.18s ease;
-      min-width: 80px;
+      min-width: 80px; font-family: inherit;
     }
     .topbar-back.visible { opacity: 1; pointer-events: auto; }
-    .topbar-back:active  { opacity: 0.55; }
-    .progress-text {
-      font-size: 16px; font-weight: 800; color: var(--muted);
+    .topbar-back:active  { opacity: 0.50; }
+    .topbar-center {
+      font-size: 15px; font-weight: 800; color: var(--muted);
       text-align: center; flex: 1;
     }
     .hearts-display {
@@ -104,77 +103,71 @@
     .heart-icon.lost { opacity: 0.22; filter: grayscale(1); }
 
     @keyframes heartLost {
-      0%  { transform: scale(1.3); }
+      0%  { transform: scale(1.4); }
       50% { transform: scale(0.7); }
       100%{ transform: scale(1);   }
     }
-    .heart-icon.losing { animation: heartLost 0.35s ease forwards; }
+    .heart-icon.losing { animation: heartLost 0.32s ease forwards; }
 
-    /* ── Screens ──────────────────────────────────────────────────── */
+    /* ── Screens ────────────────────────────────────────────────────── */
     .screen {
       display: none; flex-direction: column;
       align-items: center; justify-content: flex-start;
-      width: 100%; flex: 1;
-      padding: 0 20px max(24px, env(safe-area-inset-bottom));
-      text-align: center;
+      width: 100%; text-align: center; padding-bottom: 6px;
     }
     .screen.active { display: flex; }
 
-    /* ── Home screen layout ───────────────────────────────────────── */
-    #mathHomeScreen {
-      padding-top: 10px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    /* ── Home screen ────────────────────────────────────────────────── */
+    #mathHomeScreen { padding-top: 2px; }
 
-    /* ── Brand ────────────────────────────────────────────────────── */
-    .brand-logo {
-      width: min(52vw, 82px); max-width: 82px; height: auto; margin-bottom: 4px;
-    }
+    /* ── Brand ──────────────────────────────────────────────────────── */
+    .brand-logo { width: min(52vw, 80px); height: auto; margin-bottom: 4px; }
     .title {
-      font-size: clamp(32px, 9vw, 46px); font-weight: 900;
-      letter-spacing: -1.2px; line-height: 1.04; color: var(--text);
-      margin-bottom: 2px;
+      font-size: clamp(32px, 9vw, 44px); font-weight: 900;
+      letter-spacing: -1.2px; line-height: 1.04; color: var(--text); margin-bottom: 2px;
     }
-    .subtitle {
-      font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 14px;
-    }
+    .subtitle { font-size: 14px; font-weight: 700; color: var(--muted); margin-bottom: 14px; }
 
-    /* ── Goal cards ───────────────────────────────────────────────── */
+    /* ── Goal cards ─────────────────────────────────────────────────── */
     .goal-list {
-      width: 100%; display: flex; flex-direction: column; gap: 8px;
-      margin-bottom: 16px;
+      width: 100%; display: flex; flex-direction: column;
+      gap: 8px; margin-bottom: 16px;
     }
 
     @keyframes slideIn {
-      from { opacity: 0; transform: translateY(14px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    }
     }
     .goal-card {
       width: 100%; border: 0; border-radius: 18px;
       padding: 13px 14px; cursor: pointer;
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 4px 16px rgba(0,0,0,0.11);
-      font-family: inherit;
-      animation: slideIn 0.32s ease both;
+      font-family: inherit; text-align: left;
+      animation: slideIn 0.30s ease both;
       position: relative; overflow: hidden;
     }
     .goal-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 50%);
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.13) 0%, transparent 50%);
       pointer-events: none;
     }
-    .goal-card:active { transform: scale(0.97); }
-    .goal-card.locked { opacity: 0.40; cursor: default; }
+    .goal-card:active:not(.locked) { transform: scale(0.97); }
+    .goal-card.locked { opacity: 0.42; cursor: default; }
 
-    .goal-card-left {
-      display: flex; align-items: center; gap: 10px;
+    .goal-card-left { display: flex; align-items: center; gap: 10px; }
+    .goal-card-emoji {
+      font-size: 26px; line-height: 1; flex-shrink: 0;
+      width: 34px; text-align: center;
     }
-    .goal-card-emoji { font-size: 26px; line-height: 1; flex-shrink: 0; }
     .goal-card-text  { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; }
-    .goal-card-label { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: -0.3px; }
-    .goal-card-sub   { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.78); }
+    .goal-card-label {
+      font-size: 16px; font-weight: 900; color: #fff;
+      letter-spacing: -0.2px; white-space: nowrap;
+    }
+    .goal-card-sub   {
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.80); white-space: nowrap;
+    }
 
     .goal-card-badges { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
     .mode-badge {
@@ -187,23 +180,19 @@
       flex-shrink: 0;
     }
     @keyframes badgePulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.50); }
-      50%       { box-shadow: 0 0 0 5px rgba(255,255,255,0); }
+      0%, 100% { box-shadow: 0 0 0 0   rgba(255,255,255,0.55); }
+      60%       { box-shadow: 0 0 0 5px rgba(255,255,255,0.0);  }
     }
     .mode-badge.available {
-      background: rgba(255,255,255,0.92);
-      color: var(--text);
-      border-color: transparent;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.13);
-      animation: badgePulse 1.8s ease-in-out infinite;
+      background: rgba(255,255,255,0.93); color: var(--text);
+      border-color: transparent; box-shadow: 0 2px 6px rgba(0,0,0,0.13);
+      animation: badgePulse 1.9s ease-in-out infinite;
     }
     .mode-badge.done {
-      background: rgba(255,255,255,0.28);
-      color: rgba(255,255,255,0.90);
+      background: rgba(255,255,255,0.28); color: rgba(255,255,255,0.90);
       border-color: rgba(255,255,255,0.42);
     }
 
-    /* Goal gradients */
     .goal-1 { background: linear-gradient(135deg, #f87171 0%, #dc2626 100%); }
     .goal-2 { background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%); }
     .goal-3 { background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%); }
@@ -212,16 +201,15 @@
     .goal-6 { background: linear-gradient(135deg, #c084fc 0%, #7e22ce 100%); }
     .goal-7 { background: linear-gradient(115deg, #f87171 0%, #fb923c 22%, #fcd34d 42%, #4ade80 60%, #60a5fa 78%, #c084fc 100%); }
 
-    /* Staggered card entrance */
-    .goal-card:nth-child(1) { animation-delay: 0.04s; }
-    .goal-card:nth-child(2) { animation-delay: 0.09s; }
-    .goal-card:nth-child(3) { animation-delay: 0.14s; }
-    .goal-card:nth-child(4) { animation-delay: 0.19s; }
-    .goal-card:nth-child(5) { animation-delay: 0.24s; }
-    .goal-card:nth-child(6) { animation-delay: 0.29s; }
-    .goal-card:nth-child(7) { animation-delay: 0.34s; }
+    .goal-card:nth-child(1) { animation-delay: 0.03s; }
+    .goal-card:nth-child(2) { animation-delay: 0.08s; }
+    .goal-card:nth-child(3) { animation-delay: 0.13s; }
+    .goal-card:nth-child(4) { animation-delay: 0.18s; }
+    .goal-card:nth-child(5) { animation-delay: 0.23s; }
+    .goal-card:nth-child(6) { animation-delay: 0.28s; }
+    .goal-card:nth-child(7) { animation-delay: 0.33s; }
 
-    /* ── Buttons (shared) ─────────────────────────────────────────── */
+    /* ── Shared buttons ─────────────────────────────────────────────── */
     button { font-family: inherit; border: 0; cursor: pointer; font-weight: 800; }
     button:active { opacity: 0.75; }
 
@@ -232,94 +220,60 @@
       transition: transform 0.08s ease;
     }
     .primary-btn:active { transform: scale(0.96); }
-
     .neutral-btn {
       padding: 14px 28px; font-size: 16px; font-weight: 800; border-radius: 22px;
-      background: linear-gradient(180deg, #dbe2ea 0%, #c4ccd8 100%);
-      color: #1f2937;
+      background: linear-gradient(180deg, #dbe2ea 0%, #c4ccd8 100%); color: #1f2937;
     }
     .segmented-actions {
       width: 270px; max-width: 100%;
       display: grid; grid-template-columns: 1fr 1fr;
       border-radius: 22px; overflow: hidden;
-      box-shadow: 0 10px 20px rgba(148,163,184,0.18);
-      margin-top: 14px;
+      box-shadow: 0 10px 20px rgba(148,163,184,0.18); margin-top: 14px;
     }
     .segment-btn {
       border: 0; min-width: 0; border-radius: 0;
       padding: 15px 14px; font-size: 16px; font-weight: 800;
-      cursor: pointer; transition: transform 0.08s ease; box-shadow: none;
-      font-family: inherit;
+      cursor: pointer; font-family: inherit;
     }
-    .segment-btn:active { transform: scale(0.97); }
-    .segment-left { border-right: 1px solid rgba(255,255,255,0.35); }
+    .segment-btn:active { opacity: 0.78; }
+    .segment-left { border-right: 1px solid rgba(255,255,255,0.30); }
 
     .single-home-wrap { width: 100%; display: flex; justify-content: center; margin-top: 8px; }
     .single-home-btn  { width: 190px; max-width: 100%; }
 
-    /* ── Game screen ──────────────────────────────────────────────── */
-    #mathGameScreen {
-      padding-top: 8px;
-      justify-content: space-between;
-    }
-
+    /* ── Game screen ─────────────────────────────────────────────────── */
     .problem-panel {
-      width: 100%;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 160px;
+      width: 100%; padding: 28px 0 16px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
     }
     .problem-text {
-      font-size: clamp(62px, 16vw, 92px); font-weight: 900;
+      font-size: clamp(56px, 15vw, 86px); font-weight: 900;
       letter-spacing: -2px; color: var(--text); line-height: 1;
     }
     .problem-text .q-mark { color: #d97706; }
-    .problem-progress {
-      font-size: 14px; font-weight: 800; color: var(--muted);
-      margin-top: 8px;
-    }
-    .mode-tag {
-      font-size: 13px; font-weight: 800; color: var(--muted);
-      margin-top: 4px;
-    }
+    .problem-progress { font-size: 14px; font-weight: 800; color: var(--muted); margin-top: 10px; }
+    .mode-tag         { font-size: 13px; font-weight: 800; color: var(--muted); margin-top: 4px; }
 
-    /* ── Bubbles ──────────────────────────────────────────────────── */
-    .bubbles-section {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-shrink: 0;
-      padding-bottom: 4px;
-    }
+    /* ── Bubbles ────────────────────────────────────────────────────── */
     .bubbles-area {
-      display: flex; gap: 16px;
-      align-items: center; justify-content: center;
-      width: 100%; padding: 12px 0;
+      display: flex; gap: 16px; align-items: center; justify-content: center;
+      width: 100%; padding: 20px 0 28px;
     }
     .bubble {
-      width: clamp(96px, 27vw, 120px);
-      height: clamp(96px, 27vw, 120px);
+      width: clamp(96px, 27vw, 116px); height: clamp(96px, 27vw, 116px);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: clamp(36px, 9vw, 46px); font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.16);
-      position: relative;
-      flex-shrink: 0;
+      font-size: clamp(36px, 9vw, 44px); font-weight: 900;
+      cursor: pointer; box-shadow: 0 10px 28px rgba(0,0,0,0.16);
+      position: relative; flex-shrink: 0;
     }
     .bubble::after {
-      content: '';
-      position: absolute;
+      content: ''; position: absolute;
       top: 12%; left: 18%; width: 40%; height: 28%;
-      background: rgba(255,255,255,0.35);
-      border-radius: 50%;
-      pointer-events: none;
+      background: rgba(255,255,255,0.36); border-radius: 50%; pointer-events: none;
     }
-    .bubble:active:not(.wrong):not(.correct) { transform: scale(0.90) !important; }
+    .bubble:active:not(.wrong):not(.correct) { transform: scale(0.90); }
 
     @keyframes bob0 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
     @keyframes bob1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }
@@ -330,15 +284,13 @@
 
     @keyframes shake {
       0%,100%{ transform:translateX(0) }
-      20%{ transform:translateX(-10px) }
-      40%{ transform:translateX(10px)  }
-      60%{ transform:translateX(-6px)  }
-      80%{ transform:translateX(6px)   }
+      20%    { transform:translateX(-10px) }
+      40%    { transform:translateX(10px)  }
+      60%    { transform:translateX(-6px)  }
+      80%    { transform:translateX(6px)   }
     }
-    .bubble.wrong {
-      animation: shake 0.40s ease !important;
-      opacity: 0.22; pointer-events: none;
-    }
+    .bubble.wrong  { animation: shake 0.40s ease !important; opacity: 0.22; pointer-events: none; }
+
     @keyframes burst {
       0%  { transform:scale(1);   opacity:1; }
       50% { transform:scale(1.6); opacity:0.7; }
@@ -347,49 +299,57 @@
     .bubble.correct { animation: burst 0.38s ease forwards !important; pointer-events: none; }
 
     .game-back-wrap {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding-bottom: max(10px, env(safe-area-inset-bottom));
-      flex-shrink: 0;
+      width: 100%; display: flex; justify-content: center; padding-bottom: 4px;
     }
     .game-back-btn {
-      background: none; border: 2px solid #d1d5db;
-      border-radius: 20px; padding: 10px 28px;
-      font-size: 15px; font-weight: 800; color: var(--muted);
-      transition: opacity 0.15s;
+      background: none; border: 2px solid #d1d5db; border-radius: 20px;
+      padding: 10px 28px; font-size: 15px; font-weight: 800;
+      color: var(--muted); font-family: inherit;
     }
 
-    /* ── Finish screen ────────────────────────────────────────────── */
-    #mathFinishScreen {
-      justify-content: center; gap: 6px;
-      padding-top: 10px;
-    }
-    .finish-accent { font-size: clamp(60px, 16vw, 84px); }
+    /* ── Finish screen ───────────────────────────────────────────────── */
+    #mathFinishScreen { padding-top: 12px; gap: 8px; }
+    .finish-accent { font-size: clamp(58px, 16vw, 80px); }
     .result-title  {
-      font-size: clamp(30px, 8.5vw, 46px); font-weight: 900;
-      line-height: 1.04; color: var(--text);
+      font-size: clamp(28px, 8vw, 44px); font-weight: 900;
+      line-height: 1.05; color: var(--text);
     }
     .result-text {
-      font-size: 16px; line-height: 1.38; max-width: 300px;
+      font-size: 15px; line-height: 1.4; max-width: 290px;
       margin: 0 auto; color: #243047;
     }
     .celebration-img {
-      width: min(40vw, 150px); max-height: 150px; object-fit: cover;
-      height: auto; border-radius: 22px; margin-top: 8px;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.16); display: block;
+      width: min(38vw, 140px); max-height: 140px; object-fit: cover;
+      height: auto; border-radius: 20px;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.14); display: block;
     }
     .compact-buttons {
-      margin-top: 10px; display: flex; flex-direction: column;
+      margin-top: 6px; display: flex; flex-direction: column;
       align-items: center; gap: 10px; width: 100%;
     }
 
-    /* ── Rotate overlay ───────────────────────────────────────────── */
+    /* ── Install banner — MUST be outside .app ──────────────────────── */
+    .install-banner {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.85); color: #fff;
+      padding: 14px 20px; text-align: center;
+      font-size: 14px; z-index: 9999;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      display: none;
+    }
+    .install-banner b { color: #fcd34d; }
+    .install-banner .close-banner {
+      position: absolute; top: 8px; right: 12px;
+      color: #fff; background: none; border: none;
+      font-size: 20px; cursor: pointer; font-family: inherit;
+    }
+
+    /* ── Rotate overlay ──────────────────────────────────────────────── */
     .rotate-overlay {
       display: none; position: fixed; inset: 0;
       background: #172033; color: #fff; z-index: 99999;
-      align-items: center; justify-content: center; flex-direction: column;
-      text-align: center; padding: 24px;
+      align-items: center; justify-content: center;
+      flex-direction: column; text-align: center; padding: 24px;
     }
     @media (orientation: landscape) { .rotate-overlay { display: flex; } }
   </style>
@@ -399,12 +359,12 @@
 <body>
   <div class="app" id="app">
 
-    <!-- ── Topbar ─────────────────────────────────────────────────── -->
+    <!-- ── Topbar ──────────────────────────────────────────────────── -->
     <div class="topbar">
       <button class="topbar-back" id="topbarBack" type="button" aria-label="Back to goals">
         ‹ Goals
       </button>
-      <div class="progress-text" id="progressText"></div>
+      <div class="topbar-center" id="progressText"></div>
       <div class="hearts-display" id="heartsDisplay">
         <span class="heart-icon" id="heart0">❤️</span>
         <span class="heart-icon" id="heart1">❤️</span>
@@ -412,7 +372,7 @@
       </div>
     </div>
 
-    <!-- ── Home / Goal select ─────────────────────────────────────── -->
+    <!-- ── Home ───────────────────────────────────────────────────── -->
     <div class="screen active" id="mathHomeScreen">
       <img src="rocket_book_logo.png" alt="Rocket Book" class="brand-logo" />
       <div class="title">Number Blaster</div>
@@ -423,28 +383,24 @@
       </div>
     </div>
 
-    <!-- ── Game screen ────────────────────────────────────────────── -->
+    <!-- ── Game ───────────────────────────────────────────────────── -->
     <div class="screen" id="mathGameScreen">
       <div class="problem-panel">
         <div class="problem-text" id="problemText"></div>
         <div class="problem-progress" id="problemProgress"></div>
         <div class="mode-tag" id="modeTag"></div>
       </div>
-
-      <div class="bubbles-section">
-        <div class="bubbles-area" id="bubblesArea">
-          <div class="bubble bubble-0" id="bubble0"></div>
-          <div class="bubble bubble-1" id="bubble1"></div>
-          <div class="bubble bubble-2" id="bubble2"></div>
-        </div>
+      <div class="bubbles-area">
+        <div class="bubble bubble-0" id="bubble0"></div>
+        <div class="bubble bubble-1" id="bubble1"></div>
+        <div class="bubble bubble-2" id="bubble2"></div>
       </div>
-
       <div class="game-back-wrap">
         <button class="game-back-btn" id="mathQuitBtn" type="button">Back to Goals</button>
       </div>
     </div>
 
-    <!-- ── Finish / celebration ───────────────────────────────────── -->
+    <!-- ── Finish ─────────────────────────────────────────────────── -->
     <div class="screen" id="mathFinishScreen">
       <div class="finish-accent" id="finishAccent">🎉</div>
       <div class="result-title"  id="mathFinishTitle">Goal Complete!</div>
@@ -453,12 +409,9 @@
       <div class="compact-buttons" id="mathFinishButtons"></div>
     </div>
 
-  </div><!-- .app -->
+  </div><!-- /.app -->
 
-  <audio id="celebrationSound" preload="auto">
-    <source src="celebration_sound.mp3" type="audio/mpeg" />
-  </audio>
-
+  <!-- Both outside .app so position:fixed works correctly ─────────── -->
   <div class="rotate-overlay" aria-hidden="true">
     <div style="font-size:64px">📱</div>
     <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
@@ -466,14 +419,18 @@
   </div>
 
   <div class="install-banner" id="installBanner">
-    <button class="close-banner" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
+    <button class="close-banner" type="button" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
     Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
   </div>
+
+  <audio id="celebrationSound" preload="auto">
+    <source src="celebration_sound.mp3" type="audio/mpeg" />
+  </audio>
 
   <script>
     try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
 
-    // ── Goal data ────────────────────────────────────────────────────
+    // ── Goal data ─────────────────────────────────────────────────────
     const GOAL_EMOJIS = ['🎯','🔥','💡','🚀','⭐','🌙','🏆'];
 
     const GOALS_RAW = [
@@ -509,144 +466,116 @@
         sub:[[11,2],[11,9],[12,3],[12,9],[13,4],[13,9],[14,5],[14,9],
              [15,6],[15,9],[16,7],[16,9],[17,8],[17,9]]
       },
-      {
-        label:'Goal 7', subtitle:'Mixed Review',
-        add:null, sub:null
-      }
+      { label:'Goal 7', subtitle:'Mixed Review', add:null, sub:null }
     ];
     GOALS_RAW[6].add = GOALS_RAW.slice(0,6).flatMap(g => g.add);
     GOALS_RAW[6].sub = GOALS_RAW.slice(0,6).flatMap(g => g.sub);
 
     // ── Progress ──────────────────────────────────────────────────────
     const PROGRESS_KEY = 'nb_progress_v1';
-    function getProgress() { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); } catch(e) { return {}; } }
-    function markModeDone(gIdx, mode) {
-      const p = getProgress();
-      if (!p[gIdx]) p[gIdx] = {};
-      p[gIdx][mode] = true;
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
-    }
-    function isModeDone(gIdx, mode) { const p=getProgress(); return !!(p[gIdx]&&p[gIdx][mode]); }
-    function isGoalUnlocked(gIdx) { return gIdx===0 || isModeDone(gIdx-1,'add'); }
-    function getNextMode(gIdx) {
-      if (!isModeDone(gIdx,'add'))   return 'add';
-      if (!isModeDone(gIdx,'sub'))   return 'sub';
-      if (!isModeDone(gIdx,'champ')) return 'champ';
+    function getProgress()        { try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)||'{}'); } catch(e) { return {}; } }
+    function markModeDone(g,mode) { const p=getProgress(); if(!p[g])p[g]={}; p[g][mode]=true; localStorage.setItem(PROGRESS_KEY,JSON.stringify(p)); }
+    function isModeDone(g,mode)   { const p=getProgress(); return !!(p[g]&&p[g][mode]); }
+    function isGoalUnlocked(g)    { return g===0 || isModeDone(g-1,'add'); }
+    function getNextMode(g) {
+      if (!isModeDone(g,'add'))   return 'add';
+      if (!isModeDone(g,'sub'))   return 'sub';
+      if (!isModeDone(g,'champ')) return 'champ';
       return 'add';
     }
 
     // ── State ─────────────────────────────────────────────────────────
-    let currentGoalIndex = 0;
-    let currentMode      = '';
-    let currentDeck      = [];
-    let currentCardIndex = 0;
-    let heartsLeft       = 3;
-    let wrongThisProblem = 0;
+    let currentGoalIndex=0, currentMode='', currentDeck=[], currentCardIndex=0;
+    let heartsLeft=3, wrongThisProblem=0;
 
     // ── DOM ───────────────────────────────────────────────────────────
-    const app           = document.getElementById('app');
-    const topbarBack    = document.getElementById('topbarBack');
-    const progressText  = document.getElementById('progressText');
-    const heartsDisplay = document.getElementById('heartsDisplay');
-    const goalListEl    = document.getElementById('goalList');
-    const problemText   = document.getElementById('problemText');
-    const problemProg   = document.getElementById('problemProgress');
-    const modeTag       = document.getElementById('modeTag');
-    const bubble0       = document.getElementById('bubble0');
-    const bubble1       = document.getElementById('bubble1');
-    const bubble2       = document.getElementById('bubble2');
-    const celebSound    = document.getElementById('celebrationSound');
-    const celebImg      = document.getElementById('mathCelebrationImg');
-    const heartEls      = [0,1,2].map(i => document.getElementById('heart'+i));
-    const bubbles       = [bubble0, bubble1, bubble2];
-
+    const topbarBack   = document.getElementById('topbarBack');
+    const progressText = document.getElementById('progressText');
+    const heartsDisp   = document.getElementById('heartsDisplay');
+    const goalListEl   = document.getElementById('goalList');
+    const problemText  = document.getElementById('problemText');
+    const problemProg  = document.getElementById('problemProgress');
+    const modeTag      = document.getElementById('modeTag');
+    const celebSound   = document.getElementById('celebrationSound');
+    const celebImg     = document.getElementById('mathCelebrationImg');
+    const heartEls     = [0,1,2].map(i=>document.getElementById('heart'+i));
+    const bubbles      = [0,1,2].map(i=>document.getElementById('bubble'+i));
     const screens = {
       home:   document.getElementById('mathHomeScreen'),
       game:   document.getElementById('mathGameScreen'),
       finish: document.getElementById('mathFinishScreen')
     };
 
-    // ── Screen control ─────────────────────────────────────────────────
+    // ── Screen control ────────────────────────────────────────────────
     function showScreen(key) {
       Object.values(screens).forEach(s => s.classList.remove('active'));
       screens[key].classList.add('active');
-
       const inGame = key === 'game';
-      topbarBack.classList.toggle('visible',    inGame);
-      heartsDisplay.classList.toggle('visible', inGame);
+      topbarBack.classList.toggle('visible',  inGame);
+      heartsDisp.classList.toggle('visible',  inGame);
       progressText.textContent = '';
-
-      window.scrollTo({ top:0, behavior:'auto' });
+      window.scrollTo({top:0, behavior:'auto'});
     }
 
-    // ── Hearts ─────────────────────────────────────────────────────────
-    function renderHearts() {
-      heartEls.forEach((el, i) => {
-        el.classList.toggle('lost', i >= heartsLeft);
-      });
-    }
-    function resetHearts() { heartsLeft=3; renderHearts(); }
+    // ── Hearts ────────────────────────────────────────────────────────
+    function renderHearts() { heartEls.forEach((el,i)=>el.classList.toggle('lost', i>=heartsLeft)); }
+    function resetHearts()  { heartsLeft=3; renderHearts(); }
     function loseHeart() {
-      if (heartsLeft <= 0) return;
-      const idx = heartsLeft - 1;
+      if (heartsLeft<=0) return;
+      const idx=heartsLeft-1;
       heartEls[idx].classList.add('losing');
-      setTimeout(() => heartEls[idx].classList.remove('losing'), 380);
+      setTimeout(()=>heartEls[idx].classList.remove('losing'), 380);
       heartsLeft--;
       renderHearts();
-      if (heartsLeft === 0) {
-        setTimeout(() => {
-          resetHearts();
-          currentDeck = shuffleArr([...currentDeck]);
-          currentCardIndex = 0;
-          wrongThisProblem = 0;
-          showProblem();
+      if (heartsLeft===0) {
+        setTimeout(()=>{
+          resetHearts(); currentDeck=shuffleArr([...currentDeck]);
+          currentCardIndex=0; wrongThisProblem=0; showProblem();
         }, 750);
       }
     }
 
-    // ── Audio: Giphy ───────────────────────────────────────────────────
+    // ── Giphy ─────────────────────────────────────────────────────────
     const GIPHY_KEY  = 'kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm';
     const GIPHY_TAGS = ['great job animated cartoon','gold star cartoon','you did it animated',
                         'confetti celebration animated','thumbs up cartoon cute','hooray cartoon',
                         'super star animated sticker','well done animated cute'];
-    let giphyCache = [];
+    let giphyCache=[];
 
     async function preloadGiphyCache() {
       try {
-        const tag = GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
-        const url = `https://api.giphy.com/v1/stickers/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(tag)}&rating=g&limit=25&offset=${Math.floor(Math.random()*50)}`;
-        const data = await (await fetch(url)).json();
-        if (data.data && data.data.length) giphyCache = data.data.map(g=>g.images.fixed_height.url);
-      } catch(e) {}
+        const tag=GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
+        const url=`https://api.giphy.com/v1/stickers/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(tag)}&rating=g&limit=25&offset=${Math.floor(Math.random()*50)}`;
+        const data=await(await fetch(url)).json();
+        if (data.data&&data.data.length) giphyCache=data.data.map(g=>g.images.fixed_height.url);
+      } catch(e){}
     }
     async function getRandomGif() {
-      if (giphyCache.length > 0) {
-        const gif = giphyCache.splice(Math.floor(Math.random()*giphyCache.length),1)[0];
-        if (giphyCache.length < 5) preloadGiphyCache();
+      if (giphyCache.length>0) {
+        const gif=giphyCache.splice(Math.floor(Math.random()*giphyCache.length),1)[0];
+        if (giphyCache.length<5) preloadGiphyCache();
         return gif;
       }
       try {
-        const tag = GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
-        const url = `https://api.giphy.com/v1/stickers/random?api_key=${GIPHY_KEY}&tag=${encodeURIComponent(tag)}&rating=g`;
-        const data = await (await fetch(url)).json();
-        if (data.data && data.data.images) return data.data.images.fixed_height.url;
-      } catch(e) {}
+        const tag=GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
+        const url=`https://api.giphy.com/v1/stickers/random?api_key=${GIPHY_KEY}&tag=${encodeURIComponent(tag)}&rating=g`;
+        const data=await(await fetch(url)).json();
+        if (data.data&&data.data.images) return data.data.images.fixed_height.url;
+      } catch(e){}
       return 'rocket_book_logo.png';
     }
     function playCelebSound() {
       if (!celebSound) return;
-      celebSound.currentTime=0; celebSound.volume=0.85;
-      celebSound.play().catch(()=>{});
+      celebSound.currentTime=0; celebSound.volume=0.85; celebSound.play().catch(()=>{});
     }
     function stopCelebSound() {
-      if (!celebSound) return;
-      celebSound.pause(); celebSound.currentTime=0;
+      if (!celebSound) return; celebSound.pause(); celebSound.currentTime=0;
     }
 
-    // ── Audio: Web Audio (chime + buzz) ────────────────────────────────
+    // ── Web Audio ─────────────────────────────────────────────────────
     let _wac=null, _chimeBuf=null;
     function _ensureWAC() {
-      if (!_wac) try { _wac=new (window.AudioContext||window.webkitAudioContext)(); } catch(e){}
+      if (!_wac) try { _wac=new(window.AudioContext||window.webkitAudioContext)(); } catch(e){}
       return _wac;
     }
     async function _loadChimeBuf() {
@@ -654,22 +583,20 @@
       const ctx=_ensureWAC(); if (!ctx) return;
       try { _chimeBuf=await ctx.decodeAudioData(await(await fetch('chime.m4a')).arrayBuffer()); } catch(e){}
     }
-    const _chimeFb = Array.from({length:4},()=>{ const a=new Audio('chime.m4a'); a.preload='auto'; return a; });
+    const _chimeFb=Array.from({length:4},()=>{ const a=new Audio('chime.m4a'); a.preload='auto'; return a; });
     let _chimeFbIdx=0;
-
     function playChime() {
       const ctx=_ensureWAC();
       if (ctx&&(ctx.state==='suspended'||ctx.state==='interrupted')) ctx.resume();
       if (ctx&&_chimeBuf) {
         try {
-          const s=ctx.createBufferSource(), g=ctx.createGain();
+          const s=ctx.createBufferSource(),g=ctx.createGain();
           s.buffer=_chimeBuf; g.gain.value=0.8;
           s.connect(g); g.connect(ctx.destination); s.start(0); return;
         } catch(e){}
       }
       const a=_chimeFb[_chimeFbIdx++%_chimeFb.length]; a.volume=0.8; a.play().catch(()=>{});
     }
-
     function playBuzz() {
       const ctx=_ensureWAC(); if (!ctx) return;
       if (ctx.state==='suspended'||ctx.state==='interrupted') ctx.resume();
@@ -684,117 +611,89 @@
         osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.20);
       } catch(e){}
     }
-
     document.addEventListener('touchstart', ()=>_loadChimeBuf(), {once:true, passive:true});
 
-    // ── Helpers ────────────────────────────────────────────────────────
+    // ── Helpers ───────────────────────────────────────────────────────
     function shuffleArr(arr) {
       const a=[...arr];
-      for (let i=a.length-1; i>0; i--) {
-        const j=Math.floor(Math.random()*(i+1));
-        [a[i],a[j]]=[a[j],a[i]];
-      }
+      for (let i=a.length-1;i>0;i--) { const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
       return a;
     }
-
     function getChoices(correct) {
       const offsets=shuffleArr([-3,-2,-1,1,2,3,4,-4,5,-5]);
       const pool=[];
-      for (const off of offsets) {
-        const d=correct+off;
-        if (d>=0 && d!==correct && !pool.includes(d)) { pool.push(d); if (pool.length===2) break; }
-      }
-      let d=correct+1;
-      while (pool.length<2) { if (d!==correct&&!pool.includes(d)) pool.push(d); d++; }
+      for (const off of offsets) { const d=correct+off; if(d>=0&&d!==correct&&!pool.includes(d)){pool.push(d);if(pool.length===2)break;} }
+      let d=correct+1; while(pool.length<2){if(d!==correct&&!pool.includes(d))pool.push(d);d++;}
       return shuffleArr([correct,...pool]);
     }
 
-    // ── Bubble colors ──────────────────────────────────────────────────
-    const BUBBLE_THEMES = [
-      { bg:'linear-gradient(135deg,#fbbf24,#f59e0b)', color:'#78350f' },
-      { bg:'linear-gradient(135deg,#34d399,#059669)', color:'#022c22' },
-      { bg:'linear-gradient(135deg,#60a5fa,#3b82f6)', color:'#1e3a8a' },
-      { bg:'linear-gradient(135deg,#f472b6,#ec4899)', color:'#500724' },
-      { bg:'linear-gradient(135deg,#a78bfa,#8b5cf6)', color:'#2e1065' },
-      { bg:'linear-gradient(135deg,#fb923c,#f97316)', color:'#431407' },
+    // ── Bubble themes ─────────────────────────────────────────────────
+    const BUBBLE_THEMES=[
+      {bg:'linear-gradient(135deg,#fbbf24,#f59e0b)',color:'#78350f'},
+      {bg:'linear-gradient(135deg,#34d399,#059669)',color:'#022c22'},
+      {bg:'linear-gradient(135deg,#60a5fa,#3b82f6)',color:'#1e3a8a'},
+      {bg:'linear-gradient(135deg,#f472b6,#ec4899)',color:'#500724'},
+      {bg:'linear-gradient(135deg,#a78bfa,#8b5cf6)',color:'#2e1065'},
+      {bg:'linear-gradient(135deg,#fb923c,#f97316)',color:'#431407'},
     ];
 
-    // ── Deck building ──────────────────────────────────────────────────
-    function buildDeck(gIdx, mode) {
-      const g=GOALS_RAW[gIdx];
-      let facts=[];
-      if (mode==='add')        facts=g.add.map(([a,b])=>({q:`${a} + ${b}`, a:a+b}));
-      else if (mode==='sub')   facts=g.sub.map(([a,b])=>({q:`${a} − ${b}`, a:a-b}));
-      else { // champ: mixed
-        const adds=g.add.map(([a,b])=>({q:`${a} + ${b}`, a:a+b}));
-        const subs=g.sub.map(([a,b])=>({q:`${a} − ${b}`, a:a-b}));
-        facts=shuffleArr([...adds,...subs]);
+    // ── Deck building ─────────────────────────────────────────────────
+    function buildDeck(g,mode) {
+      const goal=GOALS_RAW[g]; let facts=[];
+      if (mode==='add')      facts=goal.add.map(([a,b])=>({q:`${a} + ${b}`,a:a+b}));
+      else if (mode==='sub') facts=goal.sub.map(([a,b])=>({q:`${a} − ${b}`,a:a-b}));
+      else {
+        facts=shuffleArr([...goal.add.map(([a,b])=>({q:`${a} + ${b}`,a:a+b})),
+                          ...goal.sub.map(([a,b])=>({q:`${a} − ${b}`,a:a-b}))]);
       }
       return shuffleArr(facts);
     }
 
-    // ── Show problem ───────────────────────────────────────────────────
+    // ── Show problem ──────────────────────────────────────────────────
     function showProblem() {
       const card=currentDeck[currentCardIndex];
       problemText.innerHTML=`${card.q} = <span class="q-mark">?</span>`;
       problemProg.textContent=`${currentCardIndex+1} of ${currentDeck.length}`;
-      const modeLabels={add:'➕ Addition', sub:'➖ Subtraction', champ:'⭐ Champion'};
+      const modeLabels={add:'➕ Addition',sub:'➖ Subtraction',champ:'⭐ Champion'};
       modeTag.textContent=`${GOALS_RAW[currentGoalIndex].label} — ${modeLabels[currentMode]}`;
-
       const choices=getChoices(card.a);
       const colors=shuffleArr([...BUBBLE_THEMES]).slice(0,3);
       bubbles.forEach((b,i)=>{
-        b.textContent=choices[i];
-        b.style.background=colors[i].bg;
-        b.style.color=colors[i].color;
-        b.dataset.val=choices[i];
-        b.className=`bubble bubble-${i}`;
-        b.style.opacity='';
-        b.style.pointerEvents='';
+        b.textContent=choices[i]; b.style.background=colors[i].bg; b.style.color=colors[i].color;
+        b.dataset.val=choices[i]; b.className=`bubble bubble-${i}`;
+        b.style.opacity=''; b.style.pointerEvents='';
       });
       wrongThisProblem=0;
     }
 
-    // ── Bubble tap ─────────────────────────────────────────────────────
+    // ── Bubble tap ────────────────────────────────────────────────────
     function handleTap(bubble) {
       const selected=parseInt(bubble.dataset.val,10);
       const correct=currentDeck[currentCardIndex].a;
       if (selected===correct) {
-        bubble.classList.add('correct');
-        playChime();
-        setTimeout(()=>{
-          currentCardIndex++;
-          if (currentCardIndex>=currentDeck.length) finishMode();
-          else showProblem();
-        }, 400);
+        bubble.classList.add('correct'); playChime();
+        setTimeout(()=>{ currentCardIndex++; if(currentCardIndex>=currentDeck.length) finishMode(); else showProblem(); },400);
       } else {
-        bubble.classList.add('wrong');
-        playBuzz();
+        bubble.classList.add('wrong'); playBuzz();
         wrongThisProblem++;
         if (wrongThisProblem>=2) loseHeart();
       }
     }
-    bubbles.forEach(b => b.addEventListener('click', ()=>handleTap(b)));
+    bubbles.forEach(b=>b.addEventListener('click',()=>handleTap(b)));
 
-    // ── Start mode ─────────────────────────────────────────────────────
-    function startGoalMode(gIdx, mode) {
+    // ── Start mode ────────────────────────────────────────────────────
+    function startGoalMode(g,mode) {
       stopCelebSound();
-      currentGoalIndex=gIdx;
-      currentMode=mode;
-      currentDeck=buildDeck(gIdx,mode);
-      currentCardIndex=0;
-      wrongThisProblem=0;
-      resetHearts();
-      showScreen('game');
-      showProblem();
-      _loadChimeBuf();
+      currentGoalIndex=g; currentMode=mode;
+      currentDeck=buildDeck(g,mode); currentCardIndex=0; wrongThisProblem=0;
+      resetHearts(); showScreen('game'); showProblem(); _loadChimeBuf();
     }
 
-    // ── Finish mode ────────────────────────────────────────────────────
-    const MODE_META = {
-      add:   {emoji:'➕', title:'Addition Blasted!',    text:'You nailed the addition facts! Ready to blast the subtraction round?'},
-      sub:   {emoji:'➖', title:'Subtraction Blasted!', text:'Amazing! Addition AND subtraction done. Now try Champion — everything mixed up!'},
-      champ: {emoji:'⭐', title:'Goal Complete!',       text:"You're a Math Champion! Unlock the next goal and keep going!"}
+    // ── Finish mode ───────────────────────────────────────────────────
+    const MODE_META={
+      add:   {emoji:'➕',title:'Addition Blasted!',    text:'You nailed the addition facts! Ready to blast the subtraction round?'},
+      sub:   {emoji:'➖',title:'Subtraction Blasted!', text:'Amazing! Addition AND subtraction done. Now try Champion — everything mixed up!'},
+      champ: {emoji:'⭐',title:'Goal Complete!',       text:"You're a Math Champion! Unlock the next goal and keep going!"}
     };
 
     function finishMode() {
@@ -806,91 +705,62 @@
 
       const btns=document.getElementById('mathFinishButtons');
       btns.innerHTML='';
-      const pill=document.createElement('div');
-      pill.className='segmented-actions';
+      const pill=document.createElement('div'); pill.className='segmented-actions';
 
       const goalsBtn=document.createElement('button');
-      goalsBtn.type='button'; goalsBtn.className='neutral-btn segment-btn segment-left';
-      goalsBtn.textContent='Goals';
+      goalsBtn.type='button'; goalsBtn.className='neutral-btn segment-btn segment-left'; goalsBtn.textContent='Goals';
       goalsBtn.addEventListener('click',()=>{ stopCelebSound(); buildGoalList(); showScreen('home'); });
 
       const nextBtn=document.createElement('button');
       nextBtn.type='button'; nextBtn.className='primary-btn segment-btn';
-
       const allDone=['add','sub','champ'].every(m=>isModeDone(currentGoalIndex,m));
-      const nextGIdx=currentGoalIndex+1;
-      const modeLabels={add:'➕ Add', sub:'➖ Sub', champ:'⭐ Champ'};
-
+      const nextG=currentGoalIndex+1;
+      const modeLabels={add:'➕ Add',sub:'➖ Sub',champ:'⭐ Champ'};
       if (!allDone) {
         const nm=getNextMode(currentGoalIndex);
         nextBtn.textContent=`Next: ${modeLabels[nm]}`;
-        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(currentGoalIndex, nm); });
-      } else if (nextGIdx<GOALS_RAW.length && isGoalUnlocked(nextGIdx)) {
-        nextBtn.textContent=`${GOALS_RAW[nextGIdx].label} →`;
-        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(nextGIdx, getNextMode(nextGIdx)); });
+        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(currentGoalIndex,nm); });
+      } else if (nextG<GOALS_RAW.length && isGoalUnlocked(nextG)) {
+        nextBtn.textContent=`${GOALS_RAW[nextG].label} →`;
+        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(nextG, getNextMode(nextG)); });
       } else {
         nextBtn.textContent='Play Again';
-        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(currentGoalIndex, currentMode); });
+        nextBtn.addEventListener('click',()=>{ stopCelebSound(); startGoalMode(currentGoalIndex,currentMode); });
       }
-
-      pill.appendChild(goalsBtn);
-      pill.appendChild(nextBtn);
-      btns.appendChild(pill);
+      pill.appendChild(goalsBtn); pill.appendChild(nextBtn); btns.appendChild(pill);
 
       celebImg.removeAttribute('src');
       getRandomGif().then(src=>{ celebImg.src=src; });
-      playCelebSound();
-      showScreen('finish');
+      playCelebSound(); showScreen('finish');
     }
 
-    // ── Goal list ──────────────────────────────────────────────────────
+    // ── Goal list ─────────────────────────────────────────────────────
     function buildGoalList() {
       goalListEl.innerHTML='';
       GOALS_RAW.forEach((goal,i)=>{
-        const unlocked =isGoalUnlocked(i);
-        const addDone  =isModeDone(i,'add');
-        const subDone  =isModeDone(i,'sub');
-        const champDone=isModeDone(i,'champ');
-
+        const unlocked=isGoalUnlocked(i);
+        const addDone=isModeDone(i,'add'), subDone=isModeDone(i,'sub'), champDone=isModeDone(i,'champ');
         const card=document.createElement('button');
-        card.type='button';
-        card.className=`goal-card goal-${i+1}${unlocked?'':' locked'}`;
+        card.type='button'; card.className=`goal-card goal-${i+1}${unlocked?'':' locked'}`;
 
-        const left=document.createElement('div');
-        left.className='goal-card-left';
+        const left=document.createElement('div'); left.className='goal-card-left';
+        const emojiEl=document.createElement('div'); emojiEl.className='goal-card-emoji'; emojiEl.textContent=GOAL_EMOJIS[i];
+        const textEl=document.createElement('div'); textEl.className='goal-card-text';
+        const lbl=document.createElement('div'); lbl.className='goal-card-label'; lbl.textContent=unlocked?goal.label:`🔒 ${goal.label}`;
+        const sub=document.createElement('div'); sub.className='goal-card-sub'; sub.textContent=goal.subtitle;
+        textEl.appendChild(lbl); textEl.appendChild(sub); left.appendChild(emojiEl); left.appendChild(textEl);
 
-        const emojiEl=document.createElement('div');
-        emojiEl.className='goal-card-emoji';
-        emojiEl.textContent=GOAL_EMOJIS[i];
-
-        const textEl=document.createElement('div');
-        textEl.className='goal-card-text';
-        const lbl=document.createElement('div');
-        lbl.className='goal-card-label';
-        lbl.textContent=unlocked ? goal.label : `🔒 ${goal.label}`;
-        const sub=document.createElement('div');
-        sub.className='goal-card-sub';
-        sub.textContent=goal.subtitle;
-        textEl.appendChild(lbl);
-        textEl.appendChild(sub);
-        left.appendChild(emojiEl);
-        left.appendChild(textEl);
-
-        const badges=document.createElement('div');
-        badges.className='goal-card-badges';
-        [
-          {done:addDone,   avail:unlocked,                 sym:'＋'},
-          {done:subDone,   avail:unlocked&&addDone,         sym:'－'},
-          {done:champDone, avail:unlocked&&addDone&&subDone, sym:'★'}
+        const badges=document.createElement('div'); badges.className='goal-card-badges';
+        [{done:addDone,avail:unlocked,sym:'＋'},
+         {done:subDone,avail:unlocked&&addDone,sym:'－'},
+         {done:champDone,avail:unlocked&&addDone&&subDone,sym:'★'}
         ].forEach(({done,avail,sym})=>{
           const b=document.createElement('div');
           b.className='mode-badge'+(done?' done':avail?' available':'');
-          b.textContent=done?'✓':sym;
-          badges.appendChild(b);
+          b.textContent=done?'✓':sym; badges.appendChild(b);
         });
 
-        card.appendChild(left);
-        card.appendChild(badges);
+        card.appendChild(left); card.appendChild(badges);
         card.addEventListener('click',()=>{
           if (!unlocked) { card.style.transform='scale(0.96)'; setTimeout(()=>card.style.transform='',180); return; }
           startGoalMode(i, getNextMode(i));
@@ -899,23 +769,17 @@
       });
     }
 
-    // ── Nav ────────────────────────────────────────────────────────────
+    // ── Nav ───────────────────────────────────────────────────────────
     topbarBack.addEventListener('click',()=>{ stopCelebSound(); buildGoalList(); showScreen('home'); });
     document.getElementById('mathBackBtn').addEventListener('click',()=>{ stopCelebSound(); window.location.href='index.html'; });
     document.getElementById('mathQuitBtn').addEventListener('click',()=>{ stopCelebSound(); buildGoalList(); showScreen('home'); });
 
-    // ── Init ───────────────────────────────────────────────────────────
+    // ── Init ──────────────────────────────────────────────────────────
     preloadGiphyCache();
     buildGoalList();
 
-    document.addEventListener('touchmove',e=>{
-      if (!e.target.closest('.scrollable')&&!e.target.closest('#mathHomeScreen')) e.preventDefault();
-    }, {passive:false});
-    document.addEventListener('gesturestart', e=>e.preventDefault());
-    document.addEventListener('gesturechange',e=>e.preventDefault());
-
     if (/iPhone|iPad/.test(navigator.userAgent)&&!window.navigator.standalone&&!localStorage.getItem('bannerDismissed')) {
-      setTimeout(()=>{ const b=document.getElementById('installBanner'); if(b) b.style.display='block'; },2000);
+      setTimeout(()=>{ const b=document.getElementById('installBanner'); if(b) b.style.display='block'; },2500);
     }
   </script>
   <script src="app-shell.js?v=20260428a" defer></script>
