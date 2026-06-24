@@ -458,6 +458,22 @@
         <span class="menu-item-icon">&#x1F3E0;</span> Home
       </button>
       <div class="menu-divider"></div>
+      <button class="menu-item menu-nav-item" type="button" data-href="fast.html" onclick="closeMenu();window.location.href='fast.html'">
+        <span class="menu-item-icon">&#x1F3CE;&#xFE0F;</span> Fast &amp; Fluent
+      </button>
+      <button class="menu-item menu-nav-item" type="button" data-href="rainbow.html" onclick="closeMenu();window.location.href='rainbow.html'">
+        <span class="menu-item-icon">&#x1F308;</span> Rainbow Reader
+      </button>
+      <button class="menu-item menu-nav-item" type="button" data-href="spell.html" onclick="closeMenu();window.location.href='spell.html'">
+        <span class="menu-item-icon">&#x1F41D;</span> Spelling Bee
+      </button>
+      <button class="menu-item menu-nav-item" type="button" data-href="learn.html" onclick="closeMenu();window.location.href='learn.html'">
+        <span class="menu-item-icon">&#x1F9E0;</span> Brain Games
+      </button>
+      <button class="menu-item menu-nav-item" type="button" data-href="math.html" onclick="closeMenu();window.location.href='math.html'">
+        <span class="menu-item-icon">&#x1F4A5;</span> Number Blaster
+      </button>
+      <div class="menu-divider"></div>
       <div style="font-size:11px;color:var(--muted);font-weight:600;text-align:center;padding:6px 14px 8px;">Rocket Book Games</div>
     </div>
   </div>
@@ -842,6 +858,12 @@
         var r = btn.getBoundingClientRect();
         sh.style.top   = (r.bottom + 6) + 'px';
         sh.style.right = (window.innerWidth - r.right) + 'px';
+        var pathname = window.location.pathname;
+        sh.querySelectorAll('.menu-nav-item').forEach(function(navBtn) {
+          var here = pathname.endsWith(navBtn.dataset.href);
+          navBtn.style.opacity = here ? '0.38' : '';
+          navBtn.style.pointerEvents = here ? 'none' : '';
+        });
         ov.classList.add('open');
       });
       window.closeMenu = function() { ov.classList.remove('open'); };
