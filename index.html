@@ -13,244 +13,293 @@
   <title>Rocket Book Games</title>
   <style>
     :root {
-      --bg: #f0f0f5;
-      --glass: rgba(255,255,255,0.55);
-      --glass-border: rgba(255,255,255,0.65);
-      --glass-shadow: 0 8px 32px rgba(0,0,0,0.08);
-      --text: #1a1a2e;
-      --muted: #6b7085;
-      --blur: 28px;
-      --radius: 24px;
+      --bg:           #f0f0f5;
+      --glass:        rgba(255,255,255,0.58);
+      --glass-border: rgba(255,255,255,0.70);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.09);
+      --text:         #1a1a2e;
+      --muted:        #6b7085;
+      --blur:         28px;
+      --radius:       22px;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
     html, body {
-      width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: auto;
-      touch-action: pan-y;
+      width: 100%; min-height: 100%; overflow-x: hidden; overflow-y: auto; touch-action: pan-y;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
       color: var(--text);
       min-height: 100vh; min-height: 100dvh;
       display: flex; align-items: center; justify-content: center;
-      padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+      padding: max(14px, env(safe-area-inset-top))
+               max(14px, env(safe-area-inset-right))
+               max(20px, env(safe-area-inset-bottom))
+               max(14px, env(safe-area-inset-left));
       user-select: none; -webkit-user-select: none;
       -webkit-text-size-adjust: 100%;
       overscroll-behavior-y: contain;
       background:
-        radial-gradient(ellipse at 20% 0%, rgba(147,130,255,0.25), transparent 50%),
-        radial-gradient(ellipse at 80% 5%, rgba(59,180,246,0.20), transparent 45%),
-        radial-gradient(ellipse at 10% 95%, rgba(251,146,60,0.18), transparent 40%),
-        radial-gradient(ellipse at 85% 90%, rgba(236,72,153,0.16), transparent 40%),
-        radial-gradient(ellipse at 50% 50%, rgba(20,184,166,0.08), transparent 50%),
+        radial-gradient(ellipse at 20%  0%,  rgba(147,130,255,0.25), transparent 50%),
+        radial-gradient(ellipse at 80%  5%,  rgba(59,180,246,0.20),  transparent 45%),
+        radial-gradient(ellipse at 10%  95%, rgba(251,146,60,0.18),  transparent 40%),
+        radial-gradient(ellipse at 85%  90%, rgba(236,72,153,0.16),  transparent 40%),
         var(--bg);
     }
 
     .app, button, img, a { touch-action: manipulation; }
 
+    /* ── Card ─────────────────────────────────────────────────────── */
     .app {
       width: min(100%, 420px);
-      max-height: min(96dvh, 820px);
       background: var(--glass);
       backdrop-filter: blur(var(--blur)) saturate(1.6);
       -webkit-backdrop-filter: blur(var(--blur)) saturate(1.6);
-      border-radius: 36px;
-      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.6);
-      padding: 24px 20px 28px 20px;
+      border-radius: 34px;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.65);
+      padding: 20px 18px 22px;
       display: flex; flex-direction: column; align-items: center;
       position: relative; overflow: hidden;
       border: 1px solid var(--glass-border);
     }
-
     .app::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 40%);
-      border-radius: 36px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, transparent 38%);
+      border-radius: 34px;
     }
 
+    /* ── Hamburger button ─────────────────────────────────────────── */
+    .menu-btn {
+      position: absolute; top: 16px; right: 16px;
+      width: 34px; height: 34px; z-index: 10;
+      background: rgba(0,0,0,0.055);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 50%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3.5px; cursor: pointer; padding: 0;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: background 0.15s;
+    }
+    .menu-btn:active { background: rgba(0,0,0,0.10); }
+    .menu-btn span {
+      display: block; width: 13px; height: 1.5px;
+      background: var(--muted); border-radius: 2px;
+    }
+
+    /* ── Screen ───────────────────────────────────────────────────── */
     .screen {
       position: relative; z-index: 1;
       display: flex; align-items: center; justify-content: center;
       text-align: center; flex-direction: column; width: 100%;
     }
 
+    /* ── Brand ────────────────────────────────────────────────────── */
     .brand-logo {
-      width: min(22vw, 76px); height: auto;
-      margin: 0 0 8px 0; object-fit: contain;
-      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.10));
+      width: min(20vw, 68px); height: auto;
+      margin: 0 0 6px;
+      filter: drop-shadow(0 5px 14px rgba(0,0,0,0.10));
       animation: logoFloat 4s ease-in-out infinite;
     }
     @keyframes logoFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
+      0%,100% { transform: translateY(0);    }
+      50%      { transform: translateY(-4px); }
     }
 
     .app-title {
-      font-size: clamp(26px, 7vw, 38px);
+      font-size: clamp(24px, 6.5vw, 34px);
       font-weight: 800; line-height: 1.06;
-      letter-spacing: -0.5px; margin-bottom: 10px;
+      letter-spacing: -0.5px; margin-bottom: 3px;
     }
-
-    /* ===== iOS Segmented Control Toggle ===== */
-    .age-toggle-wrap {
-      width: 100%; max-width: 260px;
-      margin-bottom: 10px;
-    }
-    .age-toggle {
-      display: grid; grid-template-columns: 1fr 1fr;
-      background: rgba(0,0,0,0.06);
-      border-radius: 12px; padding: 3px;
-      position: relative;
-    }
-    .age-toggle-slider {
-      position: absolute; top: 3px; left: 3px;
-      width: calc(50% - 3px); height: calc(100% - 6px);
-      background: #fff;
-      border-radius: 9px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 0;
-    }
-    .age-toggle.elc .age-toggle-slider {
-      transform: translateX(100%);
-    }
-    .age-toggle label {
-      position: relative; z-index: 1;
-      padding: 8px 0; font-size: 13px; font-weight: 700;
-      text-align: center; cursor: pointer;
-      color: var(--muted);
-      transition: color 0.25s ease;
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
-    }
-    .age-toggle label .toggle-emoji { font-size: 15px; }
-    .age-toggle input { display: none; }
-    .age-toggle label.active { color: var(--text); }
-
-    .age-subtitle {
+    .app-subtitle {
       font-size: 12px; font-weight: 600;
       color: var(--muted); margin-bottom: 14px;
-      min-height: 16px;
-      transition: opacity 0.2s ease;
+      letter-spacing: 0.1px;
     }
 
-    /* ===== Game Tiles ===== */
+    /* ── Game grid ────────────────────────────────────────────────── */
     .game-grid {
       width: 100%; max-width: 310px;
       display: grid; grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 9px;
     }
 
     .game-tile {
       border: none; outline: none;
       border-radius: var(--radius);
-      padding: 18px 10px 16px 10px;
+      padding: 16px 10px 14px;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      gap: 5px; text-align: center;
-      cursor: pointer;
+      gap: 4px; text-align: center; cursor: pointer;
       position: relative; overflow: hidden;
-      transition: transform 0.12s ease, box-shadow 0.2s ease;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.12s ease, box-shadow 0.18s ease;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }
     .game-tile:active { transform: scale(0.95); }
-
     .game-tile::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       border-radius: var(--radius);
-      background: linear-gradient(160deg, rgba(255,255,255,0.45) 0%, transparent 50%);
+      background: linear-gradient(160deg, rgba(255,255,255,0.42) 0%, transparent 52%);
     }
     .game-tile::after {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       border-radius: var(--radius);
-      box-shadow: inset 0 1px 1px rgba(255,255,255,0.5), inset 0 -1px 1px rgba(0,0,0,0.03);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.52), inset 0 -1px 1px rgba(0,0,0,0.03);
     }
 
-    .tile-icon { font-size: 34px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08)); }
-    .tile-name { font-size: 13px; font-weight: 800; line-height: 1.15; position: relative; z-index: 1; }
-    .tile-desc { font-size: 10.5px; font-weight: 600; line-height: 1.2; opacity: 0.7; position: relative; z-index: 1; }
+    /* Full-width tile (Number Blaster) */
+    .game-tile.wide {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      padding: 13px 20px;
+      gap: 10px;
+      justify-content: center;
+    }
+    .game-tile.wide .tile-name { font-size: 14px; }
+    .game-tile.wide .tile-desc { display: none; }
 
-    /* 1st Grade tile colors */
+    .tile-icon { font-size: 32px; line-height: 1; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08)); position: relative; z-index: 1; }
+    .tile-name { font-size: 13px; font-weight: 800; line-height: 1.15; position: relative; z-index: 1; }
+    .tile-desc { font-size: 10.5px; font-weight: 600; line-height: 1.2; opacity: 0.72; position: relative; z-index: 1; }
+
+    /* Tile color themes */
     .tile-fast {
-      background: linear-gradient(145deg, rgba(110,231,183,0.85), rgba(16,185,129,0.9));
-      color: #064e3b; box-shadow: 0 6px 18px rgba(16,185,129,0.25);
-      border: 1px solid rgba(110,231,183,0.5);
+      background: linear-gradient(145deg, rgba(110,231,183,0.85), rgba(16,185,129,0.90));
+      color: #064e3b; box-shadow: 0 5px 16px rgba(16,185,129,0.24);
+      border: 1px solid rgba(110,231,183,0.48);
     }
     .tile-rainbow {
-      background: linear-gradient(145deg, rgba(253,230,138,0.85), rgba(245,158,11,0.9));
-      color: #78350f; box-shadow: 0 6px 18px rgba(245,158,11,0.25);
-      border: 1px solid rgba(253,230,138,0.5);
+      background: linear-gradient(145deg, rgba(253,230,138,0.85), rgba(245,158,11,0.90));
+      color: #78350f; box-shadow: 0 5px 16px rgba(245,158,11,0.24);
+      border: 1px solid rgba(253,230,138,0.48);
     }
     .tile-spelling {
-      background: linear-gradient(145deg, rgba(252,211,77,0.85), rgba(217,119,6,0.9));
-      color: #451a03; box-shadow: 0 6px 18px rgba(217,119,6,0.25);
-      border: 1px solid rgba(252,211,77,0.5);
+      background: linear-gradient(145deg, rgba(252,211,77,0.85), rgba(217,119,6,0.90));
+      color: #451a03; box-shadow: 0 5px 16px rgba(217,119,6,0.24);
+      border: 1px solid rgba(252,211,77,0.48);
     }
     .tile-brain {
-      background: linear-gradient(145deg, rgba(103,232,249,0.85), rgba(6,182,212,0.9));
-      color: #083344; box-shadow: 0 6px 18px rgba(6,182,212,0.25);
-      border: 1px solid rgba(103,232,249,0.5);
+      background: linear-gradient(145deg, rgba(103,232,249,0.85), rgba(6,182,212,0.90));
+      color: #083344; box-shadow: 0 5px 16px rgba(6,182,212,0.24);
+      border: 1px solid rgba(103,232,249,0.48);
     }
-
     .tile-math {
       background: linear-gradient(145deg, rgba(253,186,116,0.85), rgba(239,68,68,0.90));
-      color: #7c1d1d; box-shadow: 0 6px 18px rgba(239,68,68,0.25);
-      border: 1px solid rgba(253,186,116,0.5);
+      color: #7c1d1d; box-shadow: 0 5px 16px rgba(239,68,68,0.24);
+      border: 1px solid rgba(253,186,116,0.48);
     }
 
-    /* ELC tile colors — softer pastels */
-    .tile-letters {
-      background: linear-gradient(145deg, rgba(196,181,253,0.8), rgba(139,92,246,0.85));
-      color: #3b0764; box-shadow: 0 6px 18px rgba(139,92,246,0.22);
-      border: 1px solid rgba(196,181,253,0.5);
-    }
-    .tile-counting {
-      background: linear-gradient(145deg, rgba(110,231,183,0.8), rgba(52,211,153,0.85));
-      color: #064e3b; box-shadow: 0 6px 18px rgba(52,211,153,0.22);
-      border: 1px solid rgba(110,231,183,0.5);
-    }
-    .tile-shapes {
-      background: linear-gradient(145deg, rgba(253,186,116,0.8), rgba(249,115,22,0.85));
-      color: #7c2d12; box-shadow: 0 6px 18px rgba(249,115,22,0.22);
-      border: 1px solid rgba(253,186,116,0.5);
-    }
-    .tile-colors {
-      background: linear-gradient(145deg, rgba(252,165,165,0.8), rgba(239,68,68,0.82));
-      color: #7f1d1d; box-shadow: 0 6px 18px rgba(239,68,68,0.20);
-      border: 1px solid rgba(252,165,165,0.5);
-    }
-
-    /* Tile entrance animation */
+    /* Staggered entrance */
     .game-grid .game-tile {
-      opacity: 0; transform: translateY(12px) scale(0.96);
-      animation: tileIn 0.35s ease forwards;
+      opacity: 0; transform: translateY(10px) scale(0.97);
+      animation: tileIn 0.32s ease forwards;
     }
     .game-grid .game-tile:nth-child(1) { animation-delay: 0.04s; }
-    .game-grid .game-tile:nth-child(2) { animation-delay: 0.10s; }
-    .game-grid .game-tile:nth-child(3) { animation-delay: 0.16s; }
-    .game-grid .game-tile:nth-child(4) { animation-delay: 0.22s; }
-    @keyframes tileIn {
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    .game-grid .game-tile:nth-child(2) { animation-delay: 0.09s; }
+    .game-grid .game-tile:nth-child(3) { animation-delay: 0.14s; }
+    .game-grid .game-tile:nth-child(4) { animation-delay: 0.19s; }
+    .game-grid .game-tile:nth-child(5) { animation-delay: 0.24s; }
+    @keyframes tileIn { to { opacity: 1; transform: translateY(0) scale(1); } }
 
+    /* ── Footer ───────────────────────────────────────────────────── */
     .footer {
-      margin-top: 14px;
-      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      margin-top: 13px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .micro-note { font-size: 11px; line-height: 1.35; color: var(--muted); }
+    .micro-note { font-size: 11px; color: var(--muted); line-height: 1.3; }
     .credit-link { color: inherit; text-decoration: none; font-weight: 700; }
     .credit-link:hover { text-decoration: underline; }
 
-    @media (max-width: 390px) {
-      .brand-logo { width: min(26vw, 70px); }
-      .game-grid { max-width: 290px; gap: 9px; }
-      .game-tile { padding: 16px 8px 14px 8px; border-radius: 20px; }
-      .tile-icon { font-size: 30px; }
-      .tile-name { font-size: 12.5px; }
+    /* ── Menu dropdown ────────────────────────────────────────────── */
+    .menu-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9980;
     }
+    .menu-overlay.open { display: block; }
+    .menu-sheet {
+      position: fixed;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-radius: 16px;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.13), 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,255,255,0.75);
+      padding: 6px; min-width: 190px; overflow: hidden;
+      animation: sheetIn 0.18s ease;
+    }
+    @keyframes sheetIn {
+      from { opacity: 0; transform: scale(0.92) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);     }
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 11px 14px;
+      background: none; border: 0; border-radius: 10px;
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      color: var(--text); cursor: pointer; text-align: left;
+      transition: background 0.1s;
+    }
+    .menu-item:active { background: rgba(0,0,0,0.06); }
+    .menu-item-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+    .menu-divider {
+      height: 1px; background: rgba(0,0,0,0.07); margin: 4px 8px;
+    }
+    .menu-version {
+      font-size: 11px; color: var(--muted); font-weight: 600;
+      text-align: center; padding: 6px 14px 8px;
+    }
+
+    /* ── Reports modal ────────────────────────────────────────────── */
+    .reports-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9998;
+      background: rgba(0,0,0,0.40);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .reports-overlay.open { display: flex; }
+    .reports-modal {
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-radius: 24px; width: 100%; max-width: 380px;
+      max-height: 80dvh; display: flex; flex-direction: column;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+      border: 1px solid rgba(255,255,255,0.65); overflow: hidden;
+    }
+    .reports-header {
+      padding: 16px 20px 12px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .reports-header h2 { font-size: 17px; font-weight: 800; margin: 0; }
+    .reports-close {
+      background: rgba(0,0,0,0.06); border: none; border-radius: 50%;
+      width: 30px; height: 30px; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+    }
+    .reports-body {
+      flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: 12px 20px 16px; touch-action: pan-y;
+    }
+    .report-card {
+      background: rgba(0,0,0,0.03); border-radius: 14px;
+      padding: 12px 14px; margin-bottom: 8px;
+    }
+    .report-card .rc-top { display: flex; justify-content: space-between; align-items: center; }
+    .report-card .rc-game  { font-size: 14px; font-weight: 700; }
+    .report-card .rc-score { font-size: 14px; font-weight: 800; }
+    .report-card .rc-date  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .report-card .rc-bar   { height: 4px; background: rgba(0,0,0,0.06); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+    .report-card .rc-fill  { height: 100%; border-radius: 2px; }
+    .reports-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 30px 0; }
+    .reports-footer { padding: 10px 20px 14px; border-top: 1px solid rgba(0,0,0,0.06); text-align: center; }
+    .clear-reports-btn {
+      background: none; border: none; color: #ef4444;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      padding: 6px 12px; font-family: inherit;
+    }
+
+    /* ── Install banner ───────────────────────────────────────────── */
     .install-banner {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: rgba(0,0,0,0.85); color: #fff;
@@ -260,88 +309,48 @@
       display: none;
     }
     .install-banner b { color: #6ee7b7; }
-    .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
-    .reports-btn {
-      background: rgba(0,0,0,0.05); border: none; border-radius: 12px;
-      padding: 6px 14px; font-size: 12px; font-weight: 700; color: var(--muted);
-      cursor: pointer; margin-top: 4px;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    .install-banner .close-banner {
+      position: absolute; top: 8px; right: 12px;
+      color: #fff; background: none; border: none;
+      font-size: 20px; cursor: pointer; font-family: inherit;
     }
-    .reports-btn:active { transform: scale(0.95); }
-    .reports-overlay {
-      display: none; position: fixed; inset: 0; z-index: 9998;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      align-items: center; justify-content: center; padding: 20px;
+
+    /* ── Responsive ───────────────────────────────────────────────── */
+    @media (max-width: 390px) {
+      .brand-logo { width: min(24vw, 62px); }
+      .game-grid { max-width: 288px; gap: 8px; }
+      .game-tile { padding: 14px 8px 12px; border-radius: 20px; }
+      .tile-icon { font-size: 28px; }
+      .tile-name { font-size: 12px; }
     }
-    .reports-overlay.open { display: flex; }
-    .reports-modal {
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border-radius: 24px; width: 100%; max-width: 380px;
-      max-height: 80dvh; display: flex; flex-direction: column;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-      border: 1px solid rgba(255,255,255,0.6); overflow: hidden;
-    }
-    .reports-header { padding: 16px 20px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.06); }
-    .reports-header h2 { font-size: 18px; font-weight: 800; margin: 0; }
-    .reports-close { background: rgba(0,0,0,0.06); border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .reports-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 20px 16px; }
-    .reports-body.scrollable { touch-action: pan-y; }
-    .report-card { background: rgba(0,0,0,0.03); border-radius: 14px; padding: 12px 14px; margin-bottom: 8px; }
-    .report-card .rc-top { display: flex; justify-content: space-between; align-items: center; }
-    .report-card .rc-game { font-size: 14px; font-weight: 700; }
-    .report-card .rc-score { font-size: 14px; font-weight: 800; }
-    .report-card .rc-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .report-card .rc-bar { height: 4px; background: rgba(0,0,0,0.06); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-    .report-card .rc-fill { height: 100%; border-radius: 2px; }
-    .reports-empty { text-align: center; color: var(--muted); font-size: 14px; padding: 30px 0; }
-    .reports-footer { padding: 10px 20px 14px; border-top: 1px solid rgba(0,0,0,0.06); text-align: center; }
-    .clear-reports-btn { background: none; border: none; color: #ef4444; font-size: 13px; font-weight: 700; cursor: pointer; padding: 6px 12px; }
-  
-    /* Portrait-only lock */
+
+    /* ── Portrait-only ────────────────────────────────────────────── */
     .rotate-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: #172033;
-      color: #fff;
-      z-index: 99999;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 24px;
+      display: none; position: fixed; inset: 0;
+      background: #172033; color: #fff; z-index: 99999;
+      align-items: center; justify-content: center;
+      flex-direction: column; text-align: center; padding: 24px;
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    @media (orientation: landscape) {
-      .rotate-overlay { display: flex; }
-    }
+    @media (orientation: landscape) { .rotate-overlay { display: flex; } }
   </style>
   <link rel="manifest" href="manifest.webmanifest?v=20260428a" />
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
 </head>
 <body>
   <div class="app">
+
+    <!-- Discreet hamburger menu ─────────────────────────────────── -->
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true">
+      <span></span><span></span><span></span>
+    </button>
+
     <div class="screen">
       <img src="rocket_book_logo.png" alt="Rocket Book logo" class="brand-logo" />
       <div class="app-title">Rocket Book Games</div>
+      <div class="app-subtitle">2nd Grade &middot; Summer Reading</div>
 
-      <div class="age-toggle-wrap">
-        <div class="age-toggle" id="ageToggle">
-          <label id="labelGrade" class="active" onclick="switchMode('grade')">
-            <span class="toggle-emoji">&#x1F4DA;</span> 2nd Grade
-          </label>
-          <label id="labelELC" onclick="switchMode('elc')">
-            <span class="toggle-emoji">&#x1F423;</span> TK
-          </label>
-          <div class="age-toggle-slider"></div>
-        </div>
-      </div>
-
-      <div class="age-subtitle" id="ageSubtitle">Summer Reading</div>
-
-      <div class="game-grid" id="gradeGames">
+      <div class="game-grid">
         <button class="game-tile tile-fast" onclick="window.location.href='fast.html'" type="button">
           <span class="tile-icon">&#x1F3CE;&#xFE0F;</span>
           <span class="tile-name">Fast &amp; Fluent</span>
@@ -362,96 +371,81 @@
           <span class="tile-name">Brain Games</span>
           <span class="tile-desc">Vocabulary &amp; more</span>
         </button>
-        <button class="game-tile tile-math" onclick="window.location.href='math.html'" type="button">
+        <!-- Full-width feature tile -->
+        <button class="game-tile tile-math wide" onclick="window.location.href='math.html'" type="button">
           <span class="tile-icon">&#x1F4A5;</span>
-          <span class="tile-name">Number Blaster</span>
-          <span class="tile-desc">Blast math facts!</span>
-        </button>
-      </div>
-
-      <div class="game-grid" id="elcGames" style="display:none;">
-        <button class="game-tile tile-letters" onclick="window.location.href='letter_sounds.html'" type="button">
-          <span class="tile-icon">&#x1F524;</span>
-          <span class="tile-name">Letter Sounds</span>
-          <span class="tile-desc">Tap what you hear</span>
-        </button>
-        <button class="game-tile tile-counting" onclick="window.location.href='counting.html'" type="button">
-          <span class="tile-icon">&#x1F41B;</span>
-          <span class="tile-name">Counting Critters</span>
-          <span class="tile-desc">Count &amp; tap</span>
-        </button>
-        <button class="game-tile tile-shapes" onclick="window.location.href='shapes.html'" type="button">
-          <span class="tile-icon">&#x1F4A0;</span>
-          <span class="tile-name">Shape Builder</span>
-          <span class="tile-desc">Match the shapes</span>
-        </button>
-        <button class="game-tile tile-colors" onclick="window.location.href='colors.html'" type="button">
-          <span class="tile-icon">&#x1F3A8;</span>
-          <span class="tile-name">Color Splash</span>
-          <span class="tile-desc">Find the colors</span>
+          <span class="tile-name">Number Blaster &mdash; Blast math facts!</span>
         </button>
       </div>
 
       <div class="footer">
-        <button class="reports-btn" onclick="openReports()">&#x1F4CA; Reports</button>
         <div class="micro-note">
-          Designed by
-          <a class="credit-link" href="https://www.instagram.com/silvateaches/" target="_blank" rel="noopener noreferrer">CreativeSilva</a>
+          Designed by <a class="credit-link" href="https://www.instagram.com/silvateaches/" target="_blank" rel="noopener noreferrer">CreativeSilva</a>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Menu dropdown (outside .app so it's not clipped) ───────────── -->
+  <div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
+    <div class="menu-sheet" id="menuSheet">
+      <button class="menu-item" type="button" onclick="closeMenu();openReports()">
+        <span class="menu-item-icon">&#x1F4CA;</span> Reports
+      </button>
+      <div class="menu-divider"></div>
+      <div class="menu-version">Rocket Book Games</div>
+    </div>
+  </div>
+
+  <!-- Reports modal ─────────────────────────────────────────────── -->
+  <div class="reports-overlay" id="reportsOverlay" onclick="if(event.target===this)closeReports()">
+    <div class="reports-modal">
+      <div class="reports-header">
+        <h2>&#x1F4CA; Reports</h2>
+        <button class="reports-close" type="button" onclick="closeReports()">&times;</button>
+      </div>
+      <div class="reports-body" id="reportsBody"></div>
+      <div class="reports-footer" id="reportsFooter" style="display:none">
+        <button class="clear-reports-btn" type="button" onclick="clearReports()">Clear All Reports</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Install banner ────────────────────────────────────────────── -->
+  <div class="install-banner" id="installBanner">
+    <button class="close-banner" type="button" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
+    Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
+  </div>
+
+  <!-- Rotate overlay ────────────────────────────────────────────── -->
+  <div class="rotate-overlay" aria-hidden="true">
+    <div style="font-size:64px">📱</div>
+    <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
+    <div style="font-size:15px;margin-top:8px;opacity:0.7">This game works best in portrait mode</div>
+  </div>
+
   <script>
     try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
-    let currentMode = localStorage.getItem("rocketBookMode") || "grade";
 
-    function switchMode(mode) {
-      currentMode = mode;
-      localStorage.setItem("rocketBookMode", mode);
+    // ── Hamburger menu ──────────────────────────────────────────────
+    const menuBtn     = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const menuSheet   = document.getElementById('menuSheet');
 
-      const toggle = document.getElementById("ageToggle");
-      const gradeGames = document.getElementById("gradeGames");
-      const elcGames = document.getElementById("elcGames");
-      const subtitle = document.getElementById("ageSubtitle");
-      const labelGrade = document.getElementById("labelGrade");
-      const labelELC = document.getElementById("labelELC");
+    menuBtn.addEventListener('click', function() {
+      const rect = menuBtn.getBoundingClientRect();
+      menuSheet.style.top   = (rect.bottom + 6) + 'px';
+      menuSheet.style.right = (window.innerWidth - rect.right) + 'px';
+      menuOverlay.classList.add('open');
+    });
 
-      if (mode === "elc") {
-        toggle.classList.add("elc");
-        labelGrade.classList.remove("active");
-        labelELC.classList.add("active");
-        gradeGames.style.display = "none";
-        elcGames.style.display = "";
-        subtitle.textContent = "Transitional Kindergarten";
-        elcGames.querySelectorAll(".game-tile").forEach(function(t, i) {
-          t.style.animation = "none";
-          t.offsetHeight;
-          t.style.animation = "tileIn 0.35s ease forwards " + (0.04 + i * 0.06) + "s";
-        });
-      } else {
-        toggle.classList.remove("elc");
-        labelELC.classList.remove("active");
-        labelGrade.classList.add("active");
-        elcGames.style.display = "none";
-        gradeGames.style.display = "";
-        subtitle.textContent = "Summer Reading";
-        gradeGames.querySelectorAll(".game-tile").forEach(function(t, i) {
-          t.style.animation = "none";
-          t.offsetHeight;
-          t.style.animation = "tileIn 0.35s ease forwards " + (0.04 + i * 0.06) + "s";
-        });
-      }
-    }
+    function closeMenu() { menuOverlay.classList.remove('open'); }
 
-    if (currentMode === "elc") {
-      switchMode("elc");
-    }
-
+    // ── Reports ─────────────────────────────────────────────────────
     function openReports() {
       var reports = JSON.parse(localStorage.getItem('rocketBookReports') || '[]');
-      var body = document.getElementById('reportsBody');
-      var footer = document.getElementById('reportsFooter');
+      var body    = document.getElementById('reportsBody');
+      var footer  = document.getElementById('reportsFooter');
       if (!reports.length) {
         body.innerHTML = '<div class="reports-empty">No reports yet!<br>Play a game to see results here.</div>';
         footer.style.display = 'none';
@@ -460,57 +454,39 @@
         var html = '';
         var sorted = reports.slice().reverse();
         for (var i = 0; i < sorted.length; i++) {
-          var rep = sorted[i];
-          var pct = rep.total > 0 ? Math.round((rep.correct / rep.total) * 100) : 0;
-          var color = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
-          var stars = pct === 100 ? ' ⭐' : '';
-          var d = new Date(rep.date);
-          var dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-          var timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-          html += '<div class="report-card"><div class="rc-top"><span class="rc-game">' + rep.game + '</span><span class="rc-score" style="color:' + color + '">' + rep.correct + '/' + rep.total + stars + '</span></div><div class="rc-date">' + dateStr + ' at ' + timeStr + '</div><div class="rc-bar"><div class="rc-fill" style="width:' + pct + '%;background:' + color + '"></div></div></div>';
+          var rep  = sorted[i];
+          var pct  = rep.total > 0 ? Math.round((rep.correct / rep.total) * 100) : 0;
+          var clr  = pct >= 80 ? '#22c55e' : pct >= 50 ? '#f59e0b' : '#ef4444';
+          var star = pct === 100 ? ' ⭐' : '';
+          var d    = new Date(rep.date);
+          var ds   = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+          var ts   = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+          html += '<div class="report-card">'
+                + '<div class="rc-top"><span class="rc-game">' + rep.game + '</span>'
+                + '<span class="rc-score" style="color:' + clr + '">' + rep.correct + '/' + rep.total + star + '</span></div>'
+                + '<div class="rc-date">' + ds + ' at ' + ts + '</div>'
+                + '<div class="rc-bar"><div class="rc-fill" style="width:' + pct + '%;background:' + clr + '"></div></div>'
+                + '</div>';
         }
         body.innerHTML = html;
       }
       document.getElementById('reportsOverlay').classList.add('open');
     }
     function closeReports() { document.getElementById('reportsOverlay').classList.remove('open'); }
-    function clearReports() { localStorage.removeItem('rocketBookReports'); openReports(); }
+    function clearReports()  { localStorage.removeItem('rocketBookReports'); openReports(); }
 
-    // Prevent accidental scroll/zoom for young children (mobile only)
+    // ── Touch guards ────────────────────────────────────────────────
     document.addEventListener('touchmove', function(e) {
-      if (!e.target.closest('.scrollable')) e.preventDefault();
+      if (!e.target.closest('[touch-action="pan-y"]') && !e.target.closest('.reports-body')) e.preventDefault();
     }, { passive: false });
-    document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+    document.addEventListener('gesturestart',  function(e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
-    // Prompt iOS Safari users to add to home screen
+
+    // ── Install prompt ──────────────────────────────────────────────
     if (/iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !localStorage.getItem('bannerDismissed')) {
       setTimeout(function() { document.getElementById('installBanner').style.display = 'block'; }, 2000);
     }
   </script>
-
-  <div class="reports-overlay" id="reportsOverlay" onclick="if(event.target===this)closeReports()">
-    <div class="reports-modal">
-      <div class="reports-header">
-        <h2>&#x1F4CA; Reports</h2>
-        <button class="reports-close" onclick="closeReports()">&times;</button>
-      </div>
-      <div class="reports-body scrollable" id="reportsBody"></div>
-      <div class="reports-footer" id="reportsFooter" style="display:none;">
-        <button class="clear-reports-btn" onclick="clearReports()">Clear All Reports</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="install-banner" id="installBanner">
-    <button class="close-banner" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
-    Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
-  </div>
   <script src="app-shell.js?v=20260428a" defer></script>
-
-  <div class="rotate-overlay" aria-hidden="true">
-    <div style="font-size:64px">📱</div>
-    <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
-    <div style="font-size:15px;margin-top:8px;opacity:0.7">This game works best in portrait mode</div>
-  </div>
 </body>
 </html>
