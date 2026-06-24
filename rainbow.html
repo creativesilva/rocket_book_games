@@ -181,9 +181,27 @@
     }
 
     .topbar {
-      min-height: 42px;
+      min-height: 44px;
       position: relative;
       z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .tb-back {
+      background: none; border: 0; border-radius: 10px;
+      font-size: 15px; font-weight: 800; color: var(--muted);
+      padding: 6px 8px 6px 2px; cursor: pointer;
+      display: none; font-family: inherit;
+      transition: opacity 0.15s;
+    }
+    .tb-back:active { opacity: 0.55; }
+    .tb-badge {
+      font-size: 13px; font-weight: 900; color: var(--muted);
+      background: rgba(255,255,255,0.55); border-radius: 20px;
+      padding: 5px 12px; display: none;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     }
 
     .brand-logo {
@@ -648,17 +666,6 @@
     .install-banner b { color: #6ee7b7; }
     .install-banner .close-banner { position: absolute; top: 8px; right: 12px; color: #fff; background: none; border: none; font-size: 20px; cursor: pointer; }
 
-    /* Soft white fade at the bottom of the card */
-    .bottom-fade {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 170px;
-      background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.92) 100%);
-      pointer-events: none;
-      z-index: 0;
-    }
 
     /* Portrait-only lock */
     .rotate-overlay {
@@ -684,7 +691,10 @@
 </head>
 <body>
   <div class="app" id="app">
-    <div class="topbar"></div>
+    <div class="topbar" id="topbar">
+      <button class="tb-back" id="tbBackBtn" type="button">← Home</button>
+      <div class="tb-badge" id="tbBadge"></div>
+    </div>
 
     <div class="screen active" id="rainbowHomeScreen">
       <img src="rainbow_reader_logo.png" alt="Rainbow Reader logo" class="brand-logo">
@@ -779,7 +789,6 @@
       <div class="compact-buttons" id="missedReportButtons"></div>
     </div>
 
-    <div class="bottom-fade" aria-hidden="true"></div>
   </div>
 
   <audio id="celebrationSound" preload="auto">
@@ -1291,7 +1300,23 @@
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
+    const tbBackBtn = document.getElementById("tbBackBtn");
+    const tbBadge   = document.getElementById("tbBadge");
+
+    tbBackBtn.addEventListener("click", () => {
+      stopCelebrationSound();
+      stopRainbowMusic();
+      resetRainbowState();
+      clearAppThemes();
+      showScreen("home");
+    });
+
     function updateHeader() {
+      const onHome = currentMode === "home";
+      tbBackBtn.style.display = onHome ? "none" : "block";
+      tbBadge.style.display   = (!onHome && rainbowCurrentColor) ? "block" : "none";
+      tbBadge.textContent     = rainbowCurrentColor ? `🌈 ${rainbowCurrentColor}` : "";
+
       if (currentMode === "home") {
         clearAppThemes();
         stopRainbowMusic();
