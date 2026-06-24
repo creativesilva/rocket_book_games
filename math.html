@@ -94,7 +94,7 @@
     }
     .hearts-display {
       display: flex; gap: 3px; align-items: center; justify-content: flex-end;
-      min-width: 80px;
+      min-width: 80px; padding-right: 36px;
       opacity: 0; pointer-events: none;
       transition: opacity 0.18s ease;
     }
@@ -352,12 +352,52 @@
       flex-direction: column; text-align: center; padding: 24px;
     }
     @media (orientation: landscape) { .rotate-overlay { display: flex; } }
+
+    /* ── Hamburger menu ─────────────────────────────────────────────── */
+    .menu-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 20;
+      width: 30px; height: 30px;
+      background: rgba(0,0,0,0.055); border: 1px solid rgba(255,255,255,0.55);
+      border-radius: 50%; padding: 0; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: background 0.15s;
+    }
+    .menu-btn:active { background: rgba(0,0,0,0.10); }
+    .menu-btn span { display: block; width: 12px; height: 1.5px; background: var(--muted); border-radius: 2px; }
+    .menu-overlay { display: none; position: fixed; inset: 0; z-index: 9980; }
+    .menu-overlay.open { display: block; }
+    .menu-sheet {
+      position: fixed;
+      background: rgba(255,255,255,0.96);
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border-radius: 16px;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.13);
+      border: 1px solid rgba(255,255,255,0.75);
+      padding: 6px; min-width: 190px; overflow: hidden;
+      animation: menuIn 0.18s ease;
+    }
+    @keyframes menuIn {
+      from { opacity: 0; transform: scale(0.92) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 11px 14px;
+      background: none; border: 0; border-radius: 10px;
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      color: var(--text); cursor: pointer; text-align: left; transition: background 0.1s;
+    }
+    .menu-item:active { background: rgba(0,0,0,0.06); }
+    .menu-item-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+    .menu-divider { height: 1px; background: rgba(0,0,0,0.07); margin: 4px 8px; }
   </style>
   <link rel="manifest" href="manifest.webmanifest?v=20260428a" />
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
 </head>
 <body>
   <div class="app" id="app">
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
 
     <!-- ── Topbar ──────────────────────────────────────────────────── -->
     <div class="topbar">
@@ -410,6 +450,17 @@
     </div>
 
   </div><!-- /.app -->
+
+  <!-- Menu dropdown ──────────────────────────────────────────────── -->
+  <div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
+    <div class="menu-sheet" id="menuSheet">
+      <button class="menu-item" type="button" onclick="closeMenu();window.location.href='index.html'">
+        <span class="menu-item-icon">&#x1F3E0;</span> Home
+      </button>
+      <div class="menu-divider"></div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;text-align:center;padding:6px 14px 8px;">Rocket Book Games</div>
+    </div>
+  </div>
 
   <!-- Both outside .app so position:fixed works correctly ─────────── -->
   <div class="rotate-overlay" aria-hidden="true">
@@ -781,6 +832,20 @@
     if (/iPhone|iPad/.test(navigator.userAgent)&&!window.navigator.standalone&&!localStorage.getItem('bannerDismissed')) {
       setTimeout(()=>{ const b=document.getElementById('installBanner'); if(b) b.style.display='block'; },2500);
     }
+
+    // ── Hamburger menu ──────────────────────────────────────────────
+    (function() {
+      var btn = document.getElementById('menuBtn');
+      var ov  = document.getElementById('menuOverlay');
+      var sh  = document.getElementById('menuSheet');
+      btn.addEventListener('click', function() {
+        var r = btn.getBoundingClientRect();
+        sh.style.top   = (r.bottom + 6) + 'px';
+        sh.style.right = (window.innerWidth - r.right) + 'px';
+        ov.classList.add('open');
+      });
+      window.closeMenu = function() { ov.classList.remove('open'); };
+    })();
   </script>
   <script src="app-shell.js?v=20260428a" defer></script>
 </body>
