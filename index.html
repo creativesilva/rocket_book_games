@@ -72,8 +72,8 @@
 
     /* ── Hamburger button ─────────────────────────────────────────── */
     .menu-btn {
-      position: absolute; top: 16px; right: 16px;
-      width: 34px; height: 34px; z-index: 10;
+      position: fixed; top: calc(max(14px, env(safe-area-inset-top)) + 16px); right: calc(max(14px, env(safe-area-inset-right)) + 16px);
+      width: 34px; height: 34px; z-index: 9970;
       background: rgba(0,0,0,0.055);
       border: 1px solid rgba(255,255,255,0.55);
       border-radius: 50%;
@@ -338,12 +338,10 @@
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
 </head>
 <body>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true">
+    <span></span><span></span><span></span>
+  </button>
   <div class="app">
-
-    <!-- Discreet hamburger menu ─────────────────────────────────── -->
-    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-haspopup="true">
-      <span></span><span></span><span></span>
-    </button>
 
     <div class="screen">
       <img src="rocket_book_logo.png" alt="Rocket Book logo" class="brand-logo" />

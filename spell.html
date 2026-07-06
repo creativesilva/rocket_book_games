@@ -555,7 +555,7 @@
 
     /* ── Hamburger menu ─────────────────────────────────────────────── */
     .menu-btn {
-      position: absolute; top: 14px; right: 14px; z-index: 20;
+      position: fixed; top: calc(max(14px, env(safe-area-inset-top)) + 14px); right: calc(max(14px, env(safe-area-inset-right)) + 14px); z-index: 9970;
       width: 30px; height: 30px;
       background: rgba(0,0,0,0.055); border: 1px solid rgba(255,255,255,0.55);
       border-radius: 50%; padding: 0; cursor: pointer;
@@ -596,8 +596,8 @@
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
 </head>
 <body>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
   <div class="app" id="app">
-    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
     <div class="topbar">
       <div class="progress-text" id="progressText"></div>
     </div>
