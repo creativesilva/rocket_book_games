@@ -71,7 +71,7 @@
       min-height: 0; max-height: min(96dvh, 800px); height: min(96dvh, 800px);
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-radius: 32px;
+      border-radius: 36px;
       box-shadow: var(--shadow);
       padding: 20px 20px 24px 20px;
       display: flex; flex-direction: column; justify-content: flex-start;
@@ -85,6 +85,17 @@
       background:
         radial-gradient(circle at 30% 25%, rgba(20,184,166,0.06), transparent 40%),
         radial-gradient(circle at 70% 75%, rgba(59,130,246,0.05), transparent 40%);
+    }
+
+    .app::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.045));
+      border-radius: 0 0 36px 36px;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .screen {

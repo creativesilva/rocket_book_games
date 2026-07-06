@@ -55,7 +55,7 @@
       min-height: 100vh;
       min-height: 100dvh;
       display: flex;
-      align-items: stretch;
+      align-items: flex-start;
       justify-content: center;
       padding-top: max(14px, env(safe-area-inset-top));
       padding-right: max(14px, env(safe-area-inset-right));
@@ -84,7 +84,7 @@
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border-radius: 32px;
+      border-radius: 36px;
       box-shadow: var(--shadow);
       padding: 20px 20px 24px 20px;
       display: flex;
@@ -110,6 +110,17 @@
           rgba(59,130,246,0.06) 80%,
           rgba(139,92,246,0.06) 100%);
       transition: opacity 0.35s ease;
+    }
+
+    .app::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 56px;
+      background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.045));
+      border-radius: 0 0 36px 36px;
+      pointer-events: none;
+      z-index: 0;
     }
 
     .app.normal-play {
