@@ -741,7 +741,6 @@
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a">
 </head>
 <body>
-  <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
   <div class="app" id="app">
     <div class="topbar" id="topbar">
       <button class="tb-back" id="tbBackBtn" type="button">← Home</button>
@@ -1695,7 +1694,7 @@
     }
 
     // ── Hamburger menu ──────────────────────────────────────────────
-    (function() {
+    document.addEventListener('DOMContentLoaded', function() {
       var btn = document.getElementById('menuBtn');
       var ov  = document.getElementById('menuOverlay');
       var sh  = document.getElementById('menuSheet');
@@ -1712,7 +1711,7 @@
         ov.classList.add('open');
       });
       window.closeMenu = function() { ov.classList.remove('open'); };
-    })();
+    });
   </script>
 
   <!-- Menu dropdown ──────────────────────────────────────────────── -->
@@ -1753,5 +1752,6 @@
     Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
   </div>
   <script src="app-shell.js?v=20260428a" defer></script>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
 </body>
 </html>
