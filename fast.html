@@ -509,37 +509,6 @@
         width: 168px;
       }
     }
-    /* Summer list selector */
-    .list-selector {
-      width: 100%;
-      max-width: 340px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 0;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 4px 16px rgba(148,163,184,0.22);
-      margin: 10px 0 6px 0;
-    }
-    .list-btn {
-      border: 0;
-      min-width: 0;
-      border-radius: 0;
-      padding: 13px 8px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      background: linear-gradient(180deg, #dbe2ea 0%, #c4ccd8 100%);
-      color: #374151;
-      transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
-      border-right: 1px solid rgba(255,255,255,0.40);
-    }
-    .list-btn:last-child { border-right: 0; }
-    .list-btn:active { transform: scale(0.97); }
-    .list-btn.active {
-      background: linear-gradient(180deg, #79cc69 0%, #4aa84f 100%);
-      color: #ffffff;
-    }
 
     .install-banner {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -659,13 +628,7 @@
       <div class="title">Fast &amp; Fluent</div>
       <div class="subtitle" id="fastHomeTitle">Variant Vowel /o/</div>
       <div class="small-note">
-        Pick a list, then tap Easy for emoji hints in order, or Hard to shuffle with no hints.
-      </div>
-
-      <div class="list-selector" id="listSelector">
-        <button class="list-btn active" id="listBtn0" type="button">List 1</button>
-        <button class="list-btn" id="listBtn1" type="button">List 2</button>
-        <button class="list-btn" id="listBtn2" type="button">List 3</button>
+        Tap Easy for emoji hints in order, or Hard to shuffle with no hints.
       </div>
 
       <div class="segmented-actions">
@@ -722,60 +685,30 @@
 
   <script>
     try { screen.orientation.lock('portrait').catch(() => {}); } catch(e) {}
-    // ── Summer Reading Lists ────────────────────────────────────────────────
-    // Three scaffolded summer lists for incoming 2nd grade.
-    // audio: will point to m4a files once recorded; null = audio button hidden.
-    const fastLists = [
-      {
-        title: "Summer List 1",
-        subtitle: "Long Vowel Teams — oa, ea, igh",
-        sentences: [
-          { emoji: "🛶💧",  text: "Watch the leaf <u>float</u> on the pond.",     audio: null },
-          { emoji: "🏖️🐚", text: "We found pretty shells at the <u>beach</u>.",  audio: null },
-          { emoji: "⭐💡",  text: "The stars are so <u>bright</u> at night.",      audio: null },
-          { emoji: "💭🌙",  text: "She had a funny <u>dream</u> last night.",      audio: null },
-          { emoji: "🍞🧈",  text: "Mom made warm <u>toast</u> for breakfast.",     audio: null },
-          { emoji: "🍎📚",  text: "She will <u>teach</u> us a new song.",          audio: null },
-          { emoji: "🌫️☕", text: "Hot <u>steam</u> rose from the bowl.",           audio: null },
-          { emoji: "🏈🏆",  text: "Our <u>coach</u> cheered for the whole team.",  audio: null },
-          { emoji: "⚔️🛡️", text: "The brave <u>knight</u> wore shiny armor.",     audio: null },
-          { emoji: "😩🐶",  text: "The sick puppy let out a <u>groan</u>.",        audio: null },
-        ]
-      },
-      {
-        title: "Summer List 2",
-        subtitle: "Word Builders — -ful, -less, -tion",
-        sentences: [
-          { emoji: "🚗✋",  text: "Be <u>careful</u> when you cross the street.",       audio: null },
-          { emoji: "🐶😄",  text: "Our dog has such a <u>cheerful</u> bark.",            audio: null },
-          { emoji: "😢🌧️", text: "She felt <u>hopeless</u> when it rained all day.",    audio: null },
-          { emoji: "🚆🗺️", text: "We waited at the train <u>station</u>.",              audio: null },
-          { emoji: "🎬💥",  text: "The movie was packed with <u>action</u>!",            audio: null },
-          { emoji: "🤷📦",  text: "There is <u>nothing</u> inside the box.",             audio: null },
-          { emoji: "☀️🌿", text: "Let's go play <u>outside</u> after lunch.",            audio: null },
-          { emoji: "🗺️🏝️",text: "The treasure is <u>somewhere</u> on the island.",     audio: null },
-          { emoji: "🙏❤️", text: "I am so <u>thankful</u> for my family.",               audio: null },
-          { emoji: "🎉🙌",  text: "<u>Everyone</u> at the party had so much fun.",       audio: null },
-        ]
-      },
-      {
-        title: "Summer List 3",
-        subtitle: "Big Words — 3-syllable vocabulary",
-        sentences: [
-          { emoji: "🧠💭",  text: "I <u>remember</u> your birthday every year.",          audio: null },
-          { emoji: "⭐✨",   text: "It is <u>important</u> to be kind to others.",         audio: null },
-          { emoji: "🗺️🏞️",text: "Every summer day is a new <u>adventure</u>.",           audio: null },
-          { emoji: "🔍🌱",  text: "We will <u>discover</u> something new today.",          audio: null },
-          { emoji: "🌈🦋",  text: "What a <u>wonderful</u> day we had together!",          audio: null },
-          { emoji: "🤝👯",  text: "We baked cookies <u>together</u> after school.",        audio: null },
-          { emoji: "🌅📅",  text: "I cannot wait until <u>tomorrow</u>!",                  audio: null },
-          { emoji: "📖🤔",  text: "Did you <u>understand</u> the end of the story?",      audio: null },
-          { emoji: "🌸💐",  text: "The garden looked so <u>beautiful</u> in spring.",      audio: null },
-          { emoji: "🎂🎉",  text: "Let's <u>celebrate</u> your big win tonight!",          audio: null },
-        ]
-      }
-    ];
-    let fastActiveListIndex = 0;
+    // ── Week list ─────────────────────────────────────────────────────────────
+    // Replace this object each week with the new reading list.
+    // audio: point to m4a files once recorded; null = audio button hidden.
+    const fastList = {
+      title: "Unit 1 Week 2",
+      subtitle: "Unit 1 Week 2 — Making Friends",
+      sentences: [
+        { emoji: "👫🚶",   text: "We <u>went</u> with our friends.",            audio: null },
+        { emoji: "🗣️👩",   text: "<u>Tell</u> your mom the truth.",              audio: null },
+        { emoji: "🐶🏠",   text: "Our family has a <u>pet</u>.",                 audio: null },
+        { emoji: "👩‍💼💼",  text: "His mom has a <u>job</u>.",                    audio: null },
+        { emoji: "🌫️😬",   text: "I don't like <u>fog</u>.",                    audio: null },
+        { emoji: "✋🚫",    text: "Do <u>not</u> be mean to your friends.",       audio: null },
+        { emoji: "⛵🌊",    text: "She rode on a <u>tug</u> boat.",               audio: null },
+        { emoji: "🛖❓",    text: "Do you live in a <u>hut</u>?",                audio: null },
+        { emoji: "🛁🤍",    text: "My <u>tub</u> is white.",                     audio: null },
+        { emoji: "🔧🚲",   text: "I helped him <u>fix</u> his bike.",            audio: null },
+        { emoji: "🌭🍞",   text: "Hand me a hot dog <u>bun</u>.",                audio: null },
+        { emoji: "🏡✨",   text: "She <u>has</u> a nice home.",                  audio: null },
+        { emoji: "🚗👨‍👩‍👧", text: "His family has <u>one</u> car.",              audio: null },
+        { emoji: "🏘️🤷",   text: "Do you live here <u>or</u> there?",           audio: null },
+        { emoji: "👀👫",   text: "I want to <u>see</u> my friends.",             audio: null },
+      ]
+    };
 
     // ── Practice round tracking ─────────────────────────────────────────────
     const PRACTICE_KEY = 'ff_practice_v1';
@@ -831,7 +764,7 @@
       finish: document.getElementById("finishScreen")
     };
 
-    fastHomeTitle.textContent = fastLists[fastActiveListIndex].subtitle;
+    fastHomeTitle.textContent = fastList.subtitle;
 
     // Sentence audio player
     const sentenceAudio = new Audio();
@@ -1091,7 +1024,7 @@
 
     function buildFastSequentialDeck() {
       // Easy mode: in order, emoji hints + audio
-      const sentences = fastLists[fastActiveListIndex].sentences;
+      const sentences = fastList.sentences;
       fastDeck = sentences.map(d => ({
         html: `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`,
         audio: d.audio || null
@@ -1102,7 +1035,7 @@
 
     function buildFastShuffledDeck() {
       // Hard mode: shuffled, NO emoji hints, NO audio
-      const sentences = fastLists[fastActiveListIndex].sentences;
+      const sentences = fastList.sentences;
       fastDeck = shuffleArray(sentences.map(d => ({
         html: `<span class="sentence-text">${d.text}</span>`,
         audio: null
@@ -1190,7 +1123,7 @@
           finishTime.textContent = `Final Time: ${formatTime(fastElapsedMs)}`;
           finishTime.style.display = "block";
           finishText.textContent = "Write down your time, then read again and try to beat it.";
-          try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); var _s=fastLists[fastActiveListIndex].sentences; r.push({game:'Fast & Fluent',list:fastLists[fastActiveListIndex].title,date:new Date().toISOString(),correct:_s.length,total:_s.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
+          try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); var _s=fastList.sentences; r.push({game:'Fast & Fluent',list:fastList.title,date:new Date().toISOString(),correct:_s.length,total:_s.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
         }
         if (window.RocketBookApp && window.RocketBookApp.showCelebrationImage) {
           window.RocketBookApp.showCelebrationImage(celebrationImg, getRandomCelebrationGif(), "rocket_book_logo.png");
@@ -1252,17 +1185,6 @@
     document.getElementById("fastResetBtn").addEventListener("click", resetFastGame);
     document.getElementById("fastGameBackBtn").addEventListener("click", backToFastHome);
     fastAudioBtn.addEventListener("click", playCurrentSentenceAudio);
-
-    // List selector — highlight active button and update subtitle
-    document.querySelectorAll('.list-btn').forEach(function(btn, i) {
-      btn.addEventListener('click', function() {
-        fastActiveListIndex = i;
-        document.querySelectorAll('.list-btn').forEach(function(b, j) {
-          b.classList.toggle('active', j === i);
-        });
-        fastHomeTitle.textContent = fastLists[i].subtitle;
-      });
-    });
 
     preloadGiphyCache();
     updateHeader();
