@@ -628,19 +628,17 @@
       <div class="title">Fast &amp; Fluent</div>
       <div class="subtitle" id="fastHomeTitle">Variant Vowel /o/</div>
       <div class="small-note">
-        Tap Easy for emoji hints in order, or Hard to shuffle with no hints.
+        Hard shuffles all sentences with no hints. Practice is in order, untimed. Easy is in order and timed.
       </div>
 
-      <div class="segmented-actions">
+      <div class="segmented-actions" style="grid-template-columns:1fr 1fr 1fr">
         <button class="shuffle-hard-btn segment-btn segment-left" id="fastShuffleBtn" type="button">Hard</button>
+        <button class="practice-btn segment-btn segment-left" id="fastPracticeBtn" type="button">Practice</button>
         <button class="primary-btn segment-btn" id="fastStartBtn" type="button">Easy</button>
       </div>
 
-      <div class="single-home-wrap" id="practiceWrap">
-        <div class="segmented-actions" id="practicePill">
-          <button class="neutral-btn segment-btn segment-left" id="fastBackBtn" type="button">Home</button>
-          <button class="practice-btn segment-btn" id="fastPracticeBtn" type="button">Practice ✨</button>
-        </div>
+      <div class="single-home-wrap">
+        <button class="neutral-btn single-home-btn" id="fastBackBtn" type="button">Home</button>
       </div>
     </div>
 
@@ -710,31 +708,7 @@
       ]
     };
 
-    // ── Practice round tracking ─────────────────────────────────────────────
-    const PRACTICE_KEY = 'ff_practice_v1';
-    const MAX_PRACTICE = 2;
     let fastPracticeMode = false;
-
-    function getPracticeUsed() {
-      return parseInt(localStorage.getItem(PRACTICE_KEY) || '0', 10);
-    }
-    function markPracticeUsed() {
-      localStorage.setItem(PRACTICE_KEY, String(Math.min(getPracticeUsed() + 1, MAX_PRACTICE)));
-    }
-    function updatePracticeUI() {
-      const pill = document.getElementById('practicePill');
-      const practiceBtn = document.getElementById('fastPracticeBtn');
-      const homeBtn = document.getElementById('fastBackBtn');
-      if (getPracticeUsed() >= MAX_PRACTICE) {
-        pill.style.gridTemplateColumns = '1fr';
-        practiceBtn.style.display = 'none';
-        homeBtn.style.borderRight = '0';
-      } else {
-        pill.style.gridTemplateColumns = '';
-        practiceBtn.style.display = '';
-        homeBtn.style.borderRight = '';
-      }
-    }
 
     const GIPHY_API_KEY = "kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm";
     const GIPHY_TAGS = ["great job animated cartoon", "gold star cartoon", "you did it animated", "confetti celebration animated", "thumbs up cartoon cute", "hooray cartoon", "super star animated sticker", "well done animated cute"];
@@ -1116,7 +1090,6 @@
           finishTitle.textContent = "Great Warm-Up, Reader!";
           finishTime.style.display = "none";
           finishText.textContent = "You practiced! Now try Easy mode and see how fast you can go.";
-          markPracticeUsed();
         } else {
           stopFastTimer();
           finishTitle.textContent = "Great Job, Reader!";
@@ -1169,7 +1142,6 @@
       fastHardMode = false;
       fastPracticeMode = false;
       app.classList.remove("hard-mode", "normal-play");
-      updatePracticeUI();
       showScreen("home");
     }
 
@@ -1189,7 +1161,6 @@
     preloadGiphyCache();
     updateHeader();
     setScreenTreatment();
-    updatePracticeUI();
     // Prevent accidental scroll/zoom for young children (mobile only)
     document.addEventListener('touchmove', function(e) {
       if (!e.target.closest('.scrollable')) e.preventDefault();
