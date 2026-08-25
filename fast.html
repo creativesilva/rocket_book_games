@@ -81,6 +81,9 @@
 
     .app {
       width: min(100%, 430px);
+      /* Fill the usable viewport height so no background bleeds through below */
+      min-height: calc(100vh  - max(14px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+      min-height: calc(100dvh - max(14px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -199,6 +202,17 @@
 
     .screen.active {
       display: flex;
+    }
+
+    /* Home screen: spread items evenly in the full-height card */
+    #fastHomeScreen {
+      justify-content: space-evenly;
+      padding-top: 0;
+    }
+
+    /* Game screen: sentence-wrap grows, buttons anchor to bottom */
+    #fastGameScreen {
+      justify-content: flex-start;
     }
 
     .topbar {
@@ -359,7 +373,8 @@
 
     .sentence-wrap {
       width: 100%;
-      min-height: 180px;
+      flex: 1;          /* expand to fill card height in game screen */
+      min-height: 180px; /* safety floor on tiny/edge-case viewports */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -470,7 +485,7 @@
 
     @media (max-width: 390px) {
       .sentence-wrap {
-        min-height: 220px;
+        min-height: 160px; /* floor only — flex:1 handles actual height */
       }
 
       .timer-text {
