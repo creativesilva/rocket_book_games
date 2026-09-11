@@ -162,8 +162,44 @@
       width: 100%; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       padding: 0 4px 2px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
     }
     .mountain-wrap svg { width: 100%; max-width: 320px; height: auto; overflow: visible; }
+    #mountainSvg { width: 100%; display: flex; align-items: center; justify-content: center; }
+
+    /* ── Clouds ──────────────────────────────────── */
+    .cloud-layer {
+      position: absolute; top: 0; left: 0; right: 0; height: 82px;
+      pointer-events: none; overflow: hidden; z-index: 3;
+    }
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.78);
+      border-radius: 40px;
+    }
+    .cloud::before, .cloud::after {
+      content: ''; position: absolute;
+      background: rgba(255,255,255,0.78);
+      border-radius: 50%;
+    }
+    .c1 { width: 72px; height: 20px; top: 20px;
+          animation: floatCloud 44s linear infinite; }
+    .c1::before { width: 30px; height: 30px; top: -13px; left: 10px; }
+    .c1::after  { width: 20px; height: 20px; top: -8px;  left: 38px; }
+    .c2 { width: 50px; height: 16px; top: 7px;
+          animation: floatCloud 36s linear infinite; animation-delay: -14s; }
+    .c2::before { width: 22px; height: 22px; top: -10px; left: 8px; }
+    .c2::after  { width: 15px; height: 15px; top: -5px;  left: 27px; }
+    .c3 { width: 64px; height: 18px; top: 30px;
+          animation: floatCloud 54s linear infinite; animation-delay: -30s; }
+    .c3::before { width: 26px; height: 26px; top: -12px; left: 12px; }
+    .c3::after  { width: 18px; height: 18px; top: -6px;  left: 37px; }
+    @keyframes floatCloud {
+      from { transform: translateX(-140px); }
+      to   { transform: translateX(calc(100vw + 140px)); }
+    }
 
     @keyframes mtnShake {
       0%,100% { transform: translateX(0); }
@@ -330,7 +366,14 @@
       <div class="timer-pill" id="timerPill">
         <span class="timer-pill-text" id="timerDisplay">00:00.0</span>
       </div>
-      <div class="mountain-wrap" id="mountainWrap"></div>
+      <div class="mountain-wrap" id="mountainWrap">
+        <div class="cloud-layer">
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+          <div class="cloud c3"></div>
+        </div>
+        <div id="mountainSvg"></div>
+      </div>
       <div class="numpad-wrap">
         <div class="numpad" id="numpad">
           <button class="nk" type="button" data-key="1">1</button>
@@ -467,7 +510,8 @@
     // ── DOM refs ────────────────────────────────────────────────
     const mmBack      = document.getElementById('mmBack');
     const progressEl  = document.getElementById('mmProgress');
-    const mountWrap   = document.getElementById('mountainWrap');
+    const mountWrap      = document.getElementById('mountainWrap');
+    const mountainSvgEl  = document.getElementById('mountainSvg');
     const checkBtn    = document.getElementById('checkBtn');
     const celebSound  = document.getElementById('celebrationSound');
     const gameshowAudio = document.getElementById('gameshowMusic');
@@ -536,8 +580,8 @@
   <!-- Branch lines -->
   <line x1="150" y1="107" x2="88" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="150" y1="107" x2="212" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- Mountain climber -->
-  ${(climberT > 0) ? `<image href="mountain_climber.png" x="${(75 + 75 * Math.min(climberT,1) - 20).toFixed(0)}" y="${(148 - 115 * Math.min(climberT,1) - 58).toFixed(0)}" width="40" height="58" preserveAspectRatio="xMidYMid meet"/>` : ''}
+  <!-- Mountain climber (right slope, always visible) -->
+  ${(()=>{ const t=Math.min(Math.max(climberT,0),1); const cx=(267-117*t).toFixed(0); const cy=(210-145*t-58).toFixed(0); return `<image href="mountain_climber.png" x="${(cx-20)}" y="${cy}" width="40" height="58" preserveAspectRatio="xMidYMid meet"/>`; })()}
   <!-- Plus between addends -->
   <text x="150" y="196" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
@@ -575,7 +619,7 @@
       const leftTxt  = p.missing === 'left'  ? inp : String(p.left);
       const rightTxt = p.missing === 'right' ? inp : String(p.right);
       const climberT = deck.length > 0 ? correctCount / deck.length : 0;
-      mountWrap.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none', climberT);
+      mountainSvgEl.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none', climberT);
     }
 
     // ── Show problem ─────────────────────────────────────────────
@@ -624,7 +668,7 @@
         // Flash correct answer in the missing box
         const p   = deck[idx];
         const ans = String(expected);
-        mountWrap.innerHTML = buildSVG(
+        mountainSvgEl.innerHTML = buildSVG(
           p.missing === 'total' ? ans : String(p.total),
           p.missing === 'left'  ? ans : String(p.left),
           p.missing === 'right' ? ans : String(p.right),
@@ -643,7 +687,7 @@
           inputLocked = true; checkBtn.disabled = true;
           setTimeout(() => {
             const p = deck[idx], ans = String(expected);
-            mountWrap.innerHTML = buildSVG(
+            mountainSvgEl.innerHTML = buildSVG(
               p.missing === 'total' ? ans : String(p.total),
               p.missing === 'left'  ? ans : String(p.left),
               p.missing === 'right' ? ans : String(p.right),
