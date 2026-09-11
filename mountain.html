@@ -491,7 +491,7 @@
     }
 
     // ── Mountain SVG builder ────────────────────────────────────
-    function buildSVG(topTxt, leftTxt, rightTxt, missingSlot, flashState) {
+    function buildSVG(topTxt, leftTxt, rightTxt, missingSlot, flashState, climberT) {
       function slot(s) {
         const isQ = s === missingSlot;
         if (isQ) {
@@ -536,6 +536,8 @@
   <!-- Branch lines -->
   <line x1="150" y1="107" x2="72" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="150" y1="107" x2="228" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Mountain climber -->
+  ${(climberT > 0) ? `<text x="${(65 + 83 * Math.min(climberT,1)).toFixed(0)}" y="${(150 - 130 * Math.min(climberT,1)).toFixed(0)}" text-anchor="middle" dominant-baseline="middle" font-size="20">🧗</text>` : ''}
   <!-- Plus between addends -->
   <text x="150" y="196" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
@@ -568,7 +570,8 @@
       const topTxt   = p.missing === 'total' ? inp : String(p.total);
       const leftTxt  = p.missing === 'left'  ? inp : String(p.left);
       const rightTxt = p.missing === 'right' ? inp : String(p.right);
-      mountWrap.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none');
+      const climberT = deck.length > 0 ? correctCount / deck.length : 0;
+      mountWrap.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none', climberT);
     }
 
     // ── Show problem ─────────────────────────────────────────────
@@ -621,7 +624,7 @@
           p.missing === 'total' ? ans : String(p.total),
           p.missing === 'left'  ? ans : String(p.left),
           p.missing === 'right' ? ans : String(p.right),
-          p.missing, 'correct'
+          p.missing, 'correct', correctCount / deck.length
         );
         setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 440);
 
@@ -640,7 +643,7 @@
               p.missing === 'total' ? ans : String(p.total),
               p.missing === 'left'  ? ans : String(p.left),
               p.missing === 'right' ? ans : String(p.right),
-              p.missing, 'reveal'
+              p.missing, 'reveal', correctCount / deck.length
             );
           }, 380);
           setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 1750);
