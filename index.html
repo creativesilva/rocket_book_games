@@ -190,6 +190,11 @@
       color: #7c1d1d; box-shadow: 0 5px 16px rgba(239,68,68,0.24);
       border: 1px solid rgba(253,186,116,0.48);
     }
+    .tile-mountain {
+      background: linear-gradient(145deg, rgba(134,184,106,0.85), rgba(61,107,69,0.90));
+      color: #1a3a1a; box-shadow: 0 5px 16px rgba(61,107,69,0.24);
+      border: 1px solid rgba(134,184,106,0.48);
+    }
 
     /* Staggered entrance */
     .game-grid .game-tile {
@@ -201,6 +206,7 @@
     .game-grid .game-tile:nth-child(3) { animation-delay: 0.14s; }
     .game-grid .game-tile:nth-child(4) { animation-delay: 0.19s; }
     .game-grid .game-tile:nth-child(5) { animation-delay: 0.24s; }
+    .game-grid .game-tile:nth-child(6) { animation-delay: 0.29s; }
     @keyframes tileIn { to { opacity: 1; transform: translateY(0) scale(1); } }
 
     /* ── Footer ───────────────────────────────────────────────────── */
@@ -369,10 +375,15 @@
           <span class="tile-name">Brain Games</span>
           <span class="tile-desc">Vocabulary &amp; more</span>
         </button>
-        <!-- Full-width feature tile -->
-        <button class="game-tile tile-math wide" onclick="window.location.href='math.html'" type="button">
+        <button class="game-tile tile-math" onclick="window.location.href='math.html'" type="button">
           <span class="tile-icon">&#x1F4A5;</span>
-          <span class="tile-name">Number Blaster &mdash; Blast math facts!</span>
+          <span class="tile-name">Number Blaster</span>
+          <span class="tile-desc">Blast math facts!</span>
+        </button>
+        <button class="game-tile tile-mountain" onclick="window.location.href='mountain.html'" type="button">
+          <span class="tile-icon">&#x26F0;&#xFE0F;</span>
+          <span class="tile-name">Math Mountain</span>
+          <span class="tile-desc">Number bond fun!</span>
         </button>
       </div>
 
@@ -405,6 +416,9 @@
       </button>
       <button class="menu-item" type="button" onclick="closeMenu();window.location.href='math.html'">
         <span class="menu-item-icon">&#x1F4A5;</span> Number Blaster
+      </button>
+      <button class="menu-item" type="button" onclick="closeMenu();window.location.href='mountain.html'">
+        <span class="menu-item-icon">&#x26F0;&#xFE0F;</span> Math Mountain
       </button>
       <div class="menu-divider"></div>
       <div class="menu-version">Rocket Book Games</div>

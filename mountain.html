@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Math Mountain" />
+  <meta name="theme-color" content="#d4e0c8" />
+  <link rel="apple-touch-icon" href="rocket_book_logo.png" />
+  <link rel="icon" type="image/png" href="rocket_book_logo.png" />
+  <title>Math Mountain</title>
+  <style>
+    :root {
+      --bg1:    #f2ede0;
+      --bg2:    #e0d8c0;
+      --text:   #2c1a0e;
+      --muted:  #6b5040;
+      --shadow: 0 18px 40px rgba(0,0,0,0.14);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%; min-height: 100%; margin: 0; padding: 0;
+      overflow-x: hidden; overflow-y: auto; touch-action: pan-y;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, Helvetica, sans-serif;
+      color: var(--text);
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding-top: max(14px, env(safe-area-inset-top));
+      padding-right: max(14px, env(safe-area-inset-right));
+      padding-bottom: max(20px, env(safe-area-inset-bottom));
+      padding-left: max(14px, env(safe-area-inset-left));
+      user-select: none; -webkit-user-select: none;
+      -webkit-text-size-adjust: 100%;
+      overscroll-behavior-y: contain;
+      background:
+        radial-gradient(ellipse at 50% 0%,  rgba(100,180,200,0.32) 0%, transparent 38%),
+        radial-gradient(circle at 8%  50%,  rgba(40,100,40,0.28)   0%, transparent 36%),
+        radial-gradient(circle at 92% 46%,  rgba(55,120,50,0.24)   0%, transparent 34%),
+        radial-gradient(ellipse at 25% 95%, rgba(110,75,30,0.26)   0%, transparent 38%),
+        radial-gradient(ellipse at 78% 92%, rgba(130,90,35,0.22)   0%, transparent 36%),
+        linear-gradient(180deg, #c4dcc4 0%, #e0d8b8 55%, #ccc0a0 100%);
+    }
+
+    .app, button, img { touch-action: manipulation; }
+
+    /* ── Card ──────────────────────────────────────── */
+    .app {
+      width: min(100%, 430px);
+      min-height: calc(100vh  - max(14px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+      min-height: calc(100dvh - max(14px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+      background: rgba(252, 248, 238, 0.93);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 36px;
+      box-shadow: var(--shadow);
+      padding: 0 16px 16px;
+      display: flex; flex-direction: column; align-items: center;
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.82);
+    }
+
+    /* ── Topbar ──────────────────────────────────── */
+    .topbar {
+      width: 100%; padding: 14px 0 0;
+      display: flex; justify-content: space-between; align-items: center;
+      min-height: 48px; flex-shrink: 0; position: relative; z-index: 1;
+    }
+    .topbar-back {
+      background: none; border: 0; border-radius: 12px;
+      padding: 6px 6px 6px 2px;
+      font-size: 15px; font-weight: 800; color: var(--muted);
+      display: flex; align-items: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.18s;
+      min-width: 64px; font-family: inherit; cursor: pointer;
+    }
+    .topbar-back.visible { opacity: 1; pointer-events: auto; }
+    .topbar-back:active  { opacity: 0.50; }
+    .topbar-center {
+      font-size: 14px; font-weight: 800; color: var(--muted);
+      text-align: center; flex: 1;
+    }
+
+    /* ── Screens ─────────────────────────────────── */
+    .screen {
+      display: none; flex-direction: column;
+      align-items: center; justify-content: flex-start;
+      width: 100%; text-align: center; flex: 1;
+      position: relative; z-index: 1;
+    }
+    .screen.active { display: flex; }
+
+    #mmHomeScreen  { justify-content: space-evenly; padding-top: 4px; padding-bottom: 4px; }
+    #mmGameScreen  { justify-content: flex-start; padding-top: 6px; }
+    #mmFinishScreen { padding-top: 10px; gap: 7px; justify-content: center; }
+
+    /* ── Home screen ─────────────────────────────── */
+    .mm-logo     { font-size: 64px; line-height: 1; flex-shrink: 0; }
+    .mm-title    {
+      font-size: clamp(30px, 8.5vw, 44px); font-weight: 900;
+      letter-spacing: -1.2px; color: var(--text); flex-shrink: 0;
+    }
+    .mm-subtitle { font-size: 14px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+    .mode-note   {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      max-width: 270px; line-height: 1.55; text-align: center; flex-shrink: 0;
+    }
+
+    /* ── Buttons ─────────────────────────────────── */
+    button { font-family: inherit; border: 0; cursor: pointer; font-weight: 800; }
+
+    .segmented-actions {
+      width: 290px; max-width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      border-radius: 22px; overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.14);
+      flex-shrink: 0;
+    }
+    .segment-btn {
+      border: 0; min-width: 0; border-radius: 0;
+      padding: 15px 8px; font-size: 14px; font-weight: 800;
+      cursor: pointer; font-family: inherit;
+      transition: transform 0.08s;
+    }
+    .segment-btn:active { transform: scale(0.96); }
+    .segment-left { border-right: 1px solid rgba(255,255,255,0.30); }
+
+    .hard-btn     { background: linear-gradient(180deg,#c4832a 0%,#92400e 100%); color: #fff; }
+    .practice-btn { background: linear-gradient(180deg,#86b86a 0%,#4a7c40 100%); color: #fff; }
+    .regular-btn  { background: linear-gradient(180deg,#4a7c40 0%,#2d5a27 100%); color: #fff; }
+
+    .neutral-btn {
+      padding: 13px 28px; font-size: 15px; font-weight: 800; border-radius: 20px;
+      background: linear-gradient(180deg,#ddd4c0 0%,#c8bc9c 100%); color: #3d2b1f;
+      border: 0; cursor: pointer; font-family: inherit; flex-shrink: 0;
+    }
+
+    /* ── Timer pill ──────────────────────────────── */
+    .timer-pill {
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(45,90,39,0.13) 0%, rgba(100,70,30,0.13) 100%);
+      border: 1.5px solid rgba(100,80,40,0.22);
+      border-radius: 100px; padding: 4px 18px;
+      flex-shrink: 0; margin-bottom: 2px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.20s;
+    }
+    .timer-pill.visible { opacity: 1; pointer-events: auto; }
+    .timer-pill-text {
+      font-size: 20px; font-weight: 900; color: var(--text);
+      font-variant-numeric: tabular-nums; letter-spacing: -0.5px;
+    }
+
+    /* ── Mountain SVG wrap ───────────────────────── */
+    .mountain-wrap {
+      width: 100%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px 2px;
+    }
+    .mountain-wrap svg { width: 100%; max-width: 320px; height: auto; overflow: visible; }
+
+    @keyframes mtnShake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-9px); }
+      50%     { transform: translateX(9px); }
+      80%     { transform: translateX(-5px); }
+    }
+    .mountain-wrap.shake { animation: mtnShake 0.32s ease; }
+
+    /* ── Numpad ──────────────────────────────────── */
+    .numpad-wrap {
+      flex: 1; width: 100%;
+      display: flex; flex-direction: column;
+      padding: 4px 4px 0;
+      max-height: 300px;
+    }
+    .numpad {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .nk {
+      border: 0; border-radius: 14px;
+      font-size: clamp(20px, 5.5vw, 28px); font-weight: 900;
+      background: #ede8d4; color: #2c1a0e;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; min-height: 50px;
+      transition: transform 0.08s, background 0.08s;
+      font-family: inherit;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    .nk:active { transform: scale(0.90); background: #ddd4b8; }
+    .nk-back   { background: #fef3c7; color: #92400e; font-size: clamp(16px,4.5vw,22px); }
+    .nk-back:active { background: #fde68a; }
+    .nk-check  {
+      background: linear-gradient(180deg,#86b86a 0%,#3d6b45 100%);
+      color: #fff; font-size: clamp(16px,4.5vw,22px);
+      box-shadow: 0 4px 12px rgba(45,90,39,0.30);
+    }
+    .nk-check:active  { transform: scale(0.90); opacity: 0.85; }
+    .nk-check:disabled { opacity: 0.35; pointer-events: none; }
+
+    .game-quit-wrap {
+      width: 100%; display: flex; justify-content: center;
+      padding: 6px 0 2px; flex-shrink: 0;
+    }
+    .game-quit-btn {
+      background: none; border: 1.5px solid #c8b898; border-radius: 18px;
+      padding: 8px 22px; font-size: 13px; font-weight: 800;
+      color: var(--muted); font-family: inherit; cursor: pointer;
+    }
+
+    /* ── Finish screen ───────────────────────────── */
+    .finish-accent { font-size: clamp(48px,12vw,68px); }
+    .result-title  { font-size: clamp(24px,6.5vw,36px); font-weight:900; line-height:1.05; color:var(--text); }
+    .result-score  { font-size: clamp(18px,5vw,26px); font-weight:900; color:var(--text); }
+    .result-time   { font-size: 18px; font-weight:800; color:#8b5e3c; }
+    .result-text   { font-size: 14px; line-height:1.4; max-width:270px; margin:0 auto; color:#3d2b1f; }
+    .celebration-img {
+      width: min(36vw,120px); max-height:120px; object-fit:cover;
+      border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.14);
+    }
+    .compact-buttons { margin-top:4px; display:flex; flex-direction:column; align-items:center; gap:8px; width:100%; }
+    .finish-pill {
+      width: 290px; max-width:100%;
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .finish-home-btn {
+      padding:14px 8px; font-size:14px; font-weight:800;
+      background: linear-gradient(180deg,#ddd4c0 0%,#c8bc9c 100%);
+      color:#3d2b1f; border:0; cursor:pointer; font-family:inherit;
+      border-right: 1px solid rgba(255,255,255,0.30);
+    }
+    .finish-again-btn {
+      padding:14px 8px; font-size:14px; font-weight:800;
+      background: linear-gradient(180deg,#86b86a 0%,#3d6b45 100%);
+      color:#fff; border:0; cursor:pointer; font-family:inherit;
+    }
+
+    /* ── Hamburger ───────────────────────────────── */
+    .menu-btn {
+      position:fixed;
+      top:calc(max(14px, env(safe-area-inset-top)) + 14px);
+      right:calc(max(14px, env(safe-area-inset-right)) + 14px);
+      z-index:9970;
+      width:30px; height:30px; min-width:0;
+      background:rgba(0,0,0,0.055); border:1px solid rgba(255,255,255,0.55);
+      border-radius:50%; padding:0; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+      backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    }
+    .menu-btn:active { background:rgba(0,0,0,0.10); }
+    .menu-btn span { display:block; width:12px; height:1.5px; background:var(--muted); border-radius:2px; }
+    .menu-overlay { display:none; position:fixed; inset:0; z-index:9980; }
+    .menu-overlay.open { display:block; }
+    .menu-sheet {
+      position:fixed;
+      background:rgba(252,248,238,0.96);
+      backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+      border-radius:16px; box-shadow:0 10px 36px rgba(0,0,0,0.13);
+      border:1px solid rgba(255,255,255,0.75);
+      padding:6px; min-width:190px; overflow:hidden;
+      animation:menuIn 0.18s ease;
+    }
+    @keyframes menuIn {
+      from { opacity:0; transform:scale(0.92) translateY(-6px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .menu-item {
+      display:flex; align-items:center; gap:10px;
+      width:100%; padding:10px 14px;
+      background:none; border:0; border-radius:10px;
+      font-family:inherit; font-size:15px; font-weight:700;
+      color:var(--text); cursor:pointer; text-align:left; transition:background 0.1s;
+    }
+    .menu-item:active { background:rgba(0,0,0,0.06); }
+    .menu-item-icon { font-size:17px; width:22px; text-align:center; flex-shrink:0; }
+    .menu-divider { height:1px; background:rgba(0,0,0,0.07); margin:4px 8px; }
+
+    /* ── Rotate overlay ──────────────────────────── */
+    .rotate-overlay {
+      display:none; position:fixed; inset:0;
+      background:#2c1a0e; color:#f5f0e0; z-index:99999;
+      align-items:center; justify-content:center;
+      flex-direction:column; text-align:center; padding:24px;
+    }
+    @media (orientation:landscape) { .rotate-overlay { display:flex; } }
+  </style>
+  <link rel="manifest" href="manifest.webmanifest?v=20260910a" />
+  <link rel="stylesheet" href="mobile-fixes.css?v=20260910a" />
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="topbar-back" id="mmBack" type="button">&#x2039; Home</button>
+      <div class="topbar-center" id="mmProgress"></div>
+      <div style="min-width:64px"></div>
+    </div>
+
+    <!-- Home screen -->
+    <div class="screen active" id="mmHomeScreen">
+      <div class="mm-logo">&#x26F0;&#xFE0F;</div>
+      <div class="mm-title">Math Mountain</div>
+      <div class="mm-subtitle">Find the missing number!</div>
+      <div class="mode-note">
+        Hard shuffles all mountains. Practice is in order with no timer. Regular is in order and timed.
+      </div>
+      <div class="segmented-actions">
+        <button class="hard-btn segment-btn segment-left" id="hardBtn" type="button">Hard</button>
+        <button class="practice-btn segment-btn segment-left" id="practiceBtn" type="button">Practice</button>
+        <button class="regular-btn segment-btn" id="regularBtn" type="button">Regular</button>
+      </div>
+      <button class="neutral-btn" id="mmHomeBtn" type="button">Home</button>
+    </div>
+
+    <!-- Game screen -->
+    <div class="screen" id="mmGameScreen">
+      <div class="timer-pill" id="timerPill">
+        <span class="timer-pill-text" id="timerDisplay">00:00.0</span>
+      </div>
+      <div class="mountain-wrap" id="mountainWrap"></div>
+      <div class="numpad-wrap">
+        <div class="numpad" id="numpad">
+          <button class="nk" type="button" data-key="1">1</button>
+          <button class="nk" type="button" data-key="2">2</button>
+          <button class="nk" type="button" data-key="3">3</button>
+          <button class="nk" type="button" data-key="4">4</button>
+          <button class="nk" type="button" data-key="5">5</button>
+          <button class="nk" type="button" data-key="6">6</button>
+          <button class="nk" type="button" data-key="7">7</button>
+          <button class="nk" type="button" data-key="8">8</button>
+          <button class="nk" type="button" data-key="9">9</button>
+          <button class="nk nk-back"  type="button" data-key="back">&#x232B;</button>
+          <button class="nk"          type="button" data-key="0">0</button>
+          <button class="nk nk-check" type="button" id="checkBtn" data-key="check">&#x2713;</button>
+        </div>
+      </div>
+      <div class="game-quit-wrap">
+        <button class="game-quit-btn" id="mmQuitBtn" type="button">Back to Home</button>
+      </div>
+    </div>
+
+    <!-- Finish screen -->
+    <div class="screen" id="mmFinishScreen">
+      <div class="finish-accent" id="finishAccent">&#x1F389;</div>
+      <div class="result-title"  id="mmFinishTitle">Great Job!</div>
+      <div class="result-score"  id="mmResultScore"></div>
+      <div class="result-time"   id="mmResultTime"></div>
+      <div class="result-text"   id="mmFinishText"></div>
+      <img id="mmCelebImg" class="celebration-img" alt="Celebration" />
+      <div class="compact-buttons" id="mmFinishBtns"></div>
+    </div>
+
+  </div><!-- /.app -->
+
+  <!-- Menu -->
+  <div class="menu-overlay" id="menuOverlay" onclick="if(event.target===this)closeMenu()">
+    <div class="menu-sheet" id="menuSheet">
+      <button class="menu-item" type="button" onclick="closeMenu();window.location.href='index.html'">
+        <span class="menu-item-icon">&#x1F3E0;</span> Home
+      </button>
+      <div class="menu-divider"></div>
+      <button class="menu-item menu-nav-item" data-href="fast.html"     type="button" onclick="closeMenu();window.location.href='fast.html'">
+        <span class="menu-item-icon">&#x1F3CE;&#xFE0F;</span> Fast &amp; Fluent
+      </button>
+      <button class="menu-item menu-nav-item" data-href="rainbow.html"  type="button" onclick="closeMenu();window.location.href='rainbow.html'">
+        <span class="menu-item-icon">&#x1F308;</span> Rainbow Reader
+      </button>
+      <button class="menu-item menu-nav-item" data-href="spell.html"    type="button" onclick="closeMenu();window.location.href='spell.html'">
+        <span class="menu-item-icon">&#x1F41D;</span> Spelling Bee
+      </button>
+      <button class="menu-item menu-nav-item" data-href="learn.html"    type="button" onclick="closeMenu();window.location.href='learn.html'">
+        <span class="menu-item-icon">&#x1F9E0;</span> Brain Games
+      </button>
+      <button class="menu-item menu-nav-item" data-href="math.html"     type="button" onclick="closeMenu();window.location.href='math.html'">
+        <span class="menu-item-icon">&#x1F4A5;</span> Number Blaster
+      </button>
+      <button class="menu-item menu-nav-item" data-href="mountain.html" type="button" onclick="closeMenu();window.location.href='mountain.html'">
+        <span class="menu-item-icon">&#x26F0;&#xFE0F;</span> Math Mountain
+      </button>
+      <div class="menu-divider"></div>
+      <div style="font-size:11px;color:var(--muted);font-weight:600;text-align:center;padding:5px 14px 7px;">Rocket Book Games</div>
+    </div>
+  </div>
+
+  <div class="rotate-overlay" aria-hidden="true">
+    <div style="font-size:56px">&#x1F4F1;</div>
+    <div style="font-size:20px;font-weight:900;margin-top:12px">Please rotate your device</div>
+    <div style="font-size:14px;margin-top:6px;opacity:0.7">Math Mountain works in portrait mode</div>
+  </div>
+
+  <audio id="celebrationSound" preload="auto">
+    <source src="celebration_sound.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="gameshowMusic" src="gameshow_music.mp3" loop preload="auto"></audio>
+
+  <script>
+    try { screen.orientation.lock('portrait').catch(()=>{}); } catch(e) {}
+
+    // ── Problems ────────────────────────────────────────────────
+    // missing: 'total' => answer = left+right
+    // missing: 'left'  => answer = total-right
+    // missing: 'right' => answer = total-left
+    const ALL_PROBLEMS = [
+      { total:11, left:4,  right:7,  missing:'total' },
+      { total:17, left:3,  right:14, missing:'right' },
+      { total:17, left:12, right:5,  missing:'total' },
+      { total:20, left:14, right:6,  missing:'left'  },
+      { total:18, left:15, right:3,  missing:'total' },
+      { total:17, left:7,  right:10, missing:'right' },
+      { total:20, left:4,  right:16, missing:'total' },
+      { total:17, left:8,  right:9,  missing:'total' },
+      { total:13, left:12, right:1,  missing:'right' },
+      { total:19, left:12, right:7,  missing:'left'  },
+      { total:17, left:11, right:6,  missing:'total' },
+      { total:14, left:5,  right:9,  missing:'left'  },
+    ];
+
+    function getAnswer(p) {
+      if (p.missing === 'total') return p.left + p.right;
+      if (p.missing === 'left')  return p.total - p.right;
+      return p.total - p.left;
+    }
+
+    // ── State ───────────────────────────────────────────────────
+    let deck         = [];
+    let idx          = 0;
+    let correctCount = 0;
+    let attempts     = 0;
+    let isPractice   = false;
+    let currentMode  = 'regular';
+    let inputLocked  = false;
+    let currentInput = '';
+
+    // ── Timer ───────────────────────────────────────────────────
+    let timerInt = null, startTime = null, elapsedMs = 0;
+    const timerEl   = document.getElementById('timerDisplay');
+    const timerPill = document.getElementById('timerPill');
+
+    function fmtTime(ms) {
+      const t = Math.floor(ms/100);
+      const m = Math.floor(t/600), s = Math.floor((t%600)/10), d = t%10;
+      return ('0'+m).slice(-2) + ':' + ('0'+s).slice(-2) + '.' + d;
+    }
+    function startTimer() {
+      startTime = Date.now(); elapsedMs = 0; timerEl.textContent = '00:00.0';
+      clearInterval(timerInt);
+      timerInt = setInterval(() => { elapsedMs = Date.now()-startTime; timerEl.textContent = fmtTime(elapsedMs); }, 100);
+    }
+    function stopTimer() {
+      clearInterval(timerInt);
+      if (startTime) elapsedMs = Date.now() - startTime;
+    }
+
+    // ── DOM refs ────────────────────────────────────────────────
+    const mmBack      = document.getElementById('mmBack');
+    const progressEl  = document.getElementById('mmProgress');
+    const mountWrap   = document.getElementById('mountainWrap');
+    const checkBtn    = document.getElementById('checkBtn');
+    const celebSound  = document.getElementById('celebrationSound');
+    const gameshowAudio = document.getElementById('gameshowMusic');
+    const celebImg    = document.getElementById('mmCelebImg');
+
+    const screens = {
+      home:   document.getElementById('mmHomeScreen'),
+      game:   document.getElementById('mmGameScreen'),
+      finish: document.getElementById('mmFinishScreen'),
+    };
+
+    // ── Screen control ──────────────────────────────────────────
+    function showScreen(key) {
+      Object.values(screens).forEach(s => s.classList.remove('active'));
+      screens[key].classList.add('active');
+      const inGame = key === 'game';
+      mmBack.classList.toggle('visible', inGame);
+      timerPill.classList.toggle('visible', inGame && !isPractice);
+      progressEl.textContent = '';
+      window.scrollTo({ top:0, behavior:'auto' });
+    }
+
+    // ── Mountain SVG builder ────────────────────────────────────
+    function buildSVG(topTxt, leftTxt, rightTxt, missingSlot, flashState) {
+      function slot(s) {
+        const isQ = s === missingSlot;
+        if (isQ) {
+          if (flashState === 'correct') return { fill:'#dcfce7', stroke:'#16a34a', tc:'#15803d' };
+          if (flashState === 'wrong')   return { fill:'#fee2e2', stroke:'#dc2626', tc:'#dc2626' };
+          if (flashState === 'reveal')  return { fill:'#fef9c3', stroke:'#ca8a04', tc:'#7c5c00' };
+          // default "?" box: amber
+          return { fill:'#fef3c7', stroke:'#d97706', tc:'#92400e' };
+        }
+        // known value box: warm parchment
+        return { fill:'#f5ede0', stroke:'#8b5e3c', tc:'#2c1a0e' };
+      }
+      const top  = slot('total');
+      const left = slot('left');
+      const rgt  = slot('right');
+
+      return `<svg viewBox="0 0 300 235" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a8cce0" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#b8d4b0" stop-opacity="0.18"/>
+    </linearGradient>
+    <linearGradient id="mtn" x1="0.45" y1="0" x2="0.55" y2="1">
+      <stop offset="0%" stop-color="#3d6b45"/>
+      <stop offset="65%" stop-color="#2d5235"/>
+      <stop offset="100%" stop-color="#7c5038"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="235" fill="url(#sky)"/>
+  <!-- Mountain body -->
+  <polygon points="150,16 18,214 282,214" fill="url(#mtn)"/>
+  <!-- Shadow crease -->
+  <polygon points="150,16 96,118 150,148 204,118" fill="#1a3320" opacity="0.28"/>
+  <!-- Snow cap -->
+  <polygon points="150,16 114,80 186,80" fill="#f0ece4"/>
+  <polygon points="150,16 150,80 186,80" fill="#ccc8c0" opacity="0.45"/>
+  <!-- Small trees on slope -->
+  <polygon points="58,172 53,192 63,192"  fill="#2d5235" opacity="0.70"/>
+  <polygon points="242,172 237,192 247,192" fill="#2d5235" opacity="0.70"/>
+  <polygon points="74,158 70,174 78,174"  fill="#254028" opacity="0.55"/>
+  <polygon points="226,162 222,178 230,178" fill="#254028" opacity="0.55"/>
+  <!-- Branch lines -->
+  <line x1="150" y1="107" x2="72" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="150" y1="107" x2="228" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Plus between addends -->
+  <text x="150" y="196" text-anchor="middle"
+    font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
+    font-size="18" font-weight="900" fill="#5a3a1f">+</text>
+  <!-- Peak box (total) -->
+  <rect x="118" y="66" width="64" height="41" rx="10"
+    fill="${top.fill}" stroke="${top.stroke}" stroke-width="2.5"/>
+  <text x="150" y="93" text-anchor="middle"
+    font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
+    font-size="24" font-weight="900" fill="${top.tc}">${topTxt}</text>
+  <!-- Left addend box -->
+  <rect x="38" y="161" width="64" height="41" rx="10"
+    fill="${left.fill}" stroke="${left.stroke}" stroke-width="2.5"/>
+  <text x="70" y="188" text-anchor="middle"
+    font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
+    font-size="24" font-weight="900" fill="${left.tc}">${leftTxt}</text>
+  <!-- Right addend box -->
+  <rect x="198" y="161" width="64" height="41" rx="10"
+    fill="${rgt.fill}" stroke="${rgt.stroke}" stroke-width="2.5"/>
+  <text x="230" y="188" text-anchor="middle"
+    font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
+    font-size="24" font-weight="900" fill="${rgt.tc}">${rightTxt}</text>
+</svg>`;
+    }
+
+    // ── Render current mountain ──────────────────────────────────
+    function renderMountain(flashState) {
+      const p   = deck[idx];
+      const inp = currentInput || '?';
+      const topTxt   = p.missing === 'total' ? inp : String(p.total);
+      const leftTxt  = p.missing === 'left'  ? inp : String(p.left);
+      const rightTxt = p.missing === 'right' ? inp : String(p.right);
+      mountWrap.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none');
+    }
+
+    // ── Show problem ─────────────────────────────────────────────
+    function showProblem() {
+      progressEl.textContent = `${idx+1} of ${deck.length}`;
+      currentInput = '';
+      attempts     = 0;
+      inputLocked  = false;
+      checkBtn.disabled = false;
+      mountWrap.classList.remove('shake');
+      renderMountain('none');
+    }
+
+    // ── Numpad ───────────────────────────────────────────────────
+    function onKey(k) {
+      if (inputLocked) return;
+      ensureCtx();
+      if (k === 'back') {
+        currentInput = currentInput.slice(0,-1);
+        renderMountain('none');
+      } else if (k === 'check') {
+        handleSubmit();
+      } else {
+        if (currentInput.length < 3) {
+          currentInput += k;
+          renderMountain('none');
+        }
+      }
+    }
+
+    document.getElementById('numpad').addEventListener('click', e => {
+      const b = e.target.closest('[data-key]');
+      if (b) onKey(b.dataset.key);
+    });
+
+    // ── Submit ───────────────────────────────────────────────────
+    function handleSubmit() {
+      if (inputLocked || currentInput === '') return;
+      const entered  = parseInt(currentInput, 10);
+      const expected = getAnswer(deck[idx]);
+
+      if (entered === expected) {
+        if (attempts === 0) correctCount++;
+        inputLocked = true; checkBtn.disabled = true;
+        playChime();
+        // Flash correct answer in the missing box
+        const p   = deck[idx];
+        const ans = String(expected);
+        mountWrap.innerHTML = buildSVG(
+          p.missing === 'total' ? ans : String(p.total),
+          p.missing === 'left'  ? ans : String(p.left),
+          p.missing === 'right' ? ans : String(p.right),
+          p.missing, 'correct'
+        );
+        setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 440);
+
+      } else {
+        attempts++;
+        playBuzz();
+        mountWrap.classList.remove('shake');
+        void mountWrap.offsetWidth; // reflow
+        mountWrap.classList.add('shake');
+
+        if (attempts >= 3) {
+          inputLocked = true; checkBtn.disabled = true;
+          setTimeout(() => {
+            const p = deck[idx], ans = String(expected);
+            mountWrap.innerHTML = buildSVG(
+              p.missing === 'total' ? ans : String(p.total),
+              p.missing === 'left'  ? ans : String(p.left),
+              p.missing === 'right' ? ans : String(p.right),
+              p.missing, 'reveal'
+            );
+          }, 380);
+          setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 1750);
+        } else {
+          setTimeout(() => {
+            mountWrap.classList.remove('shake');
+            currentInput = '';
+            renderMountain('none');
+          }, 340);
+        }
+      }
+    }
+
+    // ── Finish ───────────────────────────────────────────────────
+    function finishGame() {
+      stopTimer(); stopGameMusic(); playCelebSound();
+
+      const total = deck.length;
+      const pct   = Math.round((correctCount/total)*100);
+
+      const accentEl = document.getElementById('finishAccent');
+      const titleEl  = document.getElementById('mmFinishTitle');
+      const scoreEl  = document.getElementById('mmResultScore');
+      const timeEl   = document.getElementById('mmResultTime');
+      const textEl   = document.getElementById('mmFinishText');
+
+      if (pct === 100)   { accentEl.textContent = '🏔️'; titleEl.textContent = 'You Climbed It!'; }
+      else if (pct >= 80){ accentEl.textContent = '🎉'; titleEl.textContent = 'Great Climb!'; }
+      else               { accentEl.textContent = '💪'; titleEl.textContent = 'Keep Climbing!'; }
+
+      scoreEl.textContent = `${correctCount} of ${total} correct`;
+
+      if (!isPractice) {
+        timeEl.textContent  = `Time: ${fmtTime(elapsedMs)}`;
+        timeEl.style.display = '';
+        textEl.textContent  = 'Write down your time, then try to beat it!';
+      } else {
+        timeEl.style.display = 'none';
+        textEl.textContent   = 'Great practice! Try Regular or Hard mode with the timer.';
+      }
+
+      const btns = document.getElementById('mmFinishBtns');
+      btns.innerHTML = '';
+      const pill = document.createElement('div');
+      pill.className = 'finish-pill';
+
+      const homeBtn = document.createElement('button');
+      homeBtn.type = 'button'; homeBtn.className = 'finish-home-btn';
+      homeBtn.textContent = 'Home';
+      homeBtn.addEventListener('click', () => { stopCelebSound(); showScreen('home'); });
+
+      const againBtn = document.createElement('button');
+      againBtn.type = 'button'; againBtn.className = 'finish-again-btn';
+      againBtn.textContent = 'Play Again';
+      againBtn.addEventListener('click', () => { stopCelebSound(); startGame(currentMode); });
+
+      pill.appendChild(homeBtn); pill.appendChild(againBtn);
+      btns.appendChild(pill);
+
+      celebImg.removeAttribute('src');
+      getRandomGif().then(src => { celebImg.src = src; });
+      showScreen('finish');
+    }
+
+    // ── Start game ───────────────────────────────────────────────
+    function startGame(mode) {
+      stopCelebSound();
+      currentMode  = mode;
+      isPractice   = mode === 'practice';
+      deck         = mode === 'hard' ? shuffleArr([...ALL_PROBLEMS]) : [...ALL_PROBLEMS];
+      idx          = 0;
+      correctCount = 0;
+      attempts     = 0;
+      inputLocked  = false;
+      currentInput = '';
+      showScreen('game');
+      showProblem();
+      if (!isPractice) startTimer();
+      startGameMusic();
+      ensureCtx();
+    }
+
+    function shuffleArr(arr) {
+      for (let i=arr.length-1;i>0;i--) {
+        const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];
+      }
+      return arr;
+    }
+
+    // ── Giphy ────────────────────────────────────────────────────
+    const GIPHY_KEY  = 'kIyJEsGiHN0LpmsNMaYm8SXyj4p2rZjm';
+    const GIPHY_TAGS = ['great job animated cartoon','gold star cartoon','you did it animated',
+                        'confetti celebration animated','thumbs up cartoon cute'];
+    let giphyCache = [];
+    async function preloadGiphyCache() {
+      try {
+        const tag = GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
+        const url = `https://api.giphy.com/v1/stickers/search?api_key=${GIPHY_KEY}&q=${encodeURIComponent(tag)}&rating=g&limit=20&offset=${Math.floor(Math.random()*40)}`;
+        const d = await (await fetch(url)).json();
+        if (d.data) giphyCache = d.data.map(g => g.images.fixed_height.url);
+      } catch(e) {}
+    }
+    async function getRandomGif() {
+      if (giphyCache.length) {
+        const gif = giphyCache.splice(Math.floor(Math.random()*giphyCache.length),1)[0];
+        if (giphyCache.length < 4) preloadGiphyCache();
+        return gif;
+      }
+      try {
+        const tag = GIPHY_TAGS[Math.floor(Math.random()*GIPHY_TAGS.length)];
+        const d = await (await fetch(`https://api.giphy.com/v1/stickers/random?api_key=${GIPHY_KEY}&tag=${encodeURIComponent(tag)}&rating=g`)).json();
+        if (d.data?.images) return d.data.images.fixed_height.url;
+      } catch(e) {}
+      return 'rocket_book_logo.png';
+    }
+
+    // ── Audio ─────────────────────────────────────────────────────
+    let _wac = null;
+    function ensureCtx() {
+      if (!_wac) try { _wac = new (window.AudioContext||window.webkitAudioContext)(); } catch(e) {}
+      if (_wac && (_wac.state==='suspended'||_wac.state==='interrupted')) _wac.resume();
+      return _wac;
+    }
+    const _chimeFb = Array.from({length:4},()=>{const a=new Audio('chime.m4a');a.preload='auto';return a;});
+    let _fbIdx=0, _chimeBuf=null;
+    async function loadChimeBuf() {
+      if (_chimeBuf) return; const ctx=ensureCtx(); if (!ctx) return;
+      try { _chimeBuf=await ctx.decodeAudioData(await(await fetch('chime.m4a')).arrayBuffer()); } catch(e) {}
+    }
+    function playChime() {
+      const ctx=ensureCtx();
+      if (ctx && _chimeBuf) {
+        try { const s=ctx.createBufferSource(),g=ctx.createGain(); s.buffer=_chimeBuf; g.gain.value=0.8; s.connect(g); g.connect(ctx.destination); s.start(0); return; } catch(e) {}
+      }
+      const a=_chimeFb[_fbIdx++%_chimeFb.length]; a.volume=0.8; a.play().catch(()=>{});
+    }
+    function playBuzz() {
+      const ctx=ensureCtx(); if (!ctx) return;
+      try {
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.type='square'; o.frequency.setValueAtTime(90,ctx.currentTime); o.frequency.exponentialRampToValueAtTime(45,ctx.currentTime+0.18);
+        g.gain.setValueAtTime(0.16,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.18);
+        o.connect(g); g.connect(ctx.destination); o.start(ctx.currentTime); o.stop(ctx.currentTime+0.20);
+      } catch(e) {}
+    }
+    function playCelebSound() {
+      if (!celebSound) return; celebSound.currentTime=0; celebSound.volume=0.85; celebSound.play().catch(()=>{});
+    }
+    function stopCelebSound() {
+      if (!celebSound) return; celebSound.pause(); celebSound.currentTime=0;
+    }
+    function startGameMusic() {
+      gameshowAudio.currentTime=0; gameshowAudio.volume=0.45; gameshowAudio.play().catch(()=>{});
+    }
+    function stopGameMusic() { gameshowAudio.pause(); gameshowAudio.currentTime=0; }
+
+    document.addEventListener('touchstart', ()=>{ ensureCtx(); loadChimeBuf(); }, {once:true, passive:true});
+
+    // ── Nav ───────────────────────────────────────────────────────
+    mmBack.addEventListener('click', ()=>{ stopCelebSound(); stopTimer(); stopGameMusic(); showScreen('home'); });
+    document.getElementById('hardBtn').addEventListener('click',     ()=>startGame('hard'));
+    document.getElementById('practiceBtn').addEventListener('click', ()=>startGame('practice'));
+    document.getElementById('regularBtn').addEventListener('click',  ()=>startGame('regular'));
+    document.getElementById('mmHomeBtn').addEventListener('click',   ()=>{ stopCelebSound(); window.location.href='index.html'; });
+    document.getElementById('mmQuitBtn').addEventListener('click',   ()=>{ stopCelebSound(); stopTimer(); stopGameMusic(); showScreen('home'); });
+
+    document.addEventListener('touchmove', e=>{
+      if (!e.target.closest('#mmHomeScreen')) e.preventDefault();
+    }, { passive:false });
+    document.addEventListener('gesturestart',  e=>e.preventDefault());
+    document.addEventListener('gesturechange', e=>e.preventDefault());
+
+    // ── Hamburger ─────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn=document.getElementById('menuBtn'), ov=document.getElementById('menuOverlay'), sh=document.getElementById('menuSheet');
+      btn.addEventListener('click', function() {
+        var r=btn.getBoundingClientRect();
+        sh.style.top=(r.bottom+6)+'px'; sh.style.right=(window.innerWidth-r.right)+'px';
+        var pn=window.location.pathname;
+        sh.querySelectorAll('.menu-nav-item').forEach(function(nb){
+          var here=pn.endsWith(nb.dataset.href);
+          nb.style.opacity=here?'0.38':''; nb.style.pointerEvents=here?'none':'';
+        });
+        ov.classList.add('open');
+      });
+      window.closeMenu=function(){ ov.classList.remove('open'); };
+    });
+
+    // ── Init ──────────────────────────────────────────────────────
+    preloadGiphyCache();
+  </script>
+  <script src="app-shell.js?v=20260910a" defer></script>
+  <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu"><span></span><span></span><span></span></button>
+</body>
+</html>
