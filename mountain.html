@@ -168,6 +168,11 @@
     }
     .mountain-wrap svg { width: 100%; max-width: 320px; height: auto; overflow: visible; }
     #mountainSvg { width: 100%; display: flex; align-items: center; justify-content: center; }
+    .climber-img {
+      position: absolute; pointer-events: none; z-index: 4;
+      transition: top 0.48s ease, left 0.48s ease, width 0.48s ease, height 0.48s ease;
+    }
+    .climber-img.instant { transition: none; }
 
     /* ── Clouds ──────────────────────────────────── */
     .cloud-layer {
@@ -373,6 +378,7 @@
           <div class="cloud c3"></div>
         </div>
         <div id="mountainSvg"></div>
+        <img id="climberImg" class="climber-img instant" src="mountain_climber.png" alt="" />
       </div>
       <div class="numpad-wrap">
         <div class="numpad" id="numpad">
@@ -535,7 +541,7 @@
     }
 
     // ── Mountain SVG builder ────────────────────────────────────
-    function buildSVG(topTxt, leftTxt, rightTxt, missingSlot, flashState, climberT) {
+    function buildSVG(topTxt, leftTxt, rightTxt, missingSlot, flashState) {
       function slot(s) {
         const isQ = s === missingSlot;
         if (isQ) {
@@ -580,8 +586,6 @@
   <!-- Branch lines -->
   <line x1="150" y1="107" x2="88" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="150" y1="107" x2="212" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- Mountain climber (right slope, always visible) -->
-  ${(()=>{ const t=Math.min(Math.max(climberT,0),1); const cx=(267-117*t).toFixed(0); const cy=(210-145*t-58).toFixed(0); return `<image href="mountain_climber.png" x="${(cx-20)}" y="${cy}" width="40" height="58" preserveAspectRatio="xMidYMid meet"/>`; })()}
   <!-- Plus between addends -->
   <text x="150" y="196" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
@@ -611,6 +615,31 @@
 </svg>`;
     }
 
+    // ── Climber position (CSS <img> overlay, smooth transition) ──
+    const climberImgEl = document.getElementById('climberImg');
+
+    function updateClimber(instant) {
+      if (!climberImgEl) return;
+      const t = deck.length > 0 ? Math.min(Math.max(correctCount / deck.length, 0), 1) : 0;
+      const wrapW  = mountWrap.clientWidth || 300;
+      const svgW   = Math.min(wrapW - 8, 320);
+      const scale  = svgW / 300;
+      const svgLeft = (wrapW - svgW) / 2;
+      const cx     = 267 - 117 * t;
+      const cy     = 210 - 145 * t;
+      const w      = Math.round(40 * scale);
+      const h      = Math.round(58 * scale);
+      if (instant) climberImgEl.classList.add('instant');
+      climberImgEl.style.width  = w + 'px';
+      climberImgEl.style.height = h + 'px';
+      climberImgEl.style.left   = (svgLeft + (cx - 20) * scale).toFixed(1) + 'px';
+      climberImgEl.style.top    = ((cy - 58) * scale).toFixed(1) + 'px';
+      if (instant) {
+        climberImgEl.offsetHeight; // force reflow so 'instant' takes effect before removing
+        setTimeout(() => climberImgEl.classList.remove('instant'), 30);
+      }
+    }
+
     // ── Render current mountain ──────────────────────────────────
     function renderMountain(flashState) {
       const p   = deck[idx];
@@ -618,8 +647,7 @@
       const topTxt   = p.missing === 'total' ? inp : String(p.total);
       const leftTxt  = p.missing === 'left'  ? inp : String(p.left);
       const rightTxt = p.missing === 'right' ? inp : String(p.right);
-      const climberT = deck.length > 0 ? correctCount / deck.length : 0;
-      mountainSvgEl.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none', climberT);
+      mountainSvgEl.innerHTML = buildSVG(topTxt, leftTxt, rightTxt, p.missing, flashState || 'none');
     }
 
     // ── Show problem ─────────────────────────────────────────────
@@ -663,6 +691,7 @@
 
       if (entered === expected) {
         if (attempts === 0) correctCount++;
+        updateClimber();          // smooth slide up starts here
         inputLocked = true; checkBtn.disabled = true;
         playChime();
         // Flash correct answer in the missing box
@@ -672,7 +701,7 @@
           p.missing === 'total' ? ans : String(p.total),
           p.missing === 'left'  ? ans : String(p.left),
           p.missing === 'right' ? ans : String(p.right),
-          p.missing, 'correct', correctCount / deck.length
+          p.missing, 'correct'
         );
         setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 440);
 
@@ -691,7 +720,7 @@
               p.missing === 'total' ? ans : String(p.total),
               p.missing === 'left'  ? ans : String(p.left),
               p.missing === 'right' ? ans : String(p.right),
-              p.missing, 'reveal', correctCount / deck.length
+              p.missing, 'reveal'
             );
           }, 380);
           setTimeout(() => { idx++; idx >= deck.length ? finishGame() : showProblem(); }, 1750);
@@ -769,6 +798,7 @@
       currentInput = '';
       showScreen('game');
       showProblem();
+      requestAnimationFrame(() => updateClimber(true)); // snap to base, no transition
       if (!isPractice) startTimer();
       startGameMusic();
       ensureCtx();
