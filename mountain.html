@@ -260,7 +260,8 @@
     }
 
     /* ── Finish screen ───────────────────────────── */
-    .finish-accent { font-size: clamp(48px,12vw,68px); }
+    .finish-accent { line-height: 1; }
+    .finish-accent img { width: 88px; height: auto; display: block; margin: 0 auto; }
     .result-title  { font-size: clamp(24px,6.5vw,36px); font-weight:900; line-height:1.05; color:var(--text); }
     .result-score  { font-size: clamp(18px,5vw,26px); font-weight:900; color:var(--text); }
     .result-time   { font-size: 18px; font-weight:800; color:#8b5e3c; }
@@ -403,7 +404,7 @@
 
     <!-- Finish screen -->
     <div class="screen" id="mmFinishScreen">
-      <div class="finish-accent" id="finishAccent">&#x1F389;</div>
+      <div class="finish-accent" id="finishAccent"></div>
       <div class="result-title"  id="mmFinishTitle">Great Job!</div>
       <div class="result-score"  id="mmResultScore"></div>
       <div class="result-time"   id="mmResultTime"></div>
@@ -747,9 +748,10 @@
       const timeEl   = document.getElementById('mmResultTime');
       const textEl   = document.getElementById('mmFinishText');
 
-      if (pct === 100)   { accentEl.textContent = '🏔️'; titleEl.textContent = 'You Climbed It!'; }
-      else if (pct >= 80){ accentEl.textContent = '🎉'; titleEl.textContent = 'Great Climb!'; }
-      else               { accentEl.textContent = '💪'; titleEl.textContent = 'Keep Climbing!'; }
+      accentEl.innerHTML = '<img src="mountain_climber.png" alt="Mountain climber" />';
+      if (pct === 100)   { titleEl.textContent = 'You Climbed It!'; }
+      else if (pct >= 80){ titleEl.textContent = 'Great Climb!'; }
+      else               { titleEl.textContent = 'Keep Climbing!'; }
 
       scoreEl.textContent = `${correctCount} of ${total} correct`;
 
