@@ -534,10 +534,10 @@
   <polygon points="74,158 70,174 78,174"  fill="#254028" opacity="0.55"/>
   <polygon points="226,162 222,178 230,178" fill="#254028" opacity="0.55"/>
   <!-- Branch lines -->
-  <line x1="150" y1="107" x2="72" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="150" y1="107" x2="228" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="150" y1="107" x2="88" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="150" y1="107" x2="212" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <!-- Mountain climber -->
-  ${(climberT > 0) ? `<image href="mountain_climber.png" x="${(65 + 83 * Math.min(climberT,1) - 13).toFixed(0)}" y="${(150 - 120 * Math.min(climberT,1) - 38).toFixed(0)}" width="26" height="38" preserveAspectRatio="xMidYMid meet"/>` : ''}
+  ${(climberT > 0) ? `<image href="mountain_climber.png" x="${(75 + 75 * Math.min(climberT,1) - 20).toFixed(0)}" y="${(148 - 115 * Math.min(climberT,1) - 58).toFixed(0)}" width="40" height="58" preserveAspectRatio="xMidYMid meet"/>` : ''}
   <!-- Plus between addends -->
   <text x="150" y="196" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
@@ -552,16 +552,16 @@
   <text x="150" y="93" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
     font-size="24" font-weight="900" fill="${top.tc}">${topTxt}</text>
-  <!-- Left addend box -->
-  <rect x="38" y="161" width="64" height="41" rx="10"
+  <!-- Left addend box (tucked inside mountain slope) -->
+  <rect x="56" y="161" width="64" height="41" rx="10"
     fill="${left.fill}" stroke="${left.stroke}" stroke-width="2.5"/>
-  <text x="70" y="188" text-anchor="middle"
+  <text x="88" y="188" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
     font-size="24" font-weight="900" fill="${left.tc}">${leftTxt}</text>
-  <!-- Right addend box -->
-  <rect x="198" y="161" width="64" height="41" rx="10"
+  <!-- Right addend box (tucked inside mountain slope) -->
+  <rect x="180" y="161" width="64" height="41" rx="10"
     fill="${rgt.fill}" stroke="${rgt.stroke}" stroke-width="2.5"/>
-  <text x="230" y="188" text-anchor="middle"
+  <text x="212" y="188" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
     font-size="24" font-weight="900" fill="${rgt.tc}">${rightTxt}</text>
 </svg>`;
