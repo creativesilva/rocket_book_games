@@ -508,7 +508,7 @@
       const left = slot('left');
       const rgt  = slot('right');
 
-      return `<svg viewBox="0 0 300 235" xmlns="http://www.w3.org/2000/svg">
+      return `<svg viewBox="0 0 300 235" xmlns="http://www.w3.org/2000/svg" overflow="visible">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#a8cce0" stop-opacity="0.45"/>
@@ -537,7 +537,7 @@
   <line x1="150" y1="107" x2="72" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <line x1="150" y1="107" x2="228" y2="161" stroke="#5a3a1f" stroke-width="2.5" stroke-linecap="round"/>
   <!-- Mountain climber -->
-  ${(climberT > 0) ? `<text x="${(65 + 83 * Math.min(climberT,1)).toFixed(0)}" y="${(150 - 130 * Math.min(climberT,1)).toFixed(0)}" text-anchor="middle" dominant-baseline="middle" font-size="20">🧗</text>` : ''}
+  ${(climberT > 0) ? `<image href="mountain_climber.png" x="${(65 + 83 * Math.min(climberT,1) - 13).toFixed(0)}" y="${(150 - 120 * Math.min(climberT,1) - 38).toFixed(0)}" width="26" height="38" preserveAspectRatio="xMidYMid meet"/>` : ''}
   <!-- Plus between addends -->
   <text x="150" y="196" text-anchor="middle"
     font-family="-apple-system,BlinkMacSystemFont,Arial,sans-serif"
