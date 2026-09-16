@@ -702,24 +702,24 @@
     // Replace this object each week with the new reading list.
     // audio: point to m4a files once recorded; null = audio button hidden.
     const fastList = {
-      title: "Unit 1 Week 4",
-      subtitle: "Unit 1 Week 4 — Being Yourself",
+      title: "Unit 1 Week 5",
+      subtitle: "Unit 1 Week 5: Coming to America",
       sentences: [
-        { emoji: "🛍️🐕",   text: "I need a <u>bag</u> of dog food.",            audio: null },
-        { emoji: "🧢🔵",   text: "My <u>cap</u> is blue and black.",             audio: null },
-        { emoji: "👨🥩",   text: "Dad likes to eat <u>ham</u>.",                 audio: null },
-        { emoji: "👩🎂",   text: "She will <u>bake</u> a treat.",                audio: null },
-        { emoji: "🐕🦴",   text: "Her dog <u>ate</u> a bone.",                   audio: null },
-        { emoji: "😾😡",   text: "Mom is <u>mad</u> at my cat.",                 audio: null },
-        { emoji: "🚶🐕",   text: "Let's walk the dog <u>back</u>.",              audio: null },
-        { emoji: "🦸🔴",   text: "My <u>cape</u> is red and blue.",              audio: null },
-        { emoji: "🐕💢",   text: "The dog <u>made</u> a mess.",                  audio: null },
-        { emoji: "🍂🧹",   text: "Use the <u>rake</u> to clean up.",             audio: null },
-        { emoji: "❓🐱",   text: "Do you <u>still</u> have a cat?",              audio: null },
-        { emoji: "👔🖤",   text: "I wore a black <u>belt</u>.",                  audio: null },
-        { emoji: "🐄🏚️",   text: "Put the cow <u>into</u> the barn.",            audio: null },
-        { emoji: "✅🧹",   text: "Get your chores <u>done</u>.",                 audio: null },
-        { emoji: "🐾👨‍👩‍👧", text: "Does <u>your</u> family have a pet?",         audio: null },
+        { text: "<u>Did</u> your family move?",              audio: null },
+        { text: "I saw a shark <u>fin</u>.",                 audio: null },
+        { text: "He will <u>pick</u> a place to sit.",       audio: null },
+        { text: "Be quiet in <u>line</u>.",                  audio: null },
+        { text: "I need a <u>pipe</u> for my snowman.",      audio: null },
+        { text: "Dad gave the lady a <u>tip</u>.",           audio: null },
+        { text: "She helped mom <u>mix</u> the soup.",       audio: null },
+        { text: "He has <u>five</u> sisters.",               audio: null },
+        { text: "Paint the <u>side</u> of the house.",       audio: null },
+        { text: "We went on a family <u>hike</u>.",          audio: null },
+        { text: "My <u>cape</u> is green and purple.",       audio: null },
+        { text: "Mom <u>made</u> a pan of brownies.",        audio: null },
+        { text: "We <u>all</u> have the same last name.",    audio: null },
+        { text: "Do you have <u>any</u> sisters?",           audio: null },
+        { text: "Who <u>says</u> we have to be on time?",    audio: null },
       ]
     };
 
@@ -1012,10 +1012,10 @@
     }
 
     function buildFastSequentialDeck() {
-      // Easy mode: in order, emoji hints + audio
+      // Easy mode: in order, no emoji hints
       const sentences = fastList.sentences;
       fastDeck = sentences.map(d => ({
-        html: `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`,
+        html: `<span class="sentence-text">${d.text}</span>`,
         audio: d.audio || null
       }));
       fastIndex = 0;
