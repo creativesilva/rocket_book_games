@@ -705,21 +705,21 @@
       title: "Unit 1 Week 5",
       subtitle: "Unit 1 Week 5: Coming to America",
       sentences: [
-        { text: "<u>Did</u> your family move?",              audio: null },
-        { text: "I saw a shark <u>fin</u>.",                 audio: null },
-        { text: "He will <u>pick</u> a place to sit.",       audio: null },
-        { text: "Be quiet in <u>line</u>.",                  audio: null },
-        { text: "I need a <u>pipe</u> for my snowman.",      audio: null },
-        { text: "Dad gave the lady a <u>tip</u>.",           audio: null },
-        { text: "She helped mom <u>mix</u> the soup.",       audio: null },
-        { text: "He has <u>five</u> sisters.",               audio: null },
-        { text: "Paint the <u>side</u> of the house.",       audio: null },
-        { text: "We went on a family <u>hike</u>.",          audio: null },
-        { text: "My <u>cape</u> is green and purple.",       audio: null },
-        { text: "Mom <u>made</u> a pan of brownies.",        audio: null },
-        { text: "We <u>all</u> have the same last name.",    audio: null },
-        { text: "Do you have <u>any</u> sisters?",           audio: null },
-        { text: "Who <u>says</u> we have to be on time?",    audio: null },
+        { emoji: "📦🚚",  text: "<u>Did</u> your family move?",              audio: null },
+        { emoji: "🦈",    text: "I saw a shark <u>fin</u>.",                 audio: null },
+        { emoji: "🗺️🪑", text: "He will <u>pick</u> a place to sit.",       audio: null },
+        { emoji: "🤫",    text: "Be quiet in <u>line</u>.",                  audio: null },
+        { emoji: "⛄🔧",  text: "I need a <u>pipe</u> for my snowman.",      audio: null },
+        { emoji: "👨💵",  text: "Dad gave the lady a <u>tip</u>.",           audio: null },
+        { emoji: "👩🍲",  text: "She helped mom <u>mix</u> the soup.",       audio: null },
+        { emoji: "👧👧",  text: "He has <u>five</u> sisters.",               audio: null },
+        { emoji: "🏠🎨",  text: "Paint the <u>side</u> of the house.",       audio: null },
+        { emoji: "🥾🌲",  text: "We went on a family <u>hike</u>.",          audio: null },
+        { emoji: "🦸💜",  text: "My <u>cape</u> is green and purple.",       audio: null },
+        { emoji: "🍫🥘",  text: "Mom <u>made</u> a pan of brownies.",        audio: null },
+        { emoji: "👨‍👩‍👧‍👦", text: "We <u>all</u> have the same last name.",    audio: null },
+        { emoji: "👧❓",  text: "Do you have <u>any</u> sisters?",           audio: null },
+        { emoji: "⏰❓",  text: "Who <u>says</u> we have to be on time?",    audio: null },
       ]
     };
 
@@ -1012,10 +1012,12 @@
     }
 
     function buildFastSequentialDeck() {
-      // Easy mode: in order, no emoji hints
+      // Easy mode: in order, emoji hints (max 2) + audio
       const sentences = fastList.sentences;
       fastDeck = sentences.map(d => ({
-        html: `<span class="sentence-text">${d.text}</span>`,
+        html: d.emoji
+          ? `<span class="sentence-emoji" aria-hidden="true">${d.emoji}</span><span class="sentence-text">${d.text}</span>`
+          : `<span class="sentence-text">${d.text}</span>`,
         audio: d.audio || null
       }));
       fastIndex = 0;
