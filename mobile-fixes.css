@@ -178,3 +178,31 @@ html.browser-chrome .app-title {
 html.standalone-app body {
   padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
 }
+
+/* ── Global design polish (all pages) ───────────────────────── */
+
+/* Crisp font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Button feel: smoother feedback on all interactive elements */
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Standalone: give bottom action strips breathing room above home indicator */
+html.standalone-app .segmented-actions {
+  margin-bottom: max(4px, calc(env(safe-area-inset-bottom) - 18px)) !important;
+}
+
+html.standalone-app .compact-buttons {
+  padding-bottom: max(0px, calc(env(safe-area-inset-bottom) - 20px)) !important;
+}
+
+/* Standalone: prevent the app card from ending flush with home indicator */
+html.standalone-app .app {
+  margin-bottom: max(0px, calc(env(safe-area-inset-bottom) - 16px));
+}
