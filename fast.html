@@ -590,6 +590,19 @@
       box-shadow: 0 4px 14px rgba(99,102,241,0.35);
     }
 
+    .report-card-link {
+      background: none;
+      border: none;
+      color: #6366f1;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 4px 8px;
+      opacity: 0.85;
+    }
+
     @media (max-width: 390px) {
       .sentence-wrap {
         min-height: 160px; /* floor only — flex:1 handles actual height */
@@ -794,17 +807,16 @@
       <div class="run-badge" id="brBadge">Run 1 of 3 complete</div>
       <div class="result-title" id="brTitle">Nice Read!</div>
       <div class="result-time" id="brTime">00:00.0</div>
+      <img id="brCelebImg" class="celebration-img" alt="Celebration image" />
       <div class="run-history" id="brHistory"></div>
-      <div class="result-text" id="brText">Read again and try to beat your time!</div>
       <div class="compact-buttons" id="brButtons"></div>
     </div>
 
     <div class="screen" id="sessionReportScreen">
-      <div class="result-title">3 Reads Done!</div>
+      <div class="result-title" id="srTitle">Report Card</div>
       <div class="report-canvas-wrap">
         <canvas id="reportCanvas" width="320" height="220"></canvas>
       </div>
-      <div class="result-text" id="srSummary"></div>
       <div class="compact-buttons" id="srButtons"></div>
     </div>
 
@@ -1255,13 +1267,8 @@
           stopFastTimer();
           sessionRuns.push(fastElapsedMs);
           try { var r=JSON.parse(localStorage.getItem('rocketBookReports')||'[]'); var _s=fastList.sentences; r.push({game:'Fast & Fluent',list:fastList.title,date:new Date().toISOString(),correct:_s.length,total:_s.length}); localStorage.setItem('rocketBookReports',JSON.stringify(r)); } catch(e){}
-          if (sessionRuns.length < SESSION_RUNS) {
-            playCelebrationSound();
-            showBetweenRunScreen();
-          } else {
-            playCelebrationSound();
-            showSessionReport();
-          }
+          playCelebrationSound();
+          showBetweenRunScreen();
         } else {
           // Hard mode: single-run finish (existing behavior)
           stopFastTimer();
@@ -1358,18 +1365,36 @@
 
     function showBetweenRunScreen() {
       const runNum = sessionRuns.length;
+      const isLastRun = runNum >= SESSION_RUNS;
+
       document.getElementById("brBadge").textContent = `Run ${runNum} of ${SESSION_RUNS} complete`;
-      document.getElementById("brTitle").textContent = runNum === 1 ? "Nice Read!" : "Keep it up!";
+      document.getElementById("brTitle").textContent =
+        isLastRun ? "3 Reads Done!" : (runNum === 1 ? "Nice Read!" : "Keep it up!");
       document.getElementById("brTime").textContent = formatTime(sessionRuns[runNum - 1]);
+
+      // Celebration GIF
+      const brCelebImg = document.getElementById("brCelebImg");
+      if (window.RocketBookApp && window.RocketBookApp.showCelebrationImage) {
+        window.RocketBookApp.showCelebrationImage(brCelebImg, getRandomCelebrationGif(), "rocket_book_logo.png");
+      } else {
+        brCelebImg.removeAttribute("src");
+        getRandomCelebrationGif().then(src => { brCelebImg.src = src; });
+      }
 
       buildRunHistoryHTML("brHistory", sessionRuns);
 
-      const nextRun = runNum + 1;
-      document.getElementById("brText").textContent =
-        `Read it again as Run ${nextRun} and try to beat your time!`;
-
       const brButtons = document.getElementById("brButtons");
       brButtons.innerHTML = "";
+
+      if (isLastRun) {
+        // Small "Report Card" link
+        const reportBtn = document.createElement("button");
+        reportBtn.type = "button";
+        reportBtn.className = "report-card-link";
+        reportBtn.textContent = "View Report Card";
+        reportBtn.addEventListener("click", () => showSessionReport());
+        brButtons.appendChild(reportBtn);
+      }
 
       const pill = document.createElement("div");
       pill.className = "segmented-actions";
@@ -1384,19 +1409,32 @@
         window.location.href = "index.html";
       });
 
-      const goBtn = document.createElement("button");
-      goBtn.type = "button";
-      goBtn.className = "primary-btn segment-btn";
-      goBtn.textContent = `Run ${nextRun}!`;
-      goBtn.addEventListener("click", () => {
-        stopCelebrationSound();
-        launchFastGame(false, false, true);
-      });
+      if (isLastRun) {
+        const againBtn = document.createElement("button");
+        againBtn.type = "button";
+        againBtn.className = "primary-btn segment-btn";
+        againBtn.textContent = "Read Again";
+        againBtn.addEventListener("click", () => {
+          stopCelebrationSound();
+          backToFastHome();
+        });
+        pill.appendChild(homeBtn);
+        pill.appendChild(againBtn);
+      } else {
+        const nextRun = runNum + 1;
+        const goBtn = document.createElement("button");
+        goBtn.type = "button";
+        goBtn.className = "primary-btn segment-btn";
+        goBtn.textContent = `Run ${nextRun}!`;
+        goBtn.addEventListener("click", () => {
+          stopCelebrationSound();
+          launchFastGame(false, false, true);
+        });
+        pill.appendChild(homeBtn);
+        pill.appendChild(goBtn);
+      }
 
-      pill.appendChild(homeBtn);
-      pill.appendChild(goBtn);
       brButtons.appendChild(pill);
-
       showScreen("betweenRun");
     }
 
@@ -1475,49 +1513,41 @@
     function showSessionReport() {
       generateReportCanvas();
 
-      const best = Math.min(...sessionRuns);
-      const first = sessionRuns[0];
-      const delta = first - best;
-      const srSummary = document.getElementById("srSummary");
-      if (delta > 0) {
-        srSummary.textContent = `You got ${formatTime(delta)} faster from your first read to your best!`;
-      } else {
-        srSummary.textContent = `Great work! Your best time was ${formatTime(best)}.`;
-      }
-
       const srButtons = document.getElementById("srButtons");
       srButtons.innerHTML = "";
 
       const saveBtn = document.createElement("button");
       saveBtn.type = "button";
       saveBtn.className = "save-report-btn";
-      saveBtn.textContent = "Save Report Card";
+      saveBtn.textContent = "Save to Camera Roll";
       saveBtn.addEventListener("click", saveReport);
+      srButtons.appendChild(saveBtn);
 
       const pill = document.createElement("div");
       pill.className = "segmented-actions";
 
+      const closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "neutral-btn segment-btn segment-left";
+      closeBtn.textContent = "Back";
+      closeBtn.addEventListener("click", () => showScreen("betweenRun"));
+
       const homeBtn = document.createElement("button");
       homeBtn.type = "button";
-      homeBtn.className = "neutral-btn segment-btn segment-left";
+      homeBtn.className = "primary-btn segment-btn";
       homeBtn.textContent = "Home";
       homeBtn.addEventListener("click", () => {
         window.location.href = "index.html";
       });
 
-      const againBtn = document.createElement("button");
-      againBtn.type = "button";
-      againBtn.className = "primary-btn segment-btn";
-      againBtn.textContent = "Read Again";
-      againBtn.addEventListener("click", () => backToFastHome());
-
+      pill.appendChild(closeBtn);
       pill.appendChild(homeBtn);
-      pill.appendChild(againBtn);
-      srButtons.appendChild(saveBtn);
       srButtons.appendChild(pill);
 
       showScreen("report");
     }
+
+
 
     async function saveReport() {
       const canvas = document.getElementById("reportCanvas");
