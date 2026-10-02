@@ -143,6 +143,28 @@
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     }
     .game-tile:active { transform: scale(0.94); }
+
+    /* Hover lift — mouse/trackpad only, skip locked tile */
+    @media (hover: hover) {
+      .game-tile:not(.locked):hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.72);
+        transition: transform 0.20s ease, box-shadow 0.20s ease;
+      }
+      .game-tile:active {
+        transform: scale(0.93) !important;
+        transition-duration: 0.07s !important;
+      }
+    }
+
+    /* Click ripple */
+    .tile-ripple {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.28);
+      transform: scale(0); pointer-events: none; z-index: 10;
+      animation: tile-ripple 0.55s ease-out forwards;
+    }
+    @keyframes tile-ripple { to { transform: scale(4); opacity: 0; } }
     .game-tile::before {
       content: ""; position: absolute; inset: 0; pointer-events: none;
       border-radius: var(--radius);
@@ -621,6 +643,21 @@
 
     updateBreakTile();
     window.addEventListener('pageshow', updateBreakTile);
+
+    // ── Tile ripple on tap/click ────────────────────────────────────
+    document.querySelectorAll('.game-tile').forEach(function(tile) {
+      tile.addEventListener('pointerdown', function(e) {
+        var rect = tile.getBoundingClientRect();
+        var size = Math.max(rect.width, rect.height);
+        var r    = document.createElement('span');
+        r.className = 'tile-ripple';
+        r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;'
+          + 'left:' + (e.clientX - rect.left - size / 2) + 'px;'
+          + 'top:'  + (e.clientY - rect.top  - size / 2) + 'px;';
+        tile.appendChild(r);
+        r.addEventListener('animationend', function() { r.remove(); });
+      });
+    });
 
     // ── Install prompt ──────────────────────────────────────────────
     if (/iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !localStorage.getItem('bannerDismissed')) {
