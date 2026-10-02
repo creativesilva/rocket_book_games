@@ -697,6 +697,15 @@
     @media (orientation: landscape) {
       .rotate-overlay { display: flex; }
     }
+    .rotate-overlay.dismissed { display: none !important; }
+    .rotate-anyway-btn {
+      margin-top: 22px; background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.28); border-radius: 50px;
+      padding: 11px 26px; color: rgba(255,255,255,0.70);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .rotate-anyway-btn:active { background: rgba(255,255,255,0.22); }
 
     /* ── Hamburger menu ─────────────────────────────────────────────── */
     .menu-btn {
@@ -1744,10 +1753,11 @@
     </div>
   </div>
 
-  <div class="rotate-overlay" aria-hidden="true">
+  <div class="rotate-overlay" id="rotateOverlay" aria-hidden="true">
     <div style="font-size:64px">📱</div>
     <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
     <div style="font-size:15px;margin-top:8px;opacity:0.7">Rainbow Reader works in portrait mode</div>
+    <button class="rotate-anyway-btn" onclick="document.getElementById('rotateOverlay').classList.add('dismissed')" type="button">Play anyway</button>
   </div>
 
   <div class="install-banner" id="installBanner">

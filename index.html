@@ -339,6 +339,15 @@
       font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
     @media (orientation: landscape) { .rotate-overlay { display: flex; } }
+    .rotate-overlay.dismissed { display: none !important; }
+    .rotate-anyway-btn {
+      margin-top: 22px; background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.28); border-radius: 50px;
+      padding: 11px 26px; color: rgba(255,255,255,0.70);
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .rotate-anyway-btn:active { background: rgba(255,255,255,0.22); }
   </style>
   <link rel="manifest" href="manifest.webmanifest?v=20260428a" />
   <link rel="stylesheet" href="mobile-fixes.css?v=20260428a" />
@@ -352,7 +361,7 @@
     <div class="screen">
       <img src="rocket_book_logo.png" alt="Rocket Book logo" class="brand-logo" />
       <div class="app-title">Rocket Book Games</div>
-      <div class="app-subtitle">2nd Grade &middot; Summer Reading</div>
+      <div class="app-subtitle">2nd Grade &middot; 2026/2027</div>
 
       <div class="game-grid">
         <button class="game-tile tile-fast" onclick="window.location.href='fast.html'" type="button">
@@ -451,10 +460,11 @@
   </div>
 
   <!-- Rotate overlay ────────────────────────────────────────────── -->
-  <div class="rotate-overlay" aria-hidden="true">
+  <div class="rotate-overlay" id="rotateOverlay" aria-hidden="true">
     <div style="font-size:64px">📱</div>
     <div style="font-size:22px;font-weight:900;margin-top:16px">Please rotate your device</div>
     <div style="font-size:15px;margin-top:8px;opacity:0.7">This game works best in portrait mode</div>
+    <button class="rotate-anyway-btn" onclick="document.getElementById('rotateOverlay').classList.add('dismissed')" type="button">Play anyway</button>
   </div>
 
   <script>
