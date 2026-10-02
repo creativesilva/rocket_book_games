@@ -282,6 +282,7 @@
 
   <!-- ── ROTATE PROMPT SCREEN ────────────────────────────────────────── -->
   <div class="screen" id="rotateScreen">
+    <button class="menu-back-btn" id="rotateBackBtn" type="button" aria-label="Back to menu">&#8592;</button>
     <div class="rotate-icon">&#x1F4F1;</div>
     <div class="rotate-title">Turn it sideways!</div>
     <div class="rotate-sub">Rotate your device to landscape<br>for the best view.</div>
@@ -374,6 +375,12 @@
         mq.addEventListener("change", onRotate);
       }
     }
+
+    // Back button on rotate screen returns to menu
+    document.getElementById("rotateBackBtn").addEventListener("click", () => {
+      pendingVideoIndex = null;
+      showScreen(menuScreen);
+    });
 
     // "Play anyway" skips rotation
     document.getElementById("rotateCancelBtn").addEventListener("click", () => {
