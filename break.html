@@ -13,8 +13,8 @@
     :root {
       --safe-top:    max(14px, env(safe-area-inset-top));
       --safe-bottom: max(14px, env(safe-area-inset-bottom));
-      --safe-left:   max(16px, env(safe-area-inset-left));
-      --safe-right:  max(16px, env(safe-area-inset-right));
+      --safe-left:   max(20px, env(safe-area-inset-left));
+      --safe-right:  max(20px, env(safe-area-inset-right));
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -29,48 +29,31 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Portrait overlay ──────────────────────────────────────────────── */
-    .rotate-overlay {
-      display: none; position: fixed; inset: 0;
-      background: #0d0d20; color: #fff; z-index: 99999;
-      align-items: center; justify-content: center;
-      flex-direction: column; text-align: center; padding: 32px;
-    }
-    @media (orientation: portrait) { .rotate-overlay { display: flex; } }
-    .rotate-icon { font-size: 56px; margin-bottom: 16px; animation: tilt 2s ease-in-out infinite; }
-    @keyframes tilt {
-      0%,100% { transform: rotate(0deg); }
-      35%,65%  { transform: rotate(90deg); }
-    }
-    .rotate-text { font-size: 22px; font-weight: 800; }
-    .rotate-sub  { font-size: 15px; opacity: 0.50; margin-top: 8px; }
-
     /* ── Screen system ─────────────────────────────────────────────────── */
     .screen {
       position: fixed; inset: 0;
       display: none; flex-direction: column;
+      align-items: center; justify-content: center;
     }
     .screen.active { display: flex; }
 
     /* ═══════════════════════════════════════════════════════════════════
-       MENU SCREEN
+       MENU SCREEN — works in portrait and landscape
     ═══════════════════════════════════════════════════════════════════ */
     #menuScreen {
       background:
-        radial-gradient(ellipse at 20% 0%,   rgba(139,92,246,0.35),  transparent 55%),
-        radial-gradient(ellipse at 80% 10%,  rgba(59,130,246,0.25),  transparent 50%),
-        radial-gradient(ellipse at 10% 90%,  rgba(236,72,153,0.20),  transparent 45%),
-        radial-gradient(ellipse at 85% 85%,  rgba(6,182,212,0.20),   transparent 40%),
+        radial-gradient(ellipse at 20% 10%,  rgba(139,92,246,0.38), transparent 55%),
+        radial-gradient(ellipse at 80% 15%,  rgba(59,130,246,0.28), transparent 50%),
+        radial-gradient(ellipse at 10% 90%,  rgba(236,72,153,0.22), transparent 45%),
+        radial-gradient(ellipse at 85% 80%,  rgba(6,182,212,0.22),  transparent 40%),
         #0d0d20;
+      padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+      gap: 0;
     }
 
-    .menu-header {
-      padding: var(--safe-top) var(--safe-right) 12px var(--safe-left);
-      display: flex; align-items: flex-end; justify-content: space-between;
-      flex-shrink: 0;
-    }
-
-    .back-btn {
+    .menu-back-btn {
+      position: absolute;
+      top: var(--safe-top); left: var(--safe-left);
       width: 36px; height: 36px;
       background: rgba(255,255,255,0.10);
       border: 1px solid rgba(255,255,255,0.20);
@@ -78,85 +61,125 @@
       font-size: 18px; display: flex; align-items: center; justify-content: center;
       cursor: pointer;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      flex-shrink: 0;
     }
-    .back-btn:active { background: rgba(255,255,255,0.22); transform: scale(0.92); }
+    .menu-back-btn:active { background: rgba(255,255,255,0.24); transform: scale(0.92); }
 
-    .menu-header-center {
-      flex: 1; text-align: center; padding: 0 12px;
+    .menu-heading {
+      text-align: center;
+      margin-bottom: clamp(14px, 3vh, 28px);
     }
     .menu-title {
-      font-size: 22px; font-weight: 900;
-      color: #fff; letter-spacing: -0.5px; line-height: 1;
+      font-size: clamp(24px, 5vw, 34px);
+      font-weight: 900; color: #fff;
+      letter-spacing: -0.5px; line-height: 1.1;
     }
-    .menu-subtitle {
-      font-size: 12px; font-weight: 600;
-      color: rgba(255,255,255,0.45);
-      margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em;
-    }
-
-    /* Card scroll row */
-    .card-scroll-wrap {
-      flex: 1; overflow: hidden;
-      display: flex; align-items: center;
-      padding: 0 var(--safe-left) var(--safe-bottom) var(--safe-left);
+    .menu-sub {
+      font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.42);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-top: 5px;
     }
 
-    .card-row {
-      display: flex; flex-direction: row;
-      gap: 14px; align-items: stretch;
-      overflow-x: auto; overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      padding: 8px 4px 8px 4px;
-      width: 100%;
-      scrollbar-width: none;
+    /* Vertical card stack, centered */
+    .card-stack {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: clamp(8px, 1.6vh, 14px);
+      width: 100%; max-width: 440px;
     }
-    .card-row::-webkit-scrollbar { display: none; }
 
     .vid-card {
-      flex-shrink: 0;
-      width: clamp(140px, 34vw, 200px);
-      border-radius: 22px;
-      padding: 20px 16px 18px;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: flex-end;
-      gap: 8px; cursor: pointer;
-      scroll-snap-align: start;
+      width: 100%;
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex; flex-direction: row;
+      align-items: center; gap: 16px;
+      cursor: pointer;
       position: relative; overflow: hidden;
       border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 8px 28px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.22);
+      transition: transform 0.13s ease, box-shadow 0.13s ease;
     }
-    .vid-card:active { transform: scale(0.94); box-shadow: 0 4px 14px rgba(0,0,0,0.30); }
+    .vid-card:active { transform: scale(0.96); box-shadow: 0 3px 10px rgba(0,0,0,0.28); }
     .vid-card::before {
       content: ""; position: absolute; inset: 0;
-      background: linear-gradient(160deg, rgba(255,255,255,0.18) 0%, transparent 55%);
-      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.16) 0%, transparent 55%);
     }
 
-    .card-icon { font-size: clamp(44px, 10vw, 60px); line-height: 1; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.25)); position: relative; z-index: 1; }
-    .card-name { font-size: 13px; font-weight: 800; color: #fff; text-align: center; line-height: 1.2; position: relative; z-index: 1; }
-    .card-play-hint {
-      font-size: 11px; font-weight: 600;
-      color: rgba(255,255,255,0.60);
-      background: rgba(0,0,0,0.20);
-      border-radius: 20px; padding: 3px 10px;
+    .card-icon {
+      font-size: clamp(30px, 5vw, 40px);
+      line-height: 1; flex-shrink: 0;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.22));
       position: relative; z-index: 1;
     }
+    .card-text {
+      flex: 1; min-width: 0;
+      position: relative; z-index: 1;
+    }
+    .card-name {
+      font-size: clamp(14px, 2.5vw, 17px);
+      font-weight: 800; color: #fff;
+      line-height: 1.2;
+    }
+    .card-hint {
+      font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,0.55);
+      margin-top: 2px;
+    }
+    .card-arrow {
+      font-size: 20px; color: rgba(255,255,255,0.55);
+      flex-shrink: 0; position: relative; z-index: 1;
+    }
 
-    /* Card color themes */
-    .card-0 { background: linear-gradient(145deg, #fbbf24, #d97706); }
-    .card-1 { background: linear-gradient(145deg, #60a5fa, #2563eb); }
-    .card-2 { background: linear-gradient(145deg, #f472b6, #db2777); }
-    .card-3 { background: linear-gradient(145deg, #34d399, #059669); }
-    .card-4 { background: linear-gradient(145deg, #67e8f9, #0891b2); }
+    /* Card colors */
+    .card-0 { background: linear-gradient(145deg, #f59e0b, #b45309); }
+    .card-1 { background: linear-gradient(145deg, #60a5fa, #1d4ed8); }
+    .card-2 { background: linear-gradient(145deg, #f472b6, #be185d); }
+    .card-3 { background: linear-gradient(145deg, #34d399, #047857); }
+    .card-4 { background: linear-gradient(145deg, #67e8f9, #0e7490); }
+
+    /* ═══════════════════════════════════════════════════════════════════
+       ROTATE PROMPT SCREEN
+    ═══════════════════════════════════════════════════════════════════ */
+    #rotateScreen {
+      background: #0d0d20;
+      gap: 0;
+    }
+
+    .rotate-icon {
+      font-size: 64px;
+      animation: tilt 2s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes tilt {
+      0%,100% { transform: rotate(0deg); }
+      35%,65%  { transform: rotate(90deg); }
+    }
+    .rotate-title {
+      font-size: 26px; font-weight: 900;
+      color: #fff; margin-bottom: 8px; text-align: center;
+    }
+    .rotate-sub {
+      font-size: 15px; color: rgba(255,255,255,0.48);
+      text-align: center; margin-bottom: 32px;
+    }
+    .rotate-play-btn {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 50px;
+      padding: 12px 28px;
+      color: rgba(255,255,255,0.60);
+      font-family: inherit; font-size: 15px; font-weight: 700;
+      cursor: pointer;
+    }
+    .rotate-play-btn:active { background: rgba(255,255,255,0.20); }
 
     /* ═══════════════════════════════════════════════════════════════════
        PLAYER SCREEN
     ═══════════════════════════════════════════════════════════════════ */
     #playerScreen {
       background: #000;
+      justify-content: flex-start;
     }
 
     #playerVideo {
@@ -166,12 +189,11 @@
       background: #000;
     }
 
-    /* Overlay fades */
     .player-top {
       position: absolute; top: 0; left: 0; right: 0; z-index: 10;
       padding: var(--safe-top) var(--safe-right) 14px var(--safe-left);
       display: flex; align-items: flex-end; justify-content: space-between;
-      background: linear-gradient(180deg, rgba(0,0,0,0.70) 0%, transparent 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.68) 0%, transparent 100%);
       pointer-events: none;
     }
     .player-top > * { pointer-events: auto; }
@@ -180,67 +202,54 @@
       display: flex; align-items: center; gap: 7px;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 50px;
-      padding: 7px 14px 7px 10px;
+      border-radius: 50px; padding: 7px 16px 7px 11px;
       color: #fff; font-size: 14px; font-weight: 700;
       cursor: pointer; font-family: inherit;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     }
     .player-back-btn:active { background: rgba(255,255,255,0.26); transform: scale(0.95); }
-    .player-back-arrow { font-size: 17px; font-weight: 400; }
 
     .player-vid-title {
       font-size: 13px; font-weight: 700;
-      color: rgba(255,255,255,0.80);
-      background: rgba(0,0,0,0.30);
+      color: rgba(255,255,255,0.78);
+      background: rgba(0,0,0,0.32);
       border-radius: 20px; padding: 6px 14px;
       backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      max-width: 200px; white-space: nowrap;
+      max-width: 210px; white-space: nowrap;
       overflow: hidden; text-overflow: ellipsis;
     }
 
-    /* Big centered play/pause tap area */
+    /* Tap zone */
     .tap-zone {
       position: absolute; inset: 0; z-index: 5;
       display: flex; align-items: center; justify-content: center;
       cursor: pointer;
     }
-
     .play-btn-wrap {
       width: 80px; height: 80px;
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.14);
+      border: 2px solid rgba(255,255,255,0.44);
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      transition: opacity 0.25s, transform 0.15s;
+      transition: opacity 0.22s;
     }
     .play-triangle {
       width: 0; height: 0;
       border-top: 16px solid transparent;
       border-bottom: 16px solid transparent;
-      border-left: 26px solid rgba(255,255,255,0.95);
+      border-left: 27px solid rgba(255,255,255,0.95);
       margin-left: 5px;
     }
-    .pause-bars {
-      display: flex; gap: 6px; align-items: center;
-    }
-    .pause-bar {
-      width: 6px; height: 26px;
-      background: rgba(255,255,255,0.95);
-      border-radius: 3px;
-    }
+    .pause-bars { display: flex; gap: 6px; align-items: center; }
+    .pause-bar  { width: 6px; height: 26px; background: rgba(255,255,255,0.95); border-radius: 3px; }
 
-    .tap-zone.playing .play-btn-wrap {
-      opacity: 0;
-    }
-    .tap-zone.playing:hover .play-btn-wrap,
-    .tap-zone.playing:active .play-btn-wrap {
-      opacity: 1;
-    }
-    .tap-zone.paused .play-btn-wrap { opacity: 1; }
+    .tap-zone.playing .play-btn-wrap          { opacity: 0; }
+    .tap-zone.playing:hover  .play-btn-wrap   { opacity: 1; }
+    .tap-zone.playing:active .play-btn-wrap   { opacity: 1; }
+    .tap-zone.paused .play-btn-wrap           { opacity: 1; }
 
-    /* Loading spinner */
+    /* Spinner */
     .loading-ring {
       position: absolute; inset: 0; z-index: 4;
       display: none; align-items: center; justify-content: center;
@@ -259,38 +268,34 @@
 </head>
 <body>
 
-  <!-- Rotate prompt (portrait mode) -->
-  <div class="rotate-overlay">
-    <div class="rotate-icon">📱</div>
-    <div class="rotate-text">Turn sideways to watch</div>
-    <div class="rotate-sub">Brain Break plays in landscape mode</div>
-  </div>
-
   <!-- ── MENU SCREEN ─────────────────────────────────────────────────── -->
   <div class="screen active" id="menuScreen">
-    <div class="menu-header">
-      <button class="back-btn" id="menuHomeBtn" type="button" aria-label="Home">&#8592;</button>
-      <div class="menu-header-center">
-        <div class="menu-title">&#x1F3AC; Brain Break</div>
-        <div class="menu-subtitle">Pick a video and dance!</div>
-      </div>
-      <div style="width:36px"></div>
+    <button class="menu-back-btn" id="menuHomeBtn" type="button" aria-label="Home">&#8592;</button>
+
+    <div class="menu-heading">
+      <div class="menu-title">&#x1F3AC; Brain Break</div>
+      <div class="menu-sub">Pick a video and dance!</div>
     </div>
 
-    <div class="card-scroll-wrap">
-      <div class="card-row" id="cardRow"></div>
-    </div>
+    <div class="card-stack" id="cardStack"></div>
+  </div>
+
+  <!-- ── ROTATE PROMPT SCREEN ────────────────────────────────────────── -->
+  <div class="screen" id="rotateScreen">
+    <div class="rotate-icon">&#x1F4F1;</div>
+    <div class="rotate-title">Turn it sideways!</div>
+    <div class="rotate-sub">Rotate your device to landscape<br>for the best view.</div>
+    <button class="rotate-play-btn" id="rotateCancelBtn" type="button">Play anyway</button>
   </div>
 
   <!-- ── PLAYER SCREEN ───────────────────────────────────────────────── -->
   <div class="screen" id="playerScreen">
-
     <video id="playerVideo" playsinline webkit-playsinline preload="metadata"></video>
 
     <div class="loading-ring" id="loadingRing"><div class="ring"></div></div>
 
     <div class="tap-zone paused" id="tapZone">
-      <div class="play-btn-wrap" id="playBtnWrap">
+      <div class="play-btn-wrap">
         <div class="play-triangle" id="playTriangle"></div>
         <div class="pause-bars" id="pauseBars" style="display:none">
           <div class="pause-bar"></div><div class="pause-bar"></div>
@@ -300,18 +305,14 @@
 
     <div class="player-top">
       <button class="player-back-btn" id="playerBackBtn" type="button">
-        <span class="player-back-arrow">&#8592;</span> Videos
+        &#8592; Videos
       </button>
       <div class="player-vid-title" id="playerVidTitle">Loading...</div>
     </div>
-
   </div>
 
   <script>
-    try { screen.orientation.lock('landscape').catch(() => {}); } catch(e) {}
-
     // ── Video list ──────────────────────────────────────────────────────────
-    // Videos are served directly from the repo for reliable streaming.
     const breakVideos = [
       { title: "Toy Story Freeze Dance",    icon: "🤠", file: "videos/toy-story-freeze-dance.mp4" },
       { title: "PAW Patrol Human Tetris",   icon: "🐾", file: "videos/paw-patrol-human-tetris.mp4" },
@@ -322,14 +323,17 @@
 
     // ── Elements ────────────────────────────────────────────────────────────
     const menuScreen   = document.getElementById("menuScreen");
+    const rotateScreen = document.getElementById("rotateScreen");
     const playerScreen = document.getElementById("playerScreen");
-    const cardRow      = document.getElementById("cardRow");
+    const cardStack    = document.getElementById("cardStack");
     const playerVideo  = document.getElementById("playerVideo");
     const tapZone      = document.getElementById("tapZone");
     const playTriangle = document.getElementById("playTriangle");
     const pauseBars    = document.getElementById("pauseBars");
     const loadingRing  = document.getElementById("loadingRing");
     const playerVidTitle = document.getElementById("playerVidTitle");
+
+    let pendingVideoIndex = null;
 
     // ── Build menu cards ────────────────────────────────────────────────────
     breakVideos.forEach((v, i) => {
@@ -338,11 +342,42 @@
       card.className = `vid-card card-${i}`;
       card.innerHTML = `
         <span class="card-icon">${v.icon}</span>
-        <span class="card-name">${v.title}</span>
-        <span class="card-play-hint">Tap to play</span>
+        <div class="card-text">
+          <div class="card-name">${v.title}</div>
+          <div class="card-hint">Tap to play</div>
+        </div>
+        <span class="card-arrow">&#8250;</span>
       `;
-      card.addEventListener("click", () => openPlayer(i));
-      cardRow.appendChild(card);
+      card.addEventListener("click", () => onCardTap(i));
+      cardStack.appendChild(card);
+    });
+
+    // ── Card tap: rotate prompt or straight to player ───────────────────────
+    function isLandscape() {
+      return window.matchMedia("(orientation: landscape)").matches;
+    }
+
+    function onCardTap(index) {
+      pendingVideoIndex = index;
+      if (isLandscape()) {
+        openPlayer(index);
+      } else {
+        showScreen(rotateScreen);
+        // Auto-advance when they rotate
+        const mq = window.matchMedia("(orientation: landscape)");
+        function onRotate(e) {
+          if (e.matches) {
+            mq.removeEventListener("change", onRotate);
+            openPlayer(pendingVideoIndex);
+          }
+        }
+        mq.addEventListener("change", onRotate);
+      }
+    }
+
+    // "Play anyway" skips rotation
+    document.getElementById("rotateCancelBtn").addEventListener("click", () => {
+      openPlayer(pendingVideoIndex);
     });
 
     // ── Navigation ──────────────────────────────────────────────────────────
@@ -353,17 +388,20 @@
     document.getElementById("playerBackBtn").addEventListener("click", () => {
       playerVideo.pause();
       playerVideo.src = "";
-      playerScreen.classList.remove("active");
-      menuScreen.classList.add("active");
+      showScreen(menuScreen);
     });
+
+    function showScreen(screen) {
+      [menuScreen, rotateScreen, playerScreen].forEach(s => s.classList.remove("active"));
+      screen.classList.add("active");
+    }
 
     // ── Player ──────────────────────────────────────────────────────────────
     function openPlayer(index) {
+      try { screen.orientation.lock("landscape").catch(() => {}); } catch(e) {}
       const v = breakVideos[index];
-      menuScreen.classList.remove("active");
-      playerScreen.classList.add("active");
+      showScreen(playerScreen);
       playerVidTitle.textContent = v.title;
-
       setPlayState("loading");
       playerVideo.src = v.file;
       playerVideo.load();
@@ -388,7 +426,6 @@
       }
     }
 
-    // Tap zone toggles play/pause
     tapZone.addEventListener("click", () => {
       if (playerVideo.paused || playerVideo.ended) {
         playerVideo.play().catch(() => {});
@@ -397,12 +434,15 @@
       }
     });
 
-    playerVideo.addEventListener("canplay",  () => setPlayState("paused"));
-    playerVideo.addEventListener("playing",  () => setPlayState("playing"));
-    playerVideo.addEventListener("pause",    () => setPlayState("paused"));
-    playerVideo.addEventListener("waiting",  () => loadingRing.classList.add("visible"));
-    playerVideo.addEventListener("ended",    () => setPlayState("paused"));
-    playerVideo.addEventListener("error",    () => {
+    playerVideo.addEventListener("canplay", () => {
+      setPlayState("paused");
+      playerVideo.play().catch(() => {});
+    });
+    playerVideo.addEventListener("playing", () => setPlayState("playing"));
+    playerVideo.addEventListener("pause",   () => setPlayState("paused"));
+    playerVideo.addEventListener("waiting", () => loadingRing.classList.add("visible"));
+    playerVideo.addEventListener("ended",   () => setPlayState("paused"));
+    playerVideo.addEventListener("error",   () => {
       setPlayState("paused");
       playerVidTitle.textContent = "Could not load video";
     });
