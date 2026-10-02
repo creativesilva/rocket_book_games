@@ -459,6 +459,13 @@
         <span class="menu-item-icon">&#x26F0;&#xFE0F;</span> Math Mountain
       </button>
       <div class="menu-divider"></div>
+      <button class="menu-item" type="button" onclick="closeMenu();shareByEmail()">
+        <span class="menu-item-icon">&#x2709;&#xFE0F;</span> Share via Email
+      </button>
+      <button class="menu-item" id="copyLinkBtn" type="button" onclick="copyAppLink()">
+        <span class="menu-item-icon">&#x1F517;</span> <span id="copyLinkLabel">Copy Link</span>
+      </button>
+      <div class="menu-divider"></div>
       <div class="menu-version">Rocket Book Games</div>
     </div>
   </div>
@@ -551,6 +558,31 @@
     }, { passive: false });
     document.addEventListener('gesturestart',  function(e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+
+    // ── Share / Copy link ───────────────────────────────────────────
+    var APP_URL = 'https://www.schoolflo.org/rocket_book_games/';
+
+    function shareByEmail() {
+      var subject = encodeURIComponent('Rocket Book Games');
+      var body    = encodeURIComponent('Check out Rocket Book Games here: ' + APP_URL);
+      window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+    }
+
+    function copyAppLink() {
+      var label = document.getElementById('copyLinkLabel');
+      navigator.clipboard.writeText(APP_URL).then(function() {
+        label.textContent = 'Copied!';
+        setTimeout(function() { label.textContent = 'Copy Link'; closeMenu(); }, 1800);
+      }).catch(function() {
+        var ta = document.createElement('textarea');
+        ta.value = APP_URL; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta);
+        label.textContent = 'Copied!';
+        setTimeout(function() { label.textContent = 'Copy Link'; closeMenu(); }, 1800);
+      });
+    }
 
     // ── Brain Break lock ────────────────────────────────────────────
     const breakTile = document.getElementById('breakTile');
