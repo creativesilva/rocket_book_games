@@ -1,4 +1,4 @@
-const CACHE_NAME = "rocket-book-games-2026-04-28-fast-emoji-1";
+const CACHE_NAME = "rocket-book-games-2026-10-01-brain-break-1";
 
 const SHELL_ASSETS = [
   "./",
@@ -6,6 +6,7 @@ const SHELL_ASSETS = [
   "./fast.html",
   "./spell.html",
   "./rainbow.html",
+  "./break.html",
   "./learn.html",
   "./letter_sounds.html",
   "./counting.html",
