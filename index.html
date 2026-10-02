@@ -188,6 +188,12 @@
       color: #1a3a1a; box-shadow: 0 5px 16px rgba(61,107,69,0.24);
       border: 1px solid rgba(134,184,106,0.48);
     }
+    .tile-break {
+      background: linear-gradient(145deg, rgba(196,181,253,0.85), rgba(139,92,246,0.90));
+      color: #2e1065; box-shadow: 0 5px 16px rgba(139,92,246,0.24);
+      border: 1px solid rgba(196,181,253,0.48);
+      grid-column: 1 / -1;
+    }
 
     /* Staggered entrance */
     .game-grid .game-tile {
@@ -200,6 +206,7 @@
     .game-grid .game-tile:nth-child(4) { animation-delay: 0.19s; }
     .game-grid .game-tile:nth-child(5) { animation-delay: 0.24s; }
     .game-grid .game-tile:nth-child(6) { animation-delay: 0.29s; }
+    .game-grid .game-tile:nth-child(7) { animation-delay: 0.34s; }
     @keyframes tileIn { to { opacity: 1; transform: translateY(0) scale(1); } }
 
     /* ── Footer ───────────────────────────────────────────────────── */
@@ -377,6 +384,11 @@
           <span class="tile-icon">&#x26F0;&#xFE0F;</span>
           <span class="tile-name">Math Mountain</span>
           <span class="tile-desc">Number bond fun!</span>
+        </button>
+        <button class="game-tile tile-break" onclick="window.location.href='break.html'" type="button">
+          <span class="tile-icon">&#x1F57A;</span>
+          <span class="tile-name">Brain Break</span>
+          <span class="tile-desc">Movement &amp; dance videos</span>
         </button>
       </div>
 

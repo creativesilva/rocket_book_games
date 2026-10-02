@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Brain Break" />
+  <meta name="theme-color" content="#0a0a18" />
+  <link rel="apple-touch-icon" href="rocket_book_logo.png?v=12" />
+  <title>Brain Break</title>
+  <style>
+    :root { --accent: #8b5cf6; --bar-h: 48px; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #0a0a18;
+      overflow: hidden;
+      touch-action: manipulation;
+      -webkit-user-select: none; user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Portrait: ask to rotate ───────────────────────────────────────── */
+    .rotate-overlay {
+      display: none; position: fixed; inset: 0;
+      background: #0a0a18; color: #fff; z-index: 99999;
+      align-items: center; justify-content: center;
+      flex-direction: column; text-align: center; padding: 32px;
+    }
+    @media (orientation: portrait) { .rotate-overlay { display: flex; } }
+
+    .rotate-icon {
+      font-size: 60px; margin-bottom: 20px;
+      animation: spinHint 2s ease-in-out infinite;
+    }
+    @keyframes spinHint {
+      0%,100% { transform: rotate(0deg); }
+      35%,65%  { transform: rotate(90deg); }
+    }
+    .rotate-text { font-size: 22px; font-weight: 800; }
+    .rotate-sub  { font-size: 15px; opacity: 0.5; margin-top: 8px; font-weight: 500; }
+
+    /* ── Player layout ─────────────────────────────────────────────────── */
+    .player-wrap {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+    }
+
+    video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+
+    /* ── Top bar (overlaid) ────────────────────────────────────────────── */
+    .top-bar {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+      height: calc(var(--bar-h) + max(0px, env(safe-area-inset-top)));
+      padding-top: max(0px, env(safe-area-inset-top));
+      padding-left: max(14px, env(safe-area-inset-left));
+      padding-right: max(14px, env(safe-area-inset-right));
+      padding-bottom: 8px;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      background: linear-gradient(180deg, rgba(0,0,0,0.72) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .top-bar > * { pointer-events: auto; }
+
+    .bar-left { display: flex; align-items: center; gap: 10px; }
+
+    .home-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 50%;
+      color: #fff; font-size: 19px; font-weight: 400;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: background 0.15s;
+    }
+    .home-btn:active { background: rgba(255,255,255,0.26); }
+
+    .bar-title {
+      font-size: 16px; font-weight: 800;
+      color: rgba(255,255,255,0.92);
+      letter-spacing: -0.01em;
+    }
+
+    .vid-title-badge {
+      font-size: 13px; font-weight: 600;
+      color: rgba(255,255,255,0.65);
+      background: rgba(255,255,255,0.10);
+      border-radius: 20px;
+      padding: 5px 13px;
+      max-width: 240px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ── Bottom picker ─────────────────────────────────────────────────── */
+    .bottom-bar {
+      position: absolute; bottom: 0; left: 0; right: 0; z-index: 20;
+      padding-bottom: max(10px, env(safe-area-inset-bottom));
+      padding-top: 10px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+      background: linear-gradient(0deg, rgba(0,0,0,0.70) 0%, transparent 100%);
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px;
+    }
+
+    .vid-pill {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 50px; padding: 6px 16px;
+      color: rgba(255,255,255,0.72);
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap; max-width: 150px;
+      overflow: hidden; text-overflow: ellipsis;
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: background 0.15s, color 0.15s, transform 0.1s;
+    }
+    .vid-pill.active {
+      background: var(--accent);
+      border-color: rgba(139,92,246,0.60);
+      color: #fff;
+    }
+    .vid-pill:active { transform: scale(0.93); }
+
+    /* ── No-video placeholder ──────────────────────────────────────────── */
+    .no-video-msg {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.40);
+      font-size: 15px; font-weight: 600; text-align: center;
+      gap: 10px; padding: 40px;
+    }
+    .no-video-msg .big-icon { font-size: 52px; }
+    .no-video-msg .sub { font-size: 13px; opacity: 0.55; }
+  </style>
+</head>
+<body>
+
+  <div class="rotate-overlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">Turn your device sideways</div>
+    <div class="rotate-sub">Brain Break plays in landscape</div>
+  </div>
+
+  <div class="player-wrap">
+
+    <div class="top-bar">
+      <div class="bar-left">
+        <button class="home-btn" onclick="window.location.href='index.html'" type="button" aria-label="Home">&#8592;</button>
+        <span class="bar-title">Brain Break</span>
+      </div>
+      <div class="vid-title-badge" id="vidTitleBadge">Loading...</div>
+    </div>
+
+    <video id="mainVideo" playsinline webkit-playsinline controls preload="metadata"></video>
+
+    <div class="no-video-msg" id="noVideoMsg" style="display:none">
+      <div class="big-icon">&#x1F3AC;</div>
+      <div>Videos coming soon!</div>
+      <div class="sub">Drop .mp4 files in the incoming folder, then upload to GitHub.</div>
+    </div>
+
+    <div class="bottom-bar" id="bottomBar"></div>
+
+  </div>
+
+  <script>
+    try { screen.orientation.lock('landscape').catch(() => {}); } catch(e) {}
+
+    // ── Video list ──────────────────────────────────────────────────────────
+    // After uploading .mp4 files to a GitHub Release, paste each asset URL here.
+    // Create the release at: https://github.com/creativesilva/rocket_book_games/releases/new
+    // Tag it something like "media-v1", attach .mp4 files, then copy their URLs.
+    //
+    // Example entry:
+    // { title: "GoNoodle Dance Party", url: "https://github.com/creativesilva/rocket_book_games/releases/download/media-v1/gonoodle-dance.mp4" },
+
+    const breakVideos = [
+      // ADD VIDEOS HERE once uploaded — see instructions above
+    ];
+
+    // ── Player logic ────────────────────────────────────────────────────────
+    let currentIndex = 0;
+    const vid = document.getElementById("mainVideo");
+    const titleBadge = document.getElementById("vidTitleBadge");
+    const bottomBar = document.getElementById("bottomBar");
+    const noVideoMsg = document.getElementById("noVideoMsg");
+
+    function loadVideo(index) {
+      if (!breakVideos.length) return;
+      currentIndex = index;
+      const entry = breakVideos[index];
+      vid.src = entry.url;
+      vid.load();
+      vid.play().catch(() => {});
+      titleBadge.textContent = entry.title;
+      renderPills();
+    }
+
+    function renderPills() {
+      bottomBar.innerHTML = "";
+      breakVideos.forEach((entry, i) => {
+        const pill = document.createElement("button");
+        pill.type = "button";
+        pill.className = "vid-pill" + (i === currentIndex ? " active" : "");
+        pill.textContent = entry.title;
+        pill.addEventListener("click", () => loadVideo(i));
+        bottomBar.appendChild(pill);
+      });
+    }
+
+    if (breakVideos.length === 0) {
+      vid.style.display = "none";
+      noVideoMsg.style.display = "flex";
+      titleBadge.textContent = "No videos yet";
+    } else {
+      loadVideo(0);
+    }
+
+    // Auto-advance to next video when one finishes
+    vid.addEventListener("ended", () => {
+      if (currentIndex < breakVideos.length - 1) {
+        loadVideo(currentIndex + 1);
+      }
+    });
+  </script>
+</body>
+</html>
