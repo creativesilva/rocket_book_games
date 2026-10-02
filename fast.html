@@ -1520,6 +1520,7 @@
     }
 
     function showSessionReport() {
+      localStorage.setItem('rocketBreakUnlocked', '1');
       generateReportCanvas();
 
       const srButtons = document.getElementById("srButtons");

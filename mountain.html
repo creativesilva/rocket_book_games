@@ -751,7 +751,7 @@
       const textEl   = document.getElementById('mmFinishText');
 
       accentEl.innerHTML = '<img src="mountain_climber_celebration.png" alt="Mountain climber" />';
-      if (pct === 100)   { titleEl.textContent = 'You Climbed It!'; }
+      if (pct === 100)   { titleEl.textContent = 'You Climbed It!'; localStorage.setItem('rocketBreakUnlocked', '1'); }
       else if (pct >= 80){ titleEl.textContent = 'Great Climb!'; }
       else               { titleEl.textContent = 'Keep Climbing!'; }
 

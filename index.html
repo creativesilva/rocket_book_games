@@ -330,6 +330,29 @@
       .tile-name { font-size: 12px; }
     }
 
+    /* ── Brain Break lock state ──────────────────────────────────── */
+    .tile-break.locked {
+      filter: grayscale(0.65);
+      opacity: 0.50;
+    }
+    .tile-lock-icon {
+      position: absolute; top: 7px; right: 9px;
+      font-size: 14px; z-index: 2; line-height: 1;
+    }
+    .lock-toast {
+      position: fixed; bottom: 88px; left: 50%;
+      transform: translateX(-50%) translateY(14px);
+      background: rgba(0,0,0,0.82); color: #fff;
+      padding: 10px 22px; border-radius: 50px;
+      font-size: 14px; font-weight: 700;
+      white-space: nowrap; z-index: 99999;
+      opacity: 0; transition: opacity 0.22s, transform 0.22s;
+      pointer-events: none;
+    }
+    .lock-toast.show {
+      opacity: 1; transform: translateX(-50%) translateY(0);
+    }
+
     /* ── Portrait-only ────────────────────────────────────────────── */
     .rotate-overlay {
       display: none; position: fixed; inset: 0;
@@ -394,7 +417,7 @@
           <span class="tile-name">Math Mountain</span>
           <span class="tile-desc">Number bond fun!</span>
         </button>
-        <button class="game-tile tile-break" onclick="window.location.href='break.html'" type="button">
+        <button class="game-tile tile-break" id="breakTile" onclick="goBrainBreak()" type="button">
           <span class="tile-icon">&#x1F57A;</span>
           <span class="tile-name">Brain Break</span>
           <span class="tile-desc">Movement &amp; dance videos</span>
@@ -403,7 +426,7 @@
 
       <div class="footer">
         <div class="micro-note">
-          Designed by <a class="credit-link" href="https://www.instagram.com/silvateaches/" target="_blank" rel="noopener noreferrer">CreativeSilva</a>
+          Designed by Chris Silva &middot; A <a class="credit-link" href="https://www.schoolflo.org" target="_blank" rel="noopener noreferrer">School Flo</a> web-app
         </div>
       </div>
     </div>
@@ -452,6 +475,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Brain Break lock toast ────────────────────────────────────── -->
+  <div class="lock-toast" id="lockToast">Complete a learning game first!</div>
 
   <!-- Install banner ────────────────────────────────────────────── -->
   <div class="install-banner" id="installBanner">
@@ -524,6 +550,41 @@
     }, { passive: false });
     document.addEventListener('gesturestart',  function(e) { e.preventDefault(); });
     document.addEventListener('gesturechange', function(e) { e.preventDefault(); });
+
+    // ── Brain Break lock ────────────────────────────────────────────
+    const breakTile = document.getElementById('breakTile');
+    const lockToast = document.getElementById('lockToast');
+    let toastTimer  = null;
+
+    function updateBreakTile() {
+      const unlocked = localStorage.getItem('rocketBreakUnlocked') === '1';
+      if (unlocked) {
+        breakTile.classList.remove('locked');
+        var existing = breakTile.querySelector('.tile-lock-icon');
+        if (existing) existing.remove();
+      } else {
+        breakTile.classList.add('locked');
+        if (!breakTile.querySelector('.tile-lock-icon')) {
+          var icon = document.createElement('span');
+          icon.className = 'tile-lock-icon';
+          icon.textContent = '🔒';
+          breakTile.appendChild(icon);
+        }
+      }
+    }
+
+    function goBrainBreak() {
+      if (localStorage.getItem('rocketBreakUnlocked') !== '1') {
+        clearTimeout(toastTimer);
+        lockToast.classList.add('show');
+        toastTimer = setTimeout(function() { lockToast.classList.remove('show'); }, 2600);
+        return;
+      }
+      window.location.href = 'break.html';
+    }
+
+    updateBreakTile();
+    window.addEventListener('pageshow', updateBreakTile);
 
     // ── Install prompt ──────────────────────────────────────────────
     if (/iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !localStorage.getItem('bannerDismissed')) {

@@ -191,68 +191,100 @@
       background: #000;
     }
 
-    .player-top {
-      position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-      padding: var(--safe-top) var(--safe-right) 14px var(--safe-left);
-      display: flex; align-items: flex-end; justify-content: space-between;
-      background: linear-gradient(180deg, rgba(0,0,0,0.68) 0%, transparent 100%);
-      pointer-events: none;
+    /* Invisible full-screen tap area */
+    .video-tap {
+      position: absolute; inset: 0; z-index: 5; cursor: pointer;
     }
-    .player-top > * { pointer-events: auto; }
 
+    /* Controls overlay: fades in/out */
+    .player-ui {
+      position: absolute; inset: 0; z-index: 10;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.26s ease;
+    }
+    .player-ui.visible { opacity: 1; }
+    .player-ui.visible .player-top-bar,
+    .player-ui.visible .player-btm-bar { pointer-events: auto; }
+
+    /* Top gradient bar */
+    .player-top-bar {
+      position: absolute; top: 0; left: 0; right: 0;
+      padding: max(var(--safe-top), 14px) var(--safe-right) 52px var(--safe-left);
+      background: linear-gradient(180deg, rgba(0,0,0,0.76) 0%, transparent 100%);
+      display: flex; align-items: flex-end; gap: 10px;
+    }
     .player-back-btn {
-      display: flex; align-items: center; gap: 7px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 50px; padding: 7px 16px 7px 11px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 50px; padding: 7px 14px 7px 10px;
       color: #fff; font-size: 14px; font-weight: 700;
-      cursor: pointer; font-family: inherit;
+      cursor: pointer; font-family: inherit; flex-shrink: 0;
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: background 0.12s;
     }
-    .player-back-btn:active { background: rgba(255,255,255,0.26); transform: scale(0.95); }
-
+    .player-back-btn:active { background: rgba(255,255,255,0.28); }
     .player-vid-title {
       font-size: 13px; font-weight: 700;
-      color: rgba(255,255,255,0.78);
-      background: rgba(0,0,0,0.32);
-      border-radius: 20px; padding: 6px 14px;
-      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-      max-width: 210px; white-space: nowrap;
-      overflow: hidden; text-overflow: ellipsis;
+      color: rgba(255,255,255,0.82);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      min-width: 0;
     }
 
-    /* Tap zone */
-    .tap-zone {
-      position: absolute; inset: 0; z-index: 5;
-      display: flex; align-items: flex-end; justify-content: center;
-      padding-bottom: 28px;
-      cursor: pointer;
+    /* Bottom gradient bar */
+    .player-btm-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 52px var(--safe-right) max(var(--safe-bottom), 18px) var(--safe-left);
+      background: linear-gradient(0deg, rgba(0,0,0,0.82) 0%, transparent 100%);
     }
-    .play-btn-wrap {
-      width: 80px; height: 80px;
-      background: rgba(255,255,255,0.14);
-      border: 2px solid rgba(255,255,255,0.44);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      transition: opacity 0.22s;
-    }
-    .play-triangle {
-      width: 0; height: 0;
-      border-top: 16px solid transparent;
-      border-bottom: 16px solid transparent;
-      border-left: 27px solid rgba(255,255,255,0.95);
-      margin-left: 5px;
-    }
-    .pause-bars { display: flex; gap: 6px; align-items: center; }
-    .pause-bar  { width: 6px; height: 26px; background: rgba(255,255,255,0.95); border-radius: 3px; }
 
-    .tap-zone.playing .play-btn-wrap          { opacity: 0; }
-    .tap-zone.playing:hover  .play-btn-wrap   { opacity: 1; }
-    .tap-zone.playing:active .play-btn-wrap   { opacity: 1; }
-    .tap-zone.paused .play-btn-wrap           { opacity: 1; }
+    /* Progress row */
+    .prog-row {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .prog-track {
+      flex: 1; height: 4px; position: relative;
+      background: rgba(255,255,255,0.28); border-radius: 2px;
+      cursor: pointer; touch-action: none;
+      padding: 10px 0; margin: -10px 0; box-sizing: content-box;
+    }
+    .prog-fill {
+      position: absolute; top: 0; left: 0; bottom: 0;
+      background: #fff; border-radius: 2px;
+      width: 0%; pointer-events: none;
+    }
+    .prog-thumb {
+      position: absolute; top: 50%; left: 0;
+      width: 14px; height: 14px; border-radius: 50%; background: #fff;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 1px 5px rgba(0,0,0,0.4); pointer-events: none;
+    }
+    .prog-time {
+      font-size: 13px; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+      color: rgba(255,255,255,0.86); font-feature-settings: "tnum";
+    }
+    .prog-sep { color: rgba(255,255,255,0.44); }
 
-    /* Spinner */
+    /* Controls row */
+    .ctrl-row {
+      display: flex; align-items: center; justify-content: center; gap: 18px;
+    }
+    .ctrl-btn {
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 50%; color: #fff; cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: background 0.12s, transform 0.1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ctrl-btn:active { background: rgba(255,255,255,0.28); transform: scale(0.90); }
+    .skip-btn { width: 52px; height: 52px; gap: 1px; }
+    .skip-lbl { font-size: 10px; font-weight: 800; letter-spacing: 0.02em; line-height: 1; }
+    .pp-btn { width: 68px; height: 68px; }
+
+    /* Loading spinner */
     .loading-ring {
       position: absolute; inset: 0; z-index: 4;
       display: none; align-items: center; justify-content: center;
@@ -267,6 +299,32 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Video complete overlay */
+    .done-overlay {
+      display: none; position: absolute; inset: 0; z-index: 20;
+      background: rgba(0,0,0,0.84);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; text-align: center;
+      padding: max(var(--safe-top), 24px) 32px max(var(--safe-bottom), 24px);
+    }
+    .done-overlay.show { display: flex; }
+    .done-emoji { font-size: 60px; line-height: 1; }
+    .done-title { font-size: 26px; font-weight: 900; color: #fff; line-height: 1.1; }
+    .done-sub {
+      font-size: 14px; color: rgba(255,255,255,0.58);
+      max-width: 290px; line-height: 1.45; margin-top: 2px;
+    }
+    .done-back-btn {
+      margin-top: 12px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.26);
+      border-radius: 50px; padding: 13px 32px;
+      color: #fff; font-size: 17px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+    .done-back-btn:active { background: rgba(255,255,255,0.24); }
   </style>
   <link rel="stylesheet" href="mobile-fixes.css?v=20261001-ipad" />
 </head>
@@ -296,27 +354,60 @@
   <!-- ── PLAYER SCREEN ───────────────────────────────────────────────── -->
   <div class="screen" id="playerScreen">
     <video id="playerVideo" playsinline webkit-playsinline preload="metadata"></video>
-
     <div class="loading-ring" id="loadingRing"><div class="ring"></div></div>
 
-    <div class="tap-zone paused" id="tapZone">
-      <div class="play-btn-wrap">
-        <div class="play-triangle" id="playTriangle"></div>
-        <div class="pause-bars" id="pauseBars" style="display:none">
-          <div class="pause-bar"></div><div class="pause-bar"></div>
+    <div class="video-tap" id="videoTap"></div>
+
+    <div class="player-ui" id="playerUI">
+      <div class="player-top-bar">
+        <button class="player-back-btn" id="playerBackBtn" type="button">
+          <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5L8 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Videos
+        </button>
+        <div class="player-vid-title" id="playerVidTitle"></div>
+      </div>
+
+      <div class="player-btm-bar">
+        <div class="prog-row">
+          <div class="prog-track" id="progTrack">
+            <div class="prog-fill" id="progFill"></div>
+            <div class="prog-thumb" id="progThumb"></div>
+          </div>
+          <div class="prog-time">
+            <span id="timeCur">0:00</span><span class="prog-sep"> / </span><span id="timeTot">0:00</span>
+          </div>
+        </div>
+        <div class="ctrl-row">
+          <button class="ctrl-btn skip-btn" id="skipBackBtn" type="button" aria-label="Back 10 seconds">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" fill="white"/></svg>
+            <span class="skip-lbl">10</span>
+          </button>
+          <button class="ctrl-btn pp-btn" id="ppBtn" type="button" aria-label="Play or Pause">
+            <svg id="iconPlay" width="28" height="28" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="white"/></svg>
+            <svg id="iconPause" width="28" height="28" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="white"/></svg>
+          </button>
+          <button class="ctrl-btn skip-btn" id="skipFwdBtn" type="button" aria-label="Forward 10 seconds">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path d="M18 13c0 3.31-2.69 6-6 6s-6-2.69-6-6 2.69-6 6-6v4l5-5-5-5v4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8h-2z" fill="white"/></svg>
+            <span class="skip-lbl">10</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <div class="player-top">
-      <button class="player-back-btn" id="playerBackBtn" type="button">
-        &#8592; Videos
-      </button>
-      <div class="player-vid-title" id="playerVidTitle">Loading...</div>
+    <div class="done-overlay" id="doneOverlay">
+      <div class="done-emoji">&#x1F389;</div>
+      <div class="done-title">Brain Break Complete!</div>
+      <div class="done-sub">Complete another learning game to unlock the next brain break.</div>
+      <button class="done-back-btn" id="doneDismiss" type="button">Back to Menu</button>
     </div>
   </div>
 
   <script>
+    // Bounce to home if brain break is not yet unlocked
+    if (localStorage.getItem("rocketBreakUnlocked") !== "1") {
+      window.location.replace("index.html");
+    }
+
     // ── Video list ──────────────────────────────────────────────────────────
     const breakVideos = [
       { title: "Toy Story Freeze Dance",    icon: "🤠", file: "videos/toy-story-freeze-dance.mp4" },
@@ -328,19 +419,27 @@
       { title: "Mario Freeze Dance",        icon: "🍄", file: "videos/mario-freeze-dance.mp4" },
     ];
 
-    // ── Elements ────────────────────────────────────────────────────────────
+    // ── Element refs ────────────────────────────────────────────────────────
     const menuScreen   = document.getElementById("menuScreen");
     const rotateScreen = document.getElementById("rotateScreen");
     const playerScreen = document.getElementById("playerScreen");
     const cardStack    = document.getElementById("cardStack");
     const playerVideo  = document.getElementById("playerVideo");
-    const tapZone      = document.getElementById("tapZone");
-    const playTriangle = document.getElementById("playTriangle");
-    const pauseBars    = document.getElementById("pauseBars");
     const loadingRing  = document.getElementById("loadingRing");
-    const playerVidTitle = document.getElementById("playerVidTitle");
+    const playerUI     = document.getElementById("playerUI");
+    const videoTap     = document.getElementById("videoTap");
+    const progTrack    = document.getElementById("progTrack");
+    const progFill     = document.getElementById("progFill");
+    const progThumb    = document.getElementById("progThumb");
+    const timeCur      = document.getElementById("timeCur");
+    const timeTot      = document.getElementById("timeTot");
+    const ppBtn        = document.getElementById("ppBtn");
+    const iconPlay     = document.getElementById("iconPlay");
+    const iconPause    = document.getElementById("iconPause");
+    const doneOverlay  = document.getElementById("doneOverlay");
 
     let pendingVideoIndex = null;
+    let hideTimer = null;
 
     // ── Build menu cards ────────────────────────────────────────────────────
     breakVideos.forEach((v, i) => {
@@ -359,7 +458,12 @@
       cardStack.appendChild(card);
     });
 
-    // ── Card tap: rotate prompt or straight to player ───────────────────────
+    // ── Screen navigation ───────────────────────────────────────────────────
+    function showScreen(screen) {
+      [menuScreen, rotateScreen, playerScreen].forEach(s => s.classList.remove("active"));
+      screen.classList.add("active");
+    }
+
     function isLandscape() {
       return window.matchMedia("(orientation: landscape)").matches;
     }
@@ -370,94 +474,169 @@
         openPlayer(index);
       } else {
         showScreen(rotateScreen);
-        // Auto-advance when they rotate
         const mq = window.matchMedia("(orientation: landscape)");
         function onRotate(e) {
-          if (e.matches) {
-            mq.removeEventListener("change", onRotate);
-            openPlayer(pendingVideoIndex);
-          }
+          if (e.matches) { mq.removeEventListener("change", onRotate); openPlayer(pendingVideoIndex); }
         }
         mq.addEventListener("change", onRotate);
       }
     }
 
-    // Back button on rotate screen returns to menu
     document.getElementById("rotateBackBtn").addEventListener("click", () => {
-      pendingVideoIndex = null;
-      showScreen(menuScreen);
+      pendingVideoIndex = null; showScreen(menuScreen);
     });
-
-    // "Play anyway" skips rotation
     document.getElementById("rotateCancelBtn").addEventListener("click", () => {
       openPlayer(pendingVideoIndex);
     });
-
-    // ── Navigation ──────────────────────────────────────────────────────────
     document.getElementById("menuHomeBtn").addEventListener("click", () => {
       window.location.href = "index.html";
     });
 
+    // ── Open player ─────────────────────────────────────────────────────────
+    function openPlayer(index) {
+      try { screen.orientation.lock("landscape").catch(() => {}); } catch(e) {}
+      const v = breakVideos[index];
+      showScreen(playerScreen);
+      document.getElementById("playerVidTitle").textContent = v.title;
+      doneOverlay.classList.remove("show");
+      loadingRing.classList.add("visible");
+      playerUI.classList.remove("visible");
+      timeCur.textContent = "0:00";
+      timeTot.textContent = "0:00";
+      progFill.style.width = "0%";
+      progThumb.style.left = "0%";
+      playerVideo.src = v.file;
+      playerVideo.load();
+    }
+
     document.getElementById("playerBackBtn").addEventListener("click", () => {
+      clearTimeout(hideTimer);
       playerVideo.pause();
       playerVideo.src = "";
       showScreen(menuScreen);
     });
 
-    function showScreen(screen) {
-      [menuScreen, rotateScreen, playerScreen].forEach(s => s.classList.remove("active"));
-      screen.classList.add("active");
-    }
-
-    // ── Player ──────────────────────────────────────────────────────────────
-    function openPlayer(index) {
-      try { screen.orientation.lock("landscape").catch(() => {}); } catch(e) {}
-      const v = breakVideos[index];
-      showScreen(playerScreen);
-      playerVidTitle.textContent = v.title;
-      setPlayState("loading");
-      playerVideo.src = v.file;
-      playerVideo.load();
-    }
-
-    function setPlayState(state) {
-      if (state === "loading") {
-        loadingRing.classList.add("visible");
-        tapZone.className = "tap-zone paused";
-        playTriangle.style.display = "";
-        pauseBars.style.display = "none";
-      } else if (state === "playing") {
-        loadingRing.classList.remove("visible");
-        tapZone.className = "tap-zone playing";
-        playTriangle.style.display = "none";
-        pauseBars.style.display = "flex";
-      } else {
-        loadingRing.classList.remove("visible");
-        tapZone.className = "tap-zone paused";
-        playTriangle.style.display = "";
-        pauseBars.style.display = "none";
+    // ── Controls auto-hide ──────────────────────────────────────────────────
+    function showUI(autoHide) {
+      playerUI.classList.add("visible");
+      clearTimeout(hideTimer);
+      if (autoHide && !playerVideo.paused && !playerVideo.ended) {
+        hideTimer = setTimeout(() => playerUI.classList.remove("visible"), 3200);
       }
     }
 
-    tapZone.addEventListener("click", () => {
+    // ── Tap zone ────────────────────────────────────────────────────────────
+    videoTap.addEventListener("click", () => {
+      if (!playerUI.classList.contains("visible")) {
+        showUI(!playerVideo.paused);
+      } else {
+        togglePlay();
+      }
+    });
+
+    function togglePlay() {
       if (playerVideo.paused || playerVideo.ended) {
         playerVideo.play().catch(() => {});
       } else {
         playerVideo.pause();
       }
+    }
+
+    // ── Play/Pause button ───────────────────────────────────────────────────
+    ppBtn.addEventListener("click", e => {
+      e.stopPropagation(); togglePlay(); showUI(true);
     });
 
+    function updatePPIcon() {
+      const playing = !playerVideo.paused && !playerVideo.ended;
+      iconPlay.style.display  = playing ? "none" : "";
+      iconPause.style.display = playing ? "" : "none";
+    }
+
+    // ── Skip buttons ────────────────────────────────────────────────────────
+    document.getElementById("skipBackBtn").addEventListener("click", e => {
+      e.stopPropagation();
+      playerVideo.currentTime = Math.max(0, playerVideo.currentTime - 10);
+      showUI(true);
+    });
+    document.getElementById("skipFwdBtn").addEventListener("click", e => {
+      e.stopPropagation();
+      const dur = playerVideo.duration;
+      playerVideo.currentTime = Math.min(isFinite(dur) ? dur : 0, playerVideo.currentTime + 10);
+      showUI(true);
+    });
+
+    // ── Progress bar ────────────────────────────────────────────────────────
+    function fmtTime(s) {
+      if (!isFinite(s) || s < 0) return "0:00";
+      return Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+    }
+
+    function syncProgress() {
+      const dur = playerVideo.duration;
+      if (!dur || !isFinite(dur)) return;
+      const pct = (playerVideo.currentTime / dur) * 100;
+      progFill.style.width = pct + "%";
+      progThumb.style.left = pct + "%";
+      timeCur.textContent = fmtTime(playerVideo.currentTime);
+    }
+
+    function seekFromPointer(e) {
+      const rect = progTrack.getBoundingClientRect();
+      const x = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) / rect.width;
+      const dur = playerVideo.duration;
+      if (dur && isFinite(dur)) {
+        playerVideo.currentTime = Math.min(1, Math.max(0, x)) * dur;
+      }
+      syncProgress();
+    }
+
+    let scrubbing = false;
+    progTrack.addEventListener("mousedown",  e => { scrubbing = true; seekFromPointer(e); });
+    progTrack.addEventListener("touchstart", e => { scrubbing = true; seekFromPointer(e); showUI(false); }, { passive: true });
+    document.addEventListener("mousemove",  e => { if (scrubbing) seekFromPointer(e); });
+    document.addEventListener("touchmove",  e => { if (scrubbing) seekFromPointer(e); }, { passive: true });
+    document.addEventListener("mouseup",    () => { scrubbing = false; });
+    document.addEventListener("touchend",   () => { scrubbing = false; });
+
+    // ── Video events ────────────────────────────────────────────────────────
+    playerVideo.addEventListener("loadedmetadata", () => {
+      timeTot.textContent = fmtTime(playerVideo.duration);
+    });
     playerVideo.addEventListener("canplay", () => {
-      setPlayState("paused");
+      loadingRing.classList.remove("visible");
+      syncProgress();
       playerVideo.play().catch(() => {});
     });
-    playerVideo.addEventListener("playing", () => setPlayState("playing"));
-    playerVideo.addEventListener("pause",   () => setPlayState("paused"));
+    playerVideo.addEventListener("playing", () => {
+      updatePPIcon();
+      showUI(true);
+      loadingRing.classList.remove("visible");
+    });
+    playerVideo.addEventListener("pause", () => {
+      updatePPIcon();
+      clearTimeout(hideTimer);
+      playerUI.classList.add("visible");
+    });
     playerVideo.addEventListener("waiting", () => loadingRing.classList.add("visible"));
-    playerVideo.addEventListener("ended",   () => setPlayState("paused"));
-    playerVideo.addEventListener("error",   () => {
-      setPlayState("paused");
-      playerVidTitle.textContent = "Could not load video";
+    playerVideo.addEventListener("timeupdate", syncProgress);
+    playerVideo.addEventListener("ended", () => {
+      updatePPIcon();
+      clearTimeout(hideTimer);
+      playerUI.classList.remove("visible");
+      localStorage.removeItem("rocketBreakUnlocked");
+      doneOverlay.classList.add("show");
+    });
+    playerVideo.addEventListener("error", () => {
+      loadingRing.classList.remove("visible");
+      document.getElementById("playerVidTitle").textContent = "Could not load video";
+    });
+
+    document.getElementById("doneDismiss").addEventListener("click", () => {
+      doneOverlay.classList.remove("show");
+      playerVideo.pause();
+      playerVideo.src = "";
+      showScreen(menuScreen);
     });
   </script>
 </body>
