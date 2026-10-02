@@ -134,6 +134,36 @@
     }
     .vid-pill:active { transform: scale(0.93); }
 
+    /* ── Big play overlay ─────────────────────────────────────────────── */
+    .play-overlay {
+      position: absolute; inset: 0; z-index: 15;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .play-overlay.hidden { opacity: 0; pointer-events: none; }
+
+    .play-circle {
+      width: 88px; height: 88px;
+      background: rgba(255,255,255,0.18);
+      border: 2px solid rgba(255,255,255,0.50);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .play-overlay:active .play-circle {
+      transform: scale(0.90);
+      background: rgba(255,255,255,0.30);
+    }
+    .play-triangle {
+      width: 0; height: 0;
+      border-top: 18px solid transparent;
+      border-bottom: 18px solid transparent;
+      border-left: 30px solid rgba(255,255,255,0.92);
+      margin-left: 6px;
+    }
+
     /* ── No-video placeholder ──────────────────────────────────────────── */
     .no-video-msg {
       position: absolute; inset: 0;
@@ -166,6 +196,12 @@
     </div>
 
     <video id="mainVideo" playsinline webkit-playsinline controls preload="metadata"></video>
+
+    <div class="play-overlay" id="playOverlay">
+      <div class="play-circle">
+        <div class="play-triangle"></div>
+      </div>
+    </div>
 
     <div class="no-video-msg" id="noVideoMsg" style="display:none">
       <div class="big-icon">&#x1F3AC;</div>
@@ -202,11 +238,31 @@
     const titleBadge = document.getElementById("vidTitleBadge");
     const bottomBar = document.getElementById("bottomBar");
     const noVideoMsg = document.getElementById("noVideoMsg");
+    const playOverlay = document.getElementById("playOverlay");
+
+    function showOverlay() { playOverlay.classList.remove("hidden"); }
+    function hideOverlay() { playOverlay.classList.add("hidden"); }
+
+    playOverlay.addEventListener("click", () => {
+      vid.play().catch(() => {});
+      hideOverlay();
+    });
+
+    vid.addEventListener("play",  () => hideOverlay());
+    vid.addEventListener("pause", () => showOverlay());
+    vid.addEventListener("ended", () => {
+      if (currentIndex < breakVideos.length - 1) {
+        loadVideo(currentIndex + 1);
+      } else {
+        showOverlay();
+      }
+    });
 
     function loadVideo(index) {
       if (!breakVideos.length) return;
       currentIndex = index;
       const entry = breakVideos[index];
+      showOverlay();
       vid.src = entry.url;
       vid.load();
       vid.play().catch(() => {});
@@ -229,17 +285,11 @@
     if (breakVideos.length === 0) {
       vid.style.display = "none";
       noVideoMsg.style.display = "flex";
+      playOverlay.style.display = "none";
       titleBadge.textContent = "No videos yet";
     } else {
       loadVideo(0);
     }
-
-    // Auto-advance to next video when one finishes
-    vid.addEventListener("ended", () => {
-      if (currentIndex < breakVideos.length - 1) {
-        loadVideo(currentIndex + 1);
-      }
-    });
   </script>
 </body>
 </html>
