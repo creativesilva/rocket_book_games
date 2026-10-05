@@ -331,21 +331,59 @@
       padding: 6px 12px; font-family: inherit;
     }
 
-    /* ── Install banner ───────────────────────────────────────────── */
-    .install-banner {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      background: rgba(0,0,0,0.85); color: #fff;
-      padding: 14px 20px; text-align: center;
-      font-size: 14px; z-index: 9999;
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      display: none;
+    /* ── Install popup ────────────────────────────────────────────── */
+    .install-popup-overlay {
+      display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      align-items: flex-end; justify-content: center;
+      padding: 0 0 max(20px, env(safe-area-inset-bottom)) 0;
     }
-    .install-banner b { color: #6ee7b7; }
-    .install-banner .close-banner {
-      position: absolute; top: 8px; right: 12px;
-      color: #fff; background: none; border: none;
-      font-size: 20px; cursor: pointer; font-family: inherit;
+    .install-popup-overlay.show { display: flex; }
+    .install-popup {
+      width: min(100%, 500px);
+      background: rgba(255,255,255,0.97);
+      backdrop-filter: blur(24px) saturate(1.6);
+      -webkit-backdrop-filter: blur(24px) saturate(1.6);
+      border-radius: 28px 28px 22px 22px;
+      padding: 10px 24px 24px;
+      box-shadow: 0 -4px 32px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.9);
+      animation: popupSlideUp 0.34s cubic-bezier(0.34,1.56,0.64,1) both;
     }
+    @keyframes popupSlideUp {
+      from { transform: translateY(120%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+    .popup-handle {
+      width: 36px; height: 4px;
+      background: rgba(0,0,0,0.14); border-radius: 2px;
+      margin: 0 auto 18px;
+    }
+    .popup-icon { font-size: 46px; text-align: center; margin-bottom: 6px; }
+    .popup-title {
+      font-size: 20px; font-weight: 900; text-align: center;
+      line-height: 1.1; margin-bottom: 6px; color: #1a1a2e;
+    }
+    .popup-desc {
+      font-size: 14px; color: #6b7085; text-align: center;
+      line-height: 1.5; margin-bottom: 20px; font-weight: 500;
+    }
+    .popup-install-btn {
+      display: block; width: 100%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; border: none; border-radius: 16px;
+      padding: 15px; font-size: 16px; font-weight: 800;
+      font-family: inherit; cursor: pointer; margin-bottom: 10px;
+      box-shadow: 0 4px 18px rgba(99,102,241,0.32);
+      transition: opacity 0.12s, transform 0.1s;
+    }
+    .popup-install-btn:active { opacity: 0.88; transform: scale(0.98); }
+    .popup-later-btn {
+      display: block; width: 100%; background: none; border: none;
+      color: #6b7085; font-size: 15px; font-weight: 700;
+      font-family: inherit; cursor: pointer; padding: 8px;
+    }
+    .popup-later-btn:active { opacity: 0.6; }
 
     /* ── Responsive ───────────────────────────────────────────────── */
     @media (max-width: 390px) {
@@ -518,10 +556,16 @@
   <!-- Brain Break lock toast ────────────────────────────────────── -->
   <div class="lock-toast" id="lockToast">Complete a learning game first!</div>
 
-  <!-- Install banner ────────────────────────────────────────────── -->
-  <div class="install-banner" id="installBanner">
-    <button class="close-banner" type="button" onclick="document.getElementById('installBanner').style.display='none';localStorage.setItem('bannerDismissed','1')">&times;</button>
-    Tap <b>Share &#x2191;</b> then <b>Add to Home Screen</b> for the best experience!
+  <!-- Install popup ─────────────────────────────────────────────── -->
+  <div class="install-popup-overlay" id="installPopupOverlay" onclick="if(event.target===this)dismissInstallPopup()">
+    <div class="install-popup">
+      <div class="popup-handle"></div>
+      <div class="popup-icon">&#x1F4F2;</div>
+      <div class="popup-title">Add to Your Home Screen!</div>
+      <div class="popup-desc">Get the full Rocket Book Games experience: no browser bars, faster loading, and works offline. It only takes a few seconds to set up.</div>
+      <button class="popup-install-btn" id="popupInstallBtn" type="button">Show Me How to Install &#x203A;</button>
+      <button class="popup-later-btn" onclick="dismissInstallPopup()" type="button">Maybe Later</button>
+    </div>
   </div>
 
   <!-- Rotate overlay ────────────────────────────────────────────── -->
@@ -665,10 +709,26 @@
       });
     });
 
-    // ── Install prompt ──────────────────────────────────────────────
-    if (/iPhone|iPad/.test(navigator.userAgent) && !window.navigator.standalone && !localStorage.getItem('bannerDismissed')) {
-      setTimeout(function() { document.getElementById('installBanner').style.display = 'block'; }, 2000);
+    // ── Install popup (first visit, non-PWA only) ───────────────────
+    function dismissInstallPopup() {
+      document.getElementById('installPopupOverlay').classList.remove('show');
+      localStorage.setItem('rocketInstallPromptSeen', '1');
     }
+    document.getElementById('popupInstallBtn').addEventListener('click', function() {
+      localStorage.setItem('rocketInstallPromptSeen', '1');
+      window.location.href = 'install.html';
+    });
+    (function() {
+      var isStandalone = window.navigator.standalone === true
+        || window.matchMedia('(display-mode: standalone)').matches;
+      var hasSeen = localStorage.getItem('rocketInstallPromptSeen')
+        || localStorage.getItem('bannerDismissed');
+      if (!isStandalone && !hasSeen) {
+        setTimeout(function() {
+          document.getElementById('installPopupOverlay').classList.add('show');
+        }, 2200);
+      }
+    })();
   </script>
   <script src="app-shell.js?v=20260428a" defer></script>
 </body>
