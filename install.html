@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#f0f0f5" />
+  <link rel="apple-touch-icon" href="rocket_book_logo.png?v=12" />
+  <title>Install - Rocket Book Games</title>
+  <style>
+    :root {
+      --bg:     #f0f0f5;
+      --card:   rgba(255,255,255,0.64);
+      --border: rgba(255,255,255,0.72);
+      --text:   #1a1a2e;
+      --muted:  #6b7085;
+      --radius: 20px;
+      --ios:    #007aff;
+      --android:#34a853;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%; min-height: 100dvh;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -webkit-user-select: none; user-select: none;
+      background:
+        radial-gradient(ellipse at 20%  0%,  rgba(147,130,255,0.22), transparent 50%),
+        radial-gradient(ellipse at 80%  8%,  rgba(59,180,246,0.18),  transparent 45%),
+        radial-gradient(ellipse at 10%  95%, rgba(251,146,60,0.15),  transparent 40%),
+        var(--bg);
+      display: flex; flex-direction: column; align-items: center;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(28px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    /* ── Card wrapper ─────────────────────────────────────────── */
+    .card {
+      width: min(100%, 440px);
+      background: var(--card);
+      backdrop-filter: blur(28px) saturate(1.6);
+      -webkit-backdrop-filter: blur(28px) saturate(1.6);
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.09), inset 0 1px 0 rgba(255,255,255,0.9);
+      border: 1px solid var(--border);
+      padding: 20px 20px 26px;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 32px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.44) 0%, transparent 34%);
+    }
+
+    /* ── Back button ──────────────────────────────────────────── */
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(0,0,0,0.055);
+      border: 1px solid rgba(255,255,255,0.60);
+      border-radius: 50px; padding: 7px 14px 7px 10px;
+      color: var(--muted); font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit; margin-bottom: 18px;
+      width: fit-content;
+      transition: background 0.12s;
+    }
+    .back-btn:active { background: rgba(0,0,0,0.10); }
+
+    /* ── Header ───────────────────────────────────────────────── */
+    .header {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; margin-bottom: 20px;
+    }
+    .header-icon { font-size: 52px; margin-bottom: 8px; }
+    .header h1 { font-size: 22px; font-weight: 900; line-height: 1.1; margin-bottom: 5px; }
+    .header p  { font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.4; max-width: 280px; }
+
+    /* ── Platform tabs ────────────────────────────────────────── */
+    .tab-row {
+      display: flex; gap: 8px; margin-bottom: 20px;
+    }
+    .tab-btn {
+      flex: 1; padding: 11px 8px;
+      border-radius: 14px; border: 1.5px solid transparent;
+      font-family: inherit; font-size: 14px; font-weight: 800;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.16s ease;
+      background: rgba(0,0,0,0.05);
+      color: var(--muted);
+    }
+    .tab-btn.active-ios {
+      background: rgba(0,122,255,0.10);
+      border-color: rgba(0,122,255,0.30);
+      color: var(--ios);
+    }
+    .tab-btn.active-android {
+      background: rgba(52,168,83,0.10);
+      border-color: rgba(52,168,83,0.30);
+      color: var(--android);
+    }
+
+    /* ── Panel ────────────────────────────────────────────────── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ── Steps ────────────────────────────────────────────────── */
+    .step {
+      display: flex; gap: 14px; align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      font-size: 14px; font-weight: 900; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .ios-num    { background: var(--ios); }
+    .android-num{ background: var(--android); }
+    .step-body { flex: 1; min-width: 0; }
+    .step-title { font-size: 15px; font-weight: 800; line-height: 1.2; margin-bottom: 3px; }
+    .step-desc  { font-size: 13px; color: var(--muted); font-weight: 500; line-height: 1.45; }
+
+    /* ── Visual hint chips ────────────────────────────────────── */
+    .hint-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(0,0,0,0.07);
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 8px; padding: 4px 9px;
+      font-size: 12px; font-weight: 700; color: var(--text);
+      margin-top: 6px; vertical-align: middle;
+    }
+
+    /* ── Divider ──────────────────────────────────────────────── */
+    .divider {
+      height: 1px; background: rgba(0,0,0,0.07); margin: 18px 0;
+    }
+
+    /* ── Tip box ──────────────────────────────────────────────── */
+    .tip-box {
+      background: rgba(255,204,0,0.14);
+      border: 1px solid rgba(255,180,0,0.28);
+      border-radius: 14px; padding: 12px 14px;
+      font-size: 13px; color: #7a5800;
+      font-weight: 600; line-height: 1.45;
+      display: flex; gap: 9px; align-items: flex-start;
+    }
+    .tip-icon { font-size: 17px; flex-shrink: 0; line-height: 1.2; }
+
+    /* Share icon inline SVG helper */
+    .icon-share, .icon-dots, .icon-plus {
+      display: inline-block; vertical-align: middle;
+      width: 16px; height: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <!-- Back -->
+    <button class="back-btn" onclick="window.location.href='index.html'" type="button">
+      <svg width="9" height="15" viewBox="0 0 9 15" fill="none"><path d="M8 1L1 7.5L8 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to App
+    </button>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">&#x1F4F2;</div>
+      <h1>Install Rocket Book Games</h1>
+      <p>Add the app to your home screen for a full-screen experience with no browser bars.</p>
+    </div>
+
+    <!-- Platform tabs -->
+    <div class="tab-row">
+      <button class="tab-btn active-ios" id="tabIOS" onclick="showTab('ios')" type="button">
+        <svg class="icon-share" viewBox="0 0 18 18" fill="none"><rect x="1" y="1" width="16" height="16" rx="3.5" fill="#555"/><path d="M9 11V5M6 7.5L9 4.5L12 7.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11h8" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+        iPhone &amp; iPad
+      </button>
+      <button class="tab-btn" id="tabAndroid" onclick="showTab('android')" type="button">
+        <svg class="icon-share" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="#555"/><circle cx="9" cy="5" r="1.3" fill="white"/><circle cx="9" cy="9" r="1.3" fill="white"/><circle cx="9" cy="13" r="1.3" fill="white"/></svg>
+        Android
+      </button>
+    </div>
+
+    <!-- iOS panel -->
+    <div class="panel active" id="panelIOS">
+
+      <div class="tip-box" style="margin-bottom:18px">
+        <span class="tip-icon">&#x26A0;&#xFE0F;</span>
+        <span>This only works in <strong>Safari</strong>. If you are using Chrome or another browser on your iPhone or iPad, open this page in Safari first.</span>
+      </div>
+
+      <div class="step">
+        <div class="step-num ios-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open Safari</div>
+          <div class="step-desc">Visit <strong>schoolflo.org/rocket_book_games</strong> in the Safari browser on your iPhone or iPad.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num ios-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Tap the Share button</div>
+          <div class="step-desc">
+            On <strong>iPhone</strong> it is the
+            <span class="hint-chip">
+              <svg width="13" height="15" viewBox="0 0 13 15" fill="none"><path d="M6.5 9.5V1M3 3.5L6.5 0L10 3.5" stroke="#007aff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 6v8h11V6" stroke="#007aff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Share
+            </span>
+            icon at the bottom center of the browser.<br><br>
+            On <strong>iPad</strong> it is the
+            <span class="hint-chip">
+              <svg width="13" height="15" viewBox="0 0 13 15" fill="none"><path d="M6.5 9.5V1M3 3.5L6.5 0L10 3.5" stroke="#007aff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 6v8h11V6" stroke="#007aff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Share
+            </span>
+            icon in the top right of the browser.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num ios-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Tap "Add to Home Screen"</div>
+          <div class="step-desc">Scroll down in the share sheet that pops up and tap <span class="hint-chip">&#x2795; Add to Home Screen</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num ios-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Confirm the name and tap Add</div>
+          <div class="step-desc">You can leave the name as-is. Tap <span class="hint-chip">Add</span> in the top right corner of the screen.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num ios-num">5</div>
+        <div class="step-body">
+          <div class="step-title">You're all set! &#x1F389;</div>
+          <div class="step-desc">The Rocket Book Games icon will appear on your home screen. Tap it to open the full-screen app anytime.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Android panel -->
+    <div class="panel" id="panelAndroid">
+
+      <div class="tip-box" style="margin-bottom:18px">
+        <span class="tip-icon">&#x2139;&#xFE0F;</span>
+        <span>These steps are for <strong>Chrome</strong>. If you are using a different browser the steps may look slightly different, but the option is usually in the browser menu.</span>
+      </div>
+
+      <div class="step">
+        <div class="step-num android-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open Chrome</div>
+          <div class="step-desc">Visit <strong>schoolflo.org/rocket_book_games</strong> in Google Chrome on your Android phone or tablet.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num android-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Open the browser menu</div>
+          <div class="step-desc">Tap the <span class="hint-chip"><svg class="icon-dots" viewBox="0 0 4 16" fill="none" style="width:4px;height:14px"><circle cx="2" cy="2" r="1.6" fill="#3c4043"/><circle cx="2" cy="8" r="1.6" fill="#3c4043"/><circle cx="2" cy="14" r="1.6" fill="#3c4043"/></svg> three-dot menu</span> in the top right corner of Chrome.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num android-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Tap "Add to Home Screen"</div>
+          <div class="step-desc">Look for <span class="hint-chip">Add to Home Screen</span> or <span class="hint-chip">Install App</span> in the menu. Either one works.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num android-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Confirm</div>
+          <div class="step-desc">Tap <span class="hint-chip">Add</span> or <span class="hint-chip">Install</span> on the prompt that appears.</div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num android-num">5</div>
+        <div class="step-body">
+          <div class="step-title">You're all set! &#x1F389;</div>
+          <div class="step-desc">The Rocket Book Games icon will appear on your home screen. Tap it to open the full-screen app anytime.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    function showTab(platform) {
+      document.getElementById('panelIOS').classList.toggle('active', platform === 'ios');
+      document.getElementById('panelAndroid').classList.toggle('active', platform === 'android');
+      document.getElementById('tabIOS').className     = 'tab-btn' + (platform === 'ios'     ? ' active-ios'     : '');
+      document.getElementById('tabAndroid').className = 'tab-btn' + (platform === 'android' ? ' active-android' : '');
+    }
+
+    // Auto-detect platform and show the right tab
+    var ua = navigator.userAgent.toLowerCase();
+    if (/android/.test(ua)) showTab('android');
+  </script>
+
+</body>
+</html>
