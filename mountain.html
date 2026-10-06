@@ -463,19 +463,33 @@
     // missing: 'total' => answer = left+right
     // missing: 'left'  => answer = total-right
     // missing: 'right' => answer = total-left
+    // Problems from "Find the Unknown Number" worksheets (Unit 2 Week 3)
+    // Seven Goals framework: sums 11-20, missing addend + missing sum
     const ALL_PROBLEMS = [
-      { total:11, left:4,  right:7,  missing:'total' },
-      { total:17, left:3,  right:14, missing:'right' },
-      { total:17, left:12, right:5,  missing:'total' },
-      { total:20, left:14, right:6,  missing:'left'  },
-      { total:18, left:15, right:3,  missing:'total' },
-      { total:17, left:7,  right:10, missing:'right' },
-      { total:20, left:4,  right:16, missing:'total' },
+      { total:11, left:5,  right:6,  missing:'total' },
+      { total:12, left:3,  right:9,  missing:'total' },
+      { total:12, left:4,  right:8,  missing:'right' },
+      { total:12, left:7,  right:5,  missing:'total' },
+      { total:13, left:4,  right:9,  missing:'right' },
+      { total:13, left:5,  right:8,  missing:'right' },
+      { total:13, left:6,  right:7,  missing:'left'  },
+      { total:13, left:10, right:3,  missing:'left'  },
+      { total:14, left:5,  right:9,  missing:'total' },
+      { total:14, left:6,  right:8,  missing:'right' },
+      { total:14, left:8,  right:6,  missing:'total' },
+      { total:15, left:5,  right:10, missing:'total' },
+      { total:15, left:7,  right:8,  missing:'right' },
+      { total:15, left:8,  right:7,  missing:'left'  },
+      { total:16, left:7,  right:9,  missing:'total' },
+      { total:16, left:8,  right:8,  missing:'right' },
+      { total:16, left:9,  right:7,  missing:'left'  },
       { total:17, left:8,  right:9,  missing:'total' },
-      { total:13, left:12, right:1,  missing:'right' },
-      { total:19, left:12, right:7,  missing:'left'  },
-      { total:17, left:11, right:6,  missing:'total' },
-      { total:14, left:5,  right:9,  missing:'left'  },
+      { total:17, left:9,  right:8,  missing:'left'  },
+      { total:17, left:10, right:7,  missing:'right' },
+      { total:18, left:8,  right:10, missing:'total' },
+      { total:18, left:9,  right:9,  missing:'total' },
+      { total:19, left:9,  right:10, missing:'right' },
+      { total:20, left:10, right:10, missing:'right' },
     ];
 
     function getAnswer(p) {
