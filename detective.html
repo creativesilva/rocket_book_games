@@ -10,19 +10,18 @@
   <title>Digit Detective</title>
   <style>
     :root {
-      --bg:      #0d1426;
-      --card:    rgba(255,255,255,0.07);
-      --border:  rgba(255,255,255,0.12);
-      --gold:    #f5c518;
-      --gold2:   #c9a012;
-      --gold-dim: rgba(245,197,24,0.15);
-      --text:    #ffffff;
-      --muted:   rgba(255,255,255,0.50);
-      --correct: #22c55e;
-      --wrong:   #ef4444;
-      --lens:    150px;
+      --bg:    #0d1426;
+      --gold:  #f5c518;
+      --gold2: #c9a012;
+      --text:  #ffffff;
+      --muted: rgba(255,255,255,0.50);
+      --ok:    #22c55e;
+      --bad:   #ef4444;
+      --lo-r:  78px;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
     html, body {
       width: 100%; height: 100dvh; overflow: hidden;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
@@ -32,28 +31,18 @@
       -webkit-user-select: none; user-select: none;
     }
 
-    /* ── Fingerprint background ─────────────────────────────────── */
-    .fp-layer {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
-    }
-    .fp {
-      position: absolute; opacity: 0.045;
-    }
+    /* ── Fingerprint texture bg ─────────────────────── */
+    .fp-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .fp { position: absolute; opacity: 0.04; }
 
-    /* ── Screens ────────────────────────────────────────────────── */
+    /* ── Screens ────────────────────────────────────── */
     .screen {
-      display: none; flex-direction: column;
-      align-items: center; justify-content: center;
+      display: none; flex-direction: column; align-items: center;
       position: absolute; inset: 0; z-index: 10;
-      padding:
-        max(20px, env(safe-area-inset-top))
-        max(16px, env(safe-area-inset-right))
-        max(20px, env(safe-area-inset-bottom))
-        max(16px, env(safe-area-inset-left));
     }
     .screen.active { display: flex; }
 
-    /* ── Back button ────────────────────────────────────────────── */
+    /* ── Back button ────────────────────────────────── */
     .back-btn {
       position: absolute;
       top: max(14px, env(safe-area-inset-top));
@@ -63,297 +52,282 @@
       border-radius: 50px; padding: 7px 14px 7px 10px;
       color: var(--muted); font-size: 14px; font-weight: 700;
       cursor: pointer; font-family: inherit;
-      display: flex; align-items: center; gap: 6px;
-      z-index: 20;
+      display: flex; align-items: center; gap: 6px; z-index: 20;
     }
     .back-btn:active { background: rgba(255,255,255,0.16); }
 
-    /* ═══════════════════════════════════════════════════════════
-       HOME SCREEN
-    ═══════════════════════════════════════════════════════════ */
+    /* ═══ HOME ═══════════════════════════════════════ */
     #screenHome {
+      justify-content: center;
       background:
         radial-gradient(ellipse at 60% 15%, rgba(245,197,24,0.10), transparent 50%),
         radial-gradient(ellipse at 20% 85%, rgba(60,90,160,0.18), transparent 45%),
         var(--bg);
     }
     .home-badge {
-      width: 110px; height: 110px; border-radius: 28px;
+      width: 120px; height: 120px; border-radius: 30px;
       background: linear-gradient(145deg, #f5c518, #c9a012);
       display: flex; align-items: center; justify-content: center;
-      font-size: 58px; margin-bottom: 18px;
-      box-shadow: 0 8px 30px rgba(245,197,24,0.30);
+      font-size: 64px; margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(245,197,24,0.32);
     }
-    .home-title {
-      font-size: clamp(28px, 8vw, 38px); font-weight: 900;
-      text-align: center; line-height: 1.1; margin-bottom: 6px;
-      color: var(--gold);
-    }
-    .home-sub {
-      font-size: 15px; color: var(--muted); font-weight: 600;
-      text-align: center; margin-bottom: 40px; line-height: 1.4;
-      max-width: 260px;
-    }
-    .start-btn {
+    .home-title { font-size: clamp(30px,8vw,40px); font-weight: 900; text-align: center; line-height: 1.1; margin-bottom: 8px; color: var(--gold); }
+    .home-sub   { font-size: 15px; color: var(--muted); font-weight: 600; text-align: center; margin-bottom: 44px; line-height: 1.45; max-width: 270px; }
+    .start-btn  {
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #0d1426; border: none; border-radius: 18px;
-      padding: 17px 44px; font-size: 19px; font-weight: 900;
+      padding: 18px 46px; font-size: 19px; font-weight: 900;
       font-family: inherit; cursor: pointer;
-      box-shadow: 0 6px 22px rgba(245,197,24,0.32);
+      box-shadow: 0 6px 24px rgba(245,197,24,0.34);
     }
     .start-btn:active { transform: scale(0.96); }
 
-    /* ═══════════════════════════════════════════════════════════
-       GAME SCREEN
-    ═══════════════════════════════════════════════════════════ */
+    /* ═══ GAME SCREEN ════════════════════════════════ */
     #screenGame {
       justify-content: flex-start;
-      padding-top: max(60px, calc(env(safe-area-inset-top) + 48px));
-      gap: 0;
+      align-items: center;
+      padding-top:   max(calc(env(safe-area-inset-top) + 54px), 68px);
+      padding-left:  max(20px, env(safe-area-inset-left));
+      padding-right: max(20px, env(safe-area-inset-right));
+      /* bottom padding accounts for submit button */
+      padding-bottom: max(calc(env(safe-area-inset-bottom) + 90px), 100px);
+      gap: 8px;
     }
 
     /* Progress dots */
-    .prog-row {
-      display: flex; gap: 5px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center;
-    }
-    .prog-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: rgba(255,255,255,0.16); transition: background 0.2s;
-    }
-    .prog-dot.done-ok  { background: var(--correct); }
-    .prog-dot.done-bad { background: rgba(239,68,68,0.6); }
+    .prog-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
+    .prog-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.16); transition: background 0.2s; }
+    .prog-dot.done-ok  { background: var(--ok); }
+    .prog-dot.done-bad { background: rgba(239,68,68,0.60); }
     .prog-dot.current  { background: var(--gold); }
 
-    /* Problem card */
-    .problem-card {
-      width: min(100%, 340px);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 22px 18px 18px;
+    /* Case label */
+    .case-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; opacity: 0.8; }
+
+    /* ── Case File card (cream paper look) ─────────── */
+    .case-card {
+      width: 100%;
+      max-width: 300px;
+      background: #f9f5e8;
+      border: 2px solid rgba(245,197,24,0.70);
+      border-radius: 20px;
+      padding: 28px 24px 24px;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.40), 0 2px 0 rgba(245,197,24,0.30);
+      transition: border-color 0.25s, box-shadow 0.25s;
+      flex-shrink: 0;
+    }
+    .case-card.glow-snap {
+      border-color: rgba(245,197,24,1);
+      box-shadow: 0 6px 32px rgba(0,0,0,0.40), 0 0 24px rgba(245,197,24,0.40);
+    }
+
+    /* TOP label inside card */
+    .card-case-label {
+      font-size: 10px; font-weight: 900; letter-spacing: 0.14em;
+      color: #c9a012; text-transform: uppercase;
+      text-align: center; margin-bottom: 18px; opacity: 0.8;
+    }
+
+    /* Vertical equation */
+    .v-eq {
+      display: flex; flex-direction: column;
+      align-items: flex-end; /* right-align numbers */
+      gap: 0;
+      width: 100%;
+    }
+
+    .v-row {
+      display: flex; align-items: center;
+      width: 100%;
+      min-height: clamp(72px, 17vw, 90px);
+    }
+
+    .v-op {
+      font-size: clamp(30px, 8vw, 42px);
+      font-weight: 500;
+      color: #555;
+      width: 44px;
       text-align: center;
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 4px 28px rgba(0,0,0,0.28);
-      margin-bottom: 12px;
-      transition: border-color 0.3s;
-    }
-    .problem-card.glow-snap { border-color: rgba(245,197,24,0.55); }
-
-    .case-label {
-      font-size: 11px; font-weight: 800; letter-spacing: 0.12em;
-      color: var(--gold); text-transform: uppercase; margin-bottom: 12px; opacity: 0.8;
+      flex-shrink: 0;
     }
 
-    /* Equation */
-    .equation {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .eq-num {
-      font-size: clamp(36px, 10vw, 50px); font-weight: 900; line-height: 1;
-    }
-    .eq-op, .eq-eq {
-      font-size: clamp(26px, 7vw, 36px); font-weight: 600; color: var(--muted);
+    .v-num {
+      font-size: clamp(56px, 14vw, 76px);
+      font-weight: 900;
+      color: #1a1a2e;
+      flex: 1;
+      text-align: right;
+      line-height: 1;
     }
 
-    /* The blank drop-target slot */
-    .eq-blank {
-      min-width: 60px; height: 62px;
-      background: var(--gold-dim);
-      border: 2.5px dashed rgba(245,197,24,0.55);
-      border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: clamp(28px, 8vw, 42px); font-weight: 900; color: var(--gold);
+    /* Division line */
+    .v-line {
+      width: 100%;
+      height: 3px;
+      background: #1a1a2e;
+      border-radius: 2px;
+      margin: 6px 0 4px;
+    }
+
+    /* Sum row (answer / fingerprint) */
+    .v-sum-row {
+      display: flex; align-items: center; justify-content: flex-end;
+      width: 100%;
+      min-height: clamp(78px, 18vw, 96px);
       position: relative;
-      cursor: default;
-      animation: blankPulse 2.2s ease-in-out infinite;
-    }
-    @keyframes blankPulse {
-      0%,100% { box-shadow: 0 0 0 0 rgba(245,197,24,0.35); }
-      50%      { box-shadow: 0 0 0 9px rgba(245,197,24,0); }
-    }
-    .eq-blank.snapped {
-      border-style: solid; border-color: var(--gold);
-      animation: none; box-shadow: 0 0 18px rgba(245,197,24,0.25);
-      background: rgba(245,197,24,0.20);
     }
 
-    /* Hint arrow below blank */
+    /* Fingerprint blank placeholder */
+    #fpBlank {
+      display: flex; align-items: center; justify-content: center;
+      width: clamp(72px, 18vw, 90px);
+      height: clamp(78px, 18vw, 90px);
+      position: relative;
+    }
+    #fpBlank img {
+      width: 90%; height: 90%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Number revealed inside blank after snap */
+    #blankVal {
+      position: absolute; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      font-size: clamp(52px, 13vw, 70px); font-weight: 900;
+      color: var(--gold);
+    }
+    #blankVal.show { display: flex; }
+
+    /* Hint + feedback */
     .drag-hint {
-      font-size: 12px; color: rgba(245,197,24,0.70);
-      font-weight: 700; letter-spacing: 0.04em;
-      margin-top: 4px; text-align: center;
+      font-size: 14px; color: rgba(245,197,24,0.85); font-weight: 700;
+      letter-spacing: 0.04em; text-align: center;
       animation: hintFade 2s ease-in-out infinite;
-      min-height: 18px;
+      min-height: 20px;
     }
-    @keyframes hintFade {
-      0%,100% { opacity: 0.7; } 50% { opacity: 0.25; }
-    }
+    @keyframes hintFade { 0%,100%{opacity:0.85;} 50%{opacity:0.28;} }
 
-    /* Feedback */
     .feedback-msg {
-      font-size: 14px; font-weight: 800; text-align: center;
-      min-height: 20px; margin-bottom: 8px; letter-spacing: 0.02em;
+      font-size: 16px; font-weight: 800; text-align: center;
+      min-height: 24px; letter-spacing: 0.02em;
     }
-    .feedback-msg.ok  { color: var(--correct); }
-    .feedback-msg.bad { color: var(--wrong); }
+    .feedback-msg.ok  { color: var(--ok); }
+    .feedback-msg.bad { color: var(--bad); }
 
-    /* Card flash */
-    @keyframes flashOk  {
-      0%,100% { background: var(--card); } 50% { background: rgba(34,197,94,0.18); }
-    }
-    @keyframes flashBad {
-      0%,100% { background: var(--card); } 30%,70% { background: rgba(239,68,68,0.18); }
-    }
-    .problem-card.flash-ok  { animation: flashOk  0.45s ease; }
-    .problem-card.flash-bad { animation: flashBad 0.40s ease; }
+    @keyframes flashOk  { 0%,100%{background:#f9f5e8;} 50%{background:#d4f5df;} }
+    @keyframes flashBad { 0%,100%{background:#f9f5e8;} 30%,70%{background:#fdd;} }
+    .case-card.flash-ok  { animation: flashOk  0.45s ease; }
+    .case-card.flash-bad { animation: flashBad 0.40s ease; }
 
-    /* Submit button */
-    .submit-btn {
-      width: min(100%, 340px);
+    /* Submit (fixed bottom - above magnifier so handle never blocks it) */
+    #submitBtn {
+      position: fixed;
+      left:   max(16px, env(safe-area-inset-left));
+      right:  max(16px, env(safe-area-inset-right));
+      bottom: max(calc(env(safe-area-inset-bottom) + 14px), 20px);
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #0d1426; border: none; border-radius: 16px;
-      padding: 15px; font-size: 17px; font-weight: 900;
+      padding: 17px; font-size: 17px; font-weight: 900;
       font-family: inherit; cursor: pointer;
-      box-shadow: 0 4px 18px rgba(245,197,24,0.28);
-      opacity: 0.38; pointer-events: none;
-      transition: opacity 0.2s;
+      box-shadow: 0 4px 20px rgba(245,197,24,0.30);
+      opacity: 0.28; pointer-events: none;
+      transition: opacity 0.22s;
+      z-index: 250;
     }
-    .submit-btn.active { opacity: 1; pointer-events: auto; }
-    .submit-btn.active:active { transform: scale(0.97); }
+    #submitBtn.active { opacity: 1; pointer-events: auto; }
+    #submitBtn.active:active { transform: scale(0.97); }
 
-    /* ═══════════════════════════════════════════════════════════
-       MAGNIFYING GLASS (fixed, draggable)
-    ═══════════════════════════════════════════════════════════ */
+    /* ═══ MAGNIFIER ══════════════════════════════════ */
     #magnifier {
       position: fixed;
-      width: 200px; height: 210px;
+      width: min(260px, 67vw);
       z-index: 200;
       touch-action: none;
       cursor: grab;
-      pointer-events: auto;
     }
     #magnifier.dragging { cursor: grabbing; }
 
-    /* Lens circle */
-    .lens-circle {
-      position: absolute; top: 0; left: 0;
-      width: var(--lens); height: var(--lens);
+    /* PNG image on top - pointer-events:none so touches reach picker behind */
+    #magImg {
+      width: 100%;
+      display: block;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+      filter: drop-shadow(0 12px 32px rgba(0,0,0,0.70));
+    }
+
+    /* Lens overlay sits BEHIND the PNG - visible through transparent lens opening */
+    #lensOverlay {
+      position: absolute;
+      left: calc(50% - var(--lo-r));
+      top:  calc(33.5% - var(--lo-r));
+      width:  calc(var(--lo-r) * 2);
+      height: calc(var(--lo-r) * 2);
       border-radius: 50%;
-      border: 7px solid var(--gold2);
-      background: rgba(30, 50, 110, 0.55);
       overflow: hidden;
-      box-shadow:
-        0 0 0 2px rgba(255,255,255,0.10),
-        inset 0 2px 0 rgba(255,255,255,0.18),
-        0 10px 36px rgba(0,0,0,0.55);
-      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-    }
-    /* Glass sheen */
-    .lens-circle::before {
-      content: '';
-      position: absolute; inset: 0; border-radius: 50%;
-      background: radial-gradient(ellipse at 35% 28%, rgba(255,255,255,0.18) 0%, transparent 55%);
-      pointer-events: none; z-index: 20;
+      background: rgba(8, 14, 38, 0.90);
+      z-index: 1;
+      isolation: isolate;
     }
 
-    /* Not-snapped state: search symbol */
-    .lens-idle {
-      position: absolute; inset: 0; border-radius: 50%;
+    /* Search icon when not snapped */
+    #lensIdle {
+      position: absolute; inset: 0; z-index: 20;
       display: flex; align-items: center; justify-content: center;
-      font-size: 44px; z-index: 5;
-      transition: opacity 0.2s;
+      font-size: 56px;
+      transition: opacity 0.22s;
     }
 
-    /* Picker inside lens */
-    .lens-picker {
-      position: absolute; inset: 0; border-radius: 50%;
-      overflow: hidden;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s;
-      background: rgba(12, 20, 48, 0.72);
-    }
-    .lens-picker.active { opacity: 1; pointer-events: auto; }
+    /* Picker list */
+    #pickerVp { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
+    #pickerList { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
 
-    .lens-picker-vp {
-      position: absolute;
-      left: 0; right: 0;
-      top: 50%; transform: translateY(-50%);
-      height: 120px; /* 3 items × 40px */
-      overflow: hidden;
-    }
-    .lens-picker-list {
-      position: absolute; left: 0; right: 0;
-      will-change: transform;
-    }
-    .lens-picker-item {
-      height: 40px;
+    .p-item {
+      height: 50px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 20px; font-weight: 700;
-      color: rgba(255,255,255,0.38);
-      transition: color 0.08s, font-size 0.08s;
+      font-size: 22px; font-weight: 700;
+      color: rgba(255,255,255,0.28);
+      user-select: none;
     }
-    .lens-picker-item.selected {
-      color: var(--gold); font-size: 30px;
-    }
+    .p-item.sel { color: var(--gold); font-size: 40px; font-weight: 900; }
+
     /* Center selection bar */
-    .lens-select-bar {
-      position: absolute;
-      top: 50%; transform: translateY(-50%);
-      left: 12px; right: 12px; height: 40px;
-      border-top:    1.5px solid rgba(245,197,24,0.50);
-      border-bottom: 1.5px solid rgba(245,197,24,0.50);
+    #selBar {
+      position: absolute; left: 0; right: 0;
+      top: calc(var(--lo-r) - 25px);
+      height: 50px;
+      border-top:    1.5px solid rgba(245,197,24,0.60);
+      border-bottom: 1.5px solid rgba(245,197,24,0.60);
       background: rgba(245,197,24,0.08);
       pointer-events: none; z-index: 10;
     }
-    /* Fade top/bottom inside lens */
-    .lens-fade {
-      position: absolute; left: 0; right: 0; height: 44px;
-      pointer-events: none; z-index: 15;
-    }
-    .lens-fade.top    { top: 0; background: linear-gradient(to bottom, rgba(12,20,48,0.90), transparent); }
-    .lens-fade.bottom { bottom: 0; background: linear-gradient(to top,   rgba(12,20,48,0.90), transparent); }
+    .p-fade { position: absolute; left: 0; right: 0; height: 46px; pointer-events: none; z-index: 9; }
+    .p-fade.top    { top: 0;    background: linear-gradient(to bottom, rgba(8,14,38,0.94), transparent); }
+    .p-fade.bottom { bottom: 0; background: linear-gradient(to top,   rgba(8,14,38,0.94), transparent); }
 
-    /* Handle */
-    .mag-handle {
-      position: absolute;
-      top: 120px; left: 124px;
-      width: 16px; height: 72px;
-      background: linear-gradient(180deg, var(--gold2) 0%, #7a5c10 100%);
-      border-radius: 8px;
-      transform: rotate(42deg);
-      transform-origin: top center;
-      box-shadow: 3px 3px 10px rgba(0,0,0,0.55);
-    }
-    /* Handle grip lines */
-    .mag-handle::before, .mag-handle::after {
-      content: '';
-      position: absolute; left: 3px; right: 3px; height: 1.5px;
-      background: rgba(255,255,255,0.22); border-radius: 1px;
-    }
-    .mag-handle::before { top: 26px; }
-    .mag-handle::after  { top: 34px; }
-
-    /* Shake animation for wrong answer */
     @keyframes magShake {
-      0%,100% { transform: translateX(0); }
-      20%     { transform: translateX(-8px); }
-      40%     { transform: translateX(8px); }
-      60%     { transform: translateX(-5px); }
-      80%     { transform: translateX(5px); }
+      0%,100%{transform:translateX(0);}
+      20%{transform:translateX(-10px);}
+      40%{transform:translateX(10px);}
+      60%{transform:translateX(-6px);}
+      80%{transform:translateX(6px);}
     }
-    #magnifier.shake { animation: magShake 0.38s ease; }
+    #magnifier.shake { animation: magShake 0.40s ease; }
 
-    /* ═══════════════════════════════════════════════════════════
-       FINISH SCREEN
-    ═══════════════════════════════════════════════════════════ */
+    /* ═══ FINISH ═════════════════════════════════════ */
     #screenFinish {
-      background:
-        radial-gradient(ellipse at 50% 25%, rgba(245,197,24,0.12), transparent 55%),
-        var(--bg);
+      justify-content: center;
+      background: radial-gradient(ellipse at 50% 25%, rgba(245,197,24,0.12), transparent 55%), var(--bg);
     }
-    .finish-icon  { font-size: 70px; margin-bottom: 14px; }
+    .finish-icon  { font-size: 72px; margin-bottom: 14px; }
     .finish-title { font-size: 28px; font-weight: 900; color: var(--gold); text-align: center; margin-bottom: 6px; }
-    .finish-score { font-size: 15px; color: var(--muted); font-weight: 600; text-align: center; margin-bottom: 36px; line-height: 1.5; max-width: 260px; }
+    .finish-score {
+      font-size: 15px; color: var(--muted); font-weight: 600; text-align: center;
+      margin-bottom: 38px; line-height: 1.5; max-width: 264px; white-space: pre-line;
+    }
     .replay-btn {
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #0d1426; border: none; border-radius: 16px;
@@ -366,20 +340,10 @@
 </head>
 <body>
 
-<!-- ── Fingerprint texture ──────────────────────────────────── -->
+<!-- Fingerprint bg texture -->
 <div class="fp-layer" aria-hidden="true">
-  <svg class="fp" style="top:-20px;right:-30px;transform:rotate(18deg)" width="180" height="220" viewBox="0 0 180 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="90" cy="110" rx="8"  ry="10" stroke="white" stroke-width="1.3"/>
-    <ellipse cx="90" cy="110" rx="18" ry="22" stroke="white" stroke-width="1.3"/>
-    <ellipse cx="90" cy="110" rx="30" ry="36" stroke="white" stroke-width="1.2"/>
-    <ellipse cx="90" cy="110" rx="42" ry="52" stroke="white" stroke-width="1.2"/>
-    <ellipse cx="90" cy="110" rx="54" ry="66" stroke="white" stroke-width="1.1"/>
-    <ellipse cx="90" cy="110" rx="66" ry="82" stroke="white" stroke-width="1.0"/>
-    <ellipse cx="90" cy="110" rx="78" ry="96" stroke="white" stroke-width="0.9"/>
-    <ellipse cx="90" cy="110" rx="86" ry="108" stroke="white" stroke-width="0.7"/>
-  </svg>
-  <svg class="fp" style="bottom:60px;left:-40px;transform:rotate(-12deg)" width="200" height="240" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="100" cy="120" rx="9"  ry="11" stroke="white" stroke-width="1.3"/>
+  <svg class="fp" style="top:-10px;right:-20px;transform:rotate(15deg)" width="200" height="240" viewBox="0 0 200 240" fill="none">
+    <ellipse cx="100" cy="120" rx="9" ry="11" stroke="white" stroke-width="1.3"/>
     <ellipse cx="100" cy="120" rx="20" ry="25" stroke="white" stroke-width="1.3"/>
     <ellipse cx="100" cy="120" rx="33" ry="41" stroke="white" stroke-width="1.2"/>
     <ellipse cx="100" cy="120" rx="46" ry="57" stroke="white" stroke-width="1.1"/>
@@ -388,25 +352,27 @@
     <ellipse cx="100" cy="120" rx="85" ry="105" stroke="white" stroke-width="0.8"/>
     <ellipse cx="100" cy="120" rx="96" ry="118" stroke="white" stroke-width="0.6"/>
   </svg>
-  <svg class="fp" style="top:38%;left:55%;transform:rotate(6deg);opacity:0.025" width="140" height="170" viewBox="0 0 140 170" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <ellipse cx="70" cy="85" rx="7"  ry="9"  stroke="white" stroke-width="1.2"/>
-    <ellipse cx="70" cy="85" rx="16" ry="20" stroke="white" stroke-width="1.2"/>
-    <ellipse cx="70" cy="85" rx="27" ry="33" stroke="white" stroke-width="1.1"/>
-    <ellipse cx="70" cy="85" rx="38" ry="47" stroke="white" stroke-width="1.0"/>
-    <ellipse cx="70" cy="85" rx="50" ry="62" stroke="white" stroke-width="0.9"/>
-    <ellipse cx="70" cy="85" rx="62" ry="76" stroke="white" stroke-width="0.7"/>
+  <svg class="fp" style="bottom:100px;left:-30px;transform:rotate(-10deg)" width="180" height="220" viewBox="0 0 180 220" fill="none">
+    <ellipse cx="90" cy="110" rx="8"  ry="10"  stroke="white" stroke-width="1.3"/>
+    <ellipse cx="90" cy="110" rx="18" ry="22"  stroke="white" stroke-width="1.3"/>
+    <ellipse cx="90" cy="110" rx="30" ry="36"  stroke="white" stroke-width="1.2"/>
+    <ellipse cx="90" cy="110" rx="42" ry="52"  stroke="white" stroke-width="1.1"/>
+    <ellipse cx="90" cy="110" rx="54" ry="66"  stroke="white" stroke-width="1.0"/>
+    <ellipse cx="90" cy="110" rx="66" ry="82"  stroke="white" stroke-width="0.9"/>
+    <ellipse cx="90" cy="110" rx="78" ry="96"  stroke="white" stroke-width="0.8"/>
+    <ellipse cx="90" cy="110" rx="86" ry="108" stroke="white" stroke-width="0.6"/>
   </svg>
 </div>
 
-<!-- ── HOME ─────────────────────────────────────────────────── -->
+<!-- HOME -->
 <div class="screen active" id="screenHome">
   <div class="home-badge">🕵️</div>
   <div class="home-title">Digit Detective</div>
-  <div class="home-sub">Drag the magnifying glass to find the missing number!</div>
+  <div class="home-sub">Drag the magnifying glass up to the mystery number to crack the case!</div>
   <button class="start-btn" onclick="startGame()" type="button">Open Case File</button>
 </div>
 
-<!-- ── GAME ─────────────────────────────────────────────────── -->
+<!-- GAME -->
 <div class="screen" id="screenGame">
   <button class="back-btn" onclick="goHome()" type="button">
     <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -414,21 +380,41 @@
   </button>
 
   <div class="prog-row" id="progRow"></div>
+  <div class="case-label" id="caseLabel">Case #1 of 10</div>
 
-  <div class="problem-card" id="problemCard">
-    <div class="case-label" id="caseLabel">Case #1 of 24</div>
-    <div class="equation" id="equation"></div>
+  <!-- Case file card -->
+  <div class="case-card" id="caseCard">
+    <div class="card-case-label" id="cardCaseLabel">Case #1</div>
+
+    <!-- Vertical addition equation -->
+    <div class="v-eq" id="vEq">
+      <!-- Top addend -->
+      <div class="v-row" id="rowLeft">
+        <div class="v-op"></div>
+        <div class="v-num" id="vLeft">—</div>
+      </div>
+      <!-- Bottom addend with + sign -->
+      <div class="v-row" id="rowRight">
+        <div class="v-op">+</div>
+        <div class="v-num" id="vRight">—</div>
+      </div>
+      <!-- Division line -->
+      <div class="v-line"></div>
+      <!-- Sum row: fingerprint or revealed number -->
+      <div class="v-sum-row">
+        <div id="fpBlank">
+          <img src="Finger_Print.png" id="fpImg" alt="?">
+          <div id="blankVal"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="drag-hint" id="dragHint">drag 🔍 to the blank</div>
+  <div class="drag-hint" id="dragHint">drag 🔍 up to the mystery number</div>
   <div class="feedback-msg" id="feedbackMsg">&nbsp;</div>
-
-  <button class="submit-btn" id="submitBtn" onclick="submitAnswer()" type="button">
-    🔍 Case Solved!
-  </button>
 </div>
 
-<!-- ── FINISH ────────────────────────────────────────────────── -->
+<!-- FINISH -->
 <div class="screen" id="screenFinish">
   <button class="back-btn" onclick="goHome()" type="button">
     <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -440,58 +426,41 @@
   <button class="replay-btn" onclick="startGame()" type="button">New Case File</button>
 </div>
 
-<!-- ── MAGNIFIER (always in DOM, hidden on home/finish) ──────── -->
+<!-- Submit (fixed bottom, game only) -->
+<button id="submitBtn" style="display:none" onclick="submitAnswer()" type="button">
+  🔍 Case Solved!
+</button>
+
+<!-- MAGNIFIER -->
 <div id="magnifier" style="display:none">
-  <div class="lens-circle" id="lensCircle">
-    <div class="lens-idle" id="lensIdle">🔍</div>
-    <div class="lens-picker" id="lensPicker">
-      <div class="lens-picker-vp" id="lensPickerVp">
-        <div class="lens-select-bar"></div>
-        <div class="lens-picker-list" id="lensPickerList"></div>
-        <div class="lens-fade top"></div>
-        <div class="lens-fade bottom"></div>
-      </div>
+  <div id="lensOverlay">
+    <div id="lensIdle">🔍</div>
+    <div id="pickerVp">
+      <div id="pickerList"></div>
     </div>
+    <div id="selBar"></div>
+    <div class="p-fade top"></div>
+    <div class="p-fade bottom"></div>
   </div>
-  <div class="mag-handle"></div>
+  <img id="magImg" src="Magnifying_Glass_v1.png" alt="" />
 </div>
 
 <script>
   try { screen.orientation.lock('portrait').catch(()=>{}); } catch(e) {}
 
-  // ── Problem data ─────────────────────────────────────────────
+  // ── Problems (missing sum only - sum is always the mystery) ───
   const ALL_PROBLEMS = [
-    { total:11, left:5,  right:6,  missing:'total' },
-    { total:12, left:3,  right:9,  missing:'total' },
-    { total:12, left:4,  right:8,  missing:'right' },
-    { total:12, left:7,  right:5,  missing:'total' },
-    { total:13, left:4,  right:9,  missing:'right' },
-    { total:13, left:5,  right:8,  missing:'right' },
-    { total:13, left:6,  right:7,  missing:'left'  },
-    { total:13, left:10, right:3,  missing:'left'  },
-    { total:14, left:5,  right:9,  missing:'total' },
-    { total:14, left:6,  right:8,  missing:'right' },
-    { total:14, left:8,  right:6,  missing:'total' },
-    { total:15, left:5,  right:10, missing:'total' },
-    { total:15, left:7,  right:8,  missing:'right' },
-    { total:15, left:8,  right:7,  missing:'left'  },
-    { total:16, left:7,  right:9,  missing:'total' },
-    { total:16, left:8,  right:8,  missing:'right' },
-    { total:16, left:9,  right:7,  missing:'left'  },
-    { total:17, left:8,  right:9,  missing:'total' },
-    { total:17, left:9,  right:8,  missing:'left'  },
-    { total:17, left:10, right:7,  missing:'right' },
-    { total:18, left:8,  right:10, missing:'total' },
-    { total:18, left:9,  right:9,  missing:'total' },
-    { total:19, left:9,  right:10, missing:'right' },
-    { total:20, left:10, right:10, missing:'right' },
+    { total:11, left:5,  right:6  },
+    { total:12, left:3,  right:9  },
+    { total:12, left:7,  right:5  },
+    { total:14, left:5,  right:9  },
+    { total:14, left:8,  right:6  },
+    { total:15, left:5,  right:10 },
+    { total:16, left:7,  right:9  },
+    { total:17, left:8,  right:9  },
+    { total:18, left:8,  right:10 },
+    { total:18, left:9,  right:9  },
   ];
-
-  function getAnswer(p) {
-    if (p.missing === 'total') return p.left + p.right;
-    if (p.missing === 'left')  return p.total - p.right;
-    return p.total - p.left;
-  }
 
   function shuffle(arr) {
     const a = [...arr];
@@ -502,39 +471,48 @@
     return a;
   }
 
-  // ── UI refs ──────────────────────────────────────────────────
-  const magnifier   = document.getElementById('magnifier');
-  const lensCircle  = document.getElementById('lensCircle');
-  const lensIdle    = document.getElementById('lensIdle');
-  const lensPicker  = document.getElementById('lensPicker');
-  const lensPickerList = document.getElementById('lensPickerList');
-  const problemCard = document.getElementById('problemCard');
-  const submitBtn   = document.getElementById('submitBtn');
-  const dragHint    = document.getElementById('dragHint');
-  const feedbackMsg = document.getElementById('feedbackMsg');
+  // ── DOM refs ─────────────────────────────────────────────────
+  const magnifier  = document.getElementById('magnifier');
+  const magImg     = document.getElementById('magImg');
+  const lensIdle   = document.getElementById('lensIdle');
+  const pickerList = document.getElementById('pickerList');
+  const caseCard   = document.getElementById('caseCard');
+  const dragHint   = document.getElementById('dragHint');
+  const feedbackMsg= document.getElementById('feedbackMsg');
+  const submitBtn  = document.getElementById('submitBtn');
+  const fpBlank    = document.getElementById('fpBlank');
+  const blankVal   = document.getElementById('blankVal');
 
-  // ── Screen mgmt ──────────────────────────────────────────────
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    magnifier.style.display = (id === 'screenGame') ? 'block' : 'none';
-    if (id === 'screenGame') positionMagHome(false);
+  // ── Magnifier geometry ────────────────────────────────────────
+  // PNG lens center is ~50% x, ~33.5% y of rendered image
+  let LENS_OX = 130;
+  let LENS_OY = 108;
+  let MAG_H   = 321;
+
+  function updateLensGeometry() {
+    const w = magnifier.offsetWidth;
+    const h = magnifier.offsetHeight;
+    if (h > 0) { LENS_OX = w * 0.50; LENS_OY = h * 0.335; MAG_H = h; }
   }
-  function goHome() { showScreen('screenHome'); }
 
-  // ── Magnifier position ───────────────────────────────────────
-  const LENS_R = 75;  // half of 150px lens
+  magImg.addEventListener('load', () => { updateLensGeometry(); if (gameActive) positionMagHome(false); });
+  window.addEventListener('resize', () => { updateLensGeometry(); if (gameActive) positionMagHome(false); });
+
+  // ── Magnifier position ────────────────────────────────────────
   let magCX = 0, magCY = 0;
-  let isSnapped = false;
-  let canSubmit = false;
+  let gameActive = false;
 
   function getHomePos() {
-    return { x: window.innerWidth / 2, y: window.innerHeight - 130 - LENS_R };
-  }
-
-  function positionMagHome(animate) {
-    const p = getHomePos();
-    setMagPos(p.x, p.y, animate);
+    updateLensGeometry();
+    const vw = window.innerWidth;
+    // Place lens center 160px below the blank/fingerprint.
+    // User only needs to drag ~50px upward to enter the snap zone (110px).
+    const bc = getBlankCenter();
+    if (bc && bc.y > 100) {
+      return { x: vw / 2, y: bc.y + 160 };
+    }
+    // Fallback before layout is ready
+    return { x: vw / 2, y: window.innerHeight * 0.78 };
   }
 
   function setMagPos(cx, cy, animate) {
@@ -542,185 +520,179 @@
     magnifier.style.transition = animate
       ? 'left 0.38s cubic-bezier(0.34,1.56,0.64,1), top 0.38s cubic-bezier(0.34,1.56,0.64,1)'
       : 'none';
-    magnifier.style.left = (cx - LENS_R) + 'px';
-    magnifier.style.top  = (cy - LENS_R) + 'px';
+    magnifier.style.left = (cx - LENS_OX) + 'px';
+    magnifier.style.top  = (cy - LENS_OY) + 'px';
   }
 
-  // ── Drag logic ───────────────────────────────────────────────
-  const SNAP_DIST = 80;
-  let isDragging = false;
+  function positionMagHome(animate) {
+    // rAF ensures the blank is measured after the DOM has rendered
+    requestAnimationFrame(() => {
+      const p = getHomePos();
+      setMagPos(p.x, p.y, animate);
+    });
+  }
+
+  // ── State machine: idle / dragging / snapped / picking ────────
+  let state = 'idle';
   let dragOffX = 0, dragOffY = 0;
 
+  // ── Picker ────────────────────────────────────────────────────
+  const ITEM_H    = 50;
+  const MIN_V     = 0;
+  const MAX_V     = 20;
+  const CENTER_OFF = 53; // translateY so item 0 is at lens center (lo-r=78, center=78, top=53)
+
+  let pickerVal    = 5;
+  let pickerOff    = 0;
+  let pickStartY   = 0;
+  let pickStartOff = 0;
+  let pickVel      = 0;
+  let pickLastY    = 0;
+  let pickLastT    = 0;
+
+  function offsetForVal(v) { return CENTER_OFF - v * ITEM_H; }
+  function valForOffset(o) { return Math.round((CENTER_OFF - o) / ITEM_H); }
+  function clampOff(o)     { return Math.max(offsetForVal(MAX_V), Math.min(offsetForVal(MIN_V), o)); }
+
+  function applyPickerOffset(o, snap) {
+    o = clampOff(o);
+    pickerOff = o;
+    pickerList.style.transition = snap ? 'transform 0.22s cubic-bezier(0.25,1,0.5,1)' : 'none';
+    pickerList.style.transform  = 'translateY(' + o + 'px)';
+    const v = Math.max(MIN_V, Math.min(MAX_V, valForOffset(o)));
+    pickerVal = v;
+    pickerList.querySelectorAll('.p-item').forEach(el => {
+      el.classList.toggle('sel', +el.dataset.v === v);
+    });
+    // Update the revealed number in the blank
+    blankVal.textContent = v;
+  }
+
+  function buildPickerItems() {
+    pickerList.innerHTML = '';
+    for (let i = MIN_V; i <= MAX_V; i++) {
+      const d = document.createElement('div');
+      d.className = 'p-item';
+      d.dataset.v = i;
+      d.textContent = i;
+      pickerList.appendChild(d);
+    }
+  }
+
+  // ── Blank center ──────────────────────────────────────────────
   function getBlankCenter() {
-    const el = document.getElementById('eqBlank');
-    if (!el) return null;
-    const r = el.getBoundingClientRect();
+    const r = fpBlank.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
-  function onMagPointerDown(e) {
-    if (isSnapped) return; // snapped → lens handles picker scroll
-    e.preventDefault();
-    e.stopPropagation();
-    isDragging = true;
-    magnifier.setPointerCapture(e.pointerId);
-    magnifier.classList.add('dragging');
-    const cx = e.clientX, cy = e.clientY;
-    dragOffX = cx - magCX;
-    dragOffY = cy - magCY;
-  }
+  // ── Snap / unsnap ─────────────────────────────────────────────
+  const SNAP_DIST = 110;
 
-  function onMagPointerMove(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    const cx = e.clientX - dragOffX;
-    const cy = e.clientY - dragOffY;
-    setMagPos(cx, cy, false);
-    // Glow blank when near snap zone
-    const bc = getBlankCenter();
-    if (bc) {
-      const dist = Math.hypot(cx - bc.x, cy - bc.y);
-      problemCard.classList.toggle('glow-snap', dist < SNAP_DIST + 30);
-    }
-  }
-
-  function onMagPointerUp(e) {
-    if (!isDragging) return;
-    isDragging = false;
-    magnifier.classList.remove('dragging');
-    problemCard.classList.remove('glow-snap');
-    const bc = getBlankCenter();
-    if (bc) {
-      const dist = Math.hypot(magCX - bc.x, magCY - bc.y);
-      if (dist < SNAP_DIST) {
-        snapMagnifier(bc);
-        return;
-      }
-    }
-    // Not close enough: spring back
-    positionMagHome(true);
-  }
-
-  magnifier.addEventListener('pointerdown', onMagPointerDown);
-  magnifier.addEventListener('pointermove', onMagPointerMove);
-  magnifier.addEventListener('pointerup',   onMagPointerUp);
-
-  // ── Snap ────────────────────────────────────────────────────
   function snapMagnifier(bc) {
     setMagPos(bc.x, bc.y, true);
-    isSnapped = true;
-    // Activate picker after transition
+    state = 'snapped';
     setTimeout(() => {
-      const blank = document.getElementById('eqBlank');
-      if (blank) blank.classList.add('snapped');
       lensIdle.style.opacity = '0';
-      lensPicker.classList.add('active');
-      dragHint.style.display = 'none';
+      blankVal.classList.add('show');
+      dragHint.style.display  = 'none';
       submitBtn.classList.add('active');
-      canSubmit = true;
     }, 260);
   }
 
   function unsnap(animate) {
-    isSnapped = false;
-    canSubmit = false;
-    const blank = document.getElementById('eqBlank');
-    if (blank) blank.classList.remove('snapped');
-    lensPicker.classList.remove('active');
+    state = 'idle';
     lensIdle.style.opacity = '1';
-    dragHint.style.display = '';
+    blankVal.classList.remove('show');
+    dragHint.style.display  = '';
     submitBtn.classList.remove('active');
     positionMagHome(animate);
   }
 
-  // ── Picker inside lens ───────────────────────────────────────
-  const ITEM_H  = 40;
-  const MIN_V   = 0;
-  const MAX_V   = 20;
-  const CENTER_OFF = 40; // top of center item in the 120px viewport
-
-  let pickerVal    = 5;
-  let pickerOff    = 0; // translateY of picker list
-  let isPickerDrag = false;
-  let pickDragStartY = 0, pickDragStartOff = 0;
-  let pickVelocity = 0, pickLastY = 0, pickLastT = 0;
-
-  function offsetForVal(v) { return CENTER_OFF - v * ITEM_H; }
-  function valForOffset(o) { return Math.round((CENTER_OFF - o) / ITEM_H); }
-  function clampOff(o) {
-    return Math.max(offsetForVal(MAX_V), Math.min(offsetForVal(MIN_V), o));
-  }
-
-  function applyPickerOff(o, snap) {
-    o = clampOff(o);
-    pickerOff = o;
-    lensPickerList.style.transition = snap ? 'transform 0.22s cubic-bezier(0.25,1,0.5,1)' : 'none';
-    lensPickerList.style.transform = `translateY(${o}px)`;
-    const v = Math.max(MIN_V, Math.min(MAX_V, valForOffset(o)));
-    pickerVal = v;
-    lensPickerList.querySelectorAll('.lens-picker-item').forEach(el => {
-      el.classList.toggle('selected', +el.dataset.v === v);
-    });
-    // Update blank display
-    const blank = document.getElementById('eqBlank');
-    if (blank) blank.textContent = v;
-  }
-
-  function buildLensPicker() {
-    lensPickerList.innerHTML = '';
-    for (let i = MIN_V; i <= MAX_V; i++) {
-      const d = document.createElement('div');
-      d.className = 'lens-picker-item';
-      d.dataset.v = i;
-      d.textContent = i;
-      lensPickerList.appendChild(d);
-    }
-  }
-
-  // Picker scroll events (only when snapped)
-  lensPicker.addEventListener('pointerdown', e => {
-    if (!isSnapped) return;
-    e.preventDefault(); e.stopPropagation();
-    isPickerDrag = true;
-    lensPicker.setPointerCapture(e.pointerId);
-    pickDragStartY   = e.clientY;
-    pickDragStartOff = pickerOff;
-    pickVelocity = 0; pickLastY = e.clientY; pickLastT = Date.now();
-  });
-  lensPicker.addEventListener('pointermove', e => {
-    if (!isPickerDrag) return;
+  // ── Pointer events on magnifier ───────────────────────────────
+  magnifier.addEventListener('pointerdown', e => {
     e.preventDefault();
-    const dy = e.clientY - pickDragStartY;
-    applyPickerOff(pickDragStartOff + dy, false);
-    const now = Date.now(), dt = now - pickLastT;
-    if (dt > 0) pickVelocity = (e.clientY - pickLastY) / dt;
-    pickLastY = e.clientY; pickLastT = now;
-  });
-  lensPicker.addEventListener('pointerup', e => {
-    if (!isPickerDrag) return;
-    isPickerDrag = false;
-    const target = pickerOff + pickVelocity * 100;
-    const v = Math.max(MIN_V, Math.min(MAX_V, Math.round((CENTER_OFF - target) / ITEM_H)));
-    applyPickerOff(offsetForVal(v), true);
+    magnifier.setPointerCapture(e.pointerId);
+
+    if (state === 'snapped' || state === 'picking') {
+      state = 'picking';
+      pickStartY   = e.clientY;
+      pickStartOff = pickerOff;
+      pickVel = 0; pickLastY = e.clientY; pickLastT = Date.now();
+    } else if (state === 'idle') {
+      state = 'dragging';
+      magnifier.classList.add('dragging');
+      dragOffX = e.clientX - magCX;
+      dragOffY = e.clientY - magCY;
+    }
   });
 
-  // Mouse wheel support on lens
-  lensPicker.addEventListener('wheel', e => {
-    if (!isSnapped) return;
+  magnifier.addEventListener('pointermove', e => {
+    if (state === 'dragging') {
+      const cx = e.clientX - dragOffX;
+      const cy = e.clientY - dragOffY;
+      setMagPos(cx, cy, false);
+      const bc = getBlankCenter();
+      if (bc) {
+        const dist = Math.hypot(cx - bc.x, cy - bc.y);
+        caseCard.classList.toggle('glow-snap', dist < SNAP_DIST + 40);
+      }
+    } else if (state === 'picking') {
+      const dy = e.clientY - pickStartY;
+      applyPickerOffset(pickStartOff + dy, false);
+      const now = Date.now(), dt = now - pickLastT;
+      if (dt > 0) pickVel = (e.clientY - pickLastY) / dt;
+      pickLastY = e.clientY; pickLastT = now;
+    }
+  });
+
+  magnifier.addEventListener('pointerup', e => {
+    if (state === 'dragging') {
+      magnifier.classList.remove('dragging');
+      caseCard.classList.remove('glow-snap');
+      const bc = getBlankCenter();
+      if (bc) {
+        const dist = Math.hypot(magCX - bc.x, magCY - bc.y);
+        if (dist < SNAP_DIST) { snapMagnifier(bc); return; }
+      }
+      state = 'idle';
+      positionMagHome(true);
+    } else if (state === 'picking') {
+      const projected = pickerOff + pickVel * 90;
+      const v = Math.max(MIN_V, Math.min(MAX_V, Math.round((CENTER_OFF - projected) / ITEM_H)));
+      applyPickerOffset(offsetForVal(v), true);
+      state = 'snapped';
+    }
+  });
+
+  magnifier.addEventListener('wheel', e => {
+    if (state !== 'snapped' && state !== 'picking') return;
     e.preventDefault();
     const v = Math.max(MIN_V, Math.min(MAX_V, pickerVal + (e.deltaY > 0 ? 1 : -1)));
-    applyPickerOff(offsetForVal(v), true);
+    applyPickerOffset(offsetForVal(v), true);
   }, { passive: false });
 
-  // ── Game state ───────────────────────────────────────────────
+  // ── Screen management ─────────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    const onGame = (id === 'screenGame');
+    magnifier.style.display = onGame ? 'block' : 'none';
+    submitBtn.style.display  = onGame ? '' : 'none';
+    gameActive = onGame;
+    if (onGame) { updateLensGeometry(); positionMagHome(false); }
+  }
+
+  function goHome() { showScreen('screenHome'); }
+
+  // ── Game logic ────────────────────────────────────────────────
   let deck = [], idx = 0, correctCount = 0, results = [];
 
   function startGame() {
     deck = shuffle(ALL_PROBLEMS);
     idx = 0; correctCount = 0;
     results = new Array(deck.length).fill('pending');
+    buildPickerItems();
     buildProgRow();
-    buildLensPicker();
     loadProblem();
     showScreen('screenGame');
   }
@@ -731,14 +703,14 @@
     deck.forEach((_, i) => {
       const d = document.createElement('div');
       d.className = 'prog-dot' + (i === 0 ? ' current' : '');
-      d.id = `dot${i}`;
+      d.id = 'dot' + i;
       row.appendChild(d);
     });
   }
 
   function updateProgRow() {
     deck.forEach((_, i) => {
-      const d = document.getElementById(`dot${i}`);
+      const d = document.getElementById('dot' + i);
       if (!d) return;
       d.className = 'prog-dot '
         + (results[i] === 'correct' ? 'done-ok'
@@ -749,82 +721,71 @@
 
   function loadProblem() {
     const p = deck[idx];
-    document.getElementById('caseLabel').textContent = `Case #${idx + 1} of ${deck.length}`;
+
+    document.getElementById('caseLabel').textContent    = 'Case #' + (idx + 1) + ' of ' + deck.length;
+    document.getElementById('cardCaseLabel').textContent = 'Case #' + (idx + 1);
+    document.getElementById('vLeft').textContent  = p.left;
+    document.getElementById('vRight').textContent = p.right;
+
     feedbackMsg.innerHTML = '&nbsp;';
     feedbackMsg.className = 'feedback-msg';
     dragHint.style.display = '';
-    renderEquation(p);
-    // Randomize picker start, not at answer
-    const answer = getAnswer(p);
-    const start  = (answer <= 10) ? answer + 5 : answer - 5;
-    applyPickerOff(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, start))), false);
+
+    // Start picker away from the answer
+    const ans   = p.total;
+    const start = Math.max(MIN_V, Math.min(MAX_V, ans <= 10 ? ans + 5 : ans - 5));
+    applyPickerOffset(offsetForVal(start), false);
+
+    // Show fingerprint, hide number
+    blankVal.classList.remove('show');
+    document.getElementById('fpImg').style.opacity = '1';
+
     updateProgRow();
     unsnap(false);
   }
 
-  function renderEquation(p) {
-    const eq = document.getElementById('equation');
-    const blank = `<div class="eq-blank" id="eqBlank">${pickerVal}</div>`;
-    const numA = p.missing === 'left'  ? blank : `<div class="eq-num">${p.left}</div>`;
-    const numB = p.missing === 'right' ? blank : `<div class="eq-num">${p.right}</div>`;
-    const numC = p.missing === 'total' ? blank : `<div class="eq-num">${p.total}</div>`;
-    eq.innerHTML = numA
-      + `<div class="eq-op">+</div>`
-      + numB
-      + `<div class="eq-eq">=</div>`
-      + numC;
-  }
-
   function submitAnswer() {
-    if (!canSubmit) return;
+    if (state !== 'snapped' && state !== 'picking') return;
     const p = deck[idx];
-    const answer = getAnswer(p);
 
-    if (pickerVal === answer) {
+    if (pickerVal === p.total) {
       results[idx] = 'correct';
       correctCount++;
-      canSubmit = false;
-      problemCard.classList.remove('flash-bad');
-      void problemCard.offsetWidth;
-      problemCard.classList.add('flash-ok');
+      caseCard.classList.remove('flash-bad');
+      void caseCard.offsetWidth;
+      caseCard.classList.add('flash-ok');
       feedbackMsg.textContent = 'GO GO GADGET! 🎉';
       feedbackMsg.className = 'feedback-msg ok';
       updateProgRow();
+      submitBtn.classList.remove('active');
       setTimeout(() => {
-        problemCard.classList.remove('flash-ok');
+        caseCard.classList.remove('flash-ok');
         idx++;
         if (idx >= deck.length) showFinish();
         else loadProblem();
-      }, 1300);
+      }, 1200);
     } else {
-      // Wrong
       results[idx] = 'wrong';
-      problemCard.classList.remove('flash-ok');
-      void problemCard.offsetWidth;
-      problemCard.classList.add('flash-bad');
+      caseCard.classList.remove('flash-ok');
+      void caseCard.offsetWidth;
+      caseCard.classList.add('flash-bad');
       magnifier.classList.remove('shake');
       void magnifier.offsetWidth;
       magnifier.classList.add('shake');
       feedbackMsg.textContent = 'Not quite, Inspector! Try again. 🔍';
       feedbackMsg.className = 'feedback-msg bad';
-      setTimeout(() => {
-        problemCard.classList.remove('flash-bad');
-        magnifier.classList.remove('shake');
-        // Mark wrong but allow retry
-        results[idx] = 'wrong';
-        updateProgRow();
-      }, 450);
+      setTimeout(() => { caseCard.classList.remove('flash-bad'); magnifier.classList.remove('shake'); updateProgRow(); }, 450);
     }
   }
 
   function showFinish() {
+    showScreen('screenFinish');
     const pct = Math.round((correctCount / deck.length) * 100);
     document.getElementById('finishIcon').textContent  = pct === 100 ? '🏆' : pct >= 70 ? '🕵️' : '🔍';
     document.getElementById('finishTitle').textContent = pct === 100 ? 'Case Closed!' : pct >= 70 ? 'Good Work, Detective!' : 'Keep Investigating!';
     document.getElementById('finishScore').textContent =
-      `${correctCount} of ${deck.length} solved on the first try.\n`
+      correctCount + ' of ' + deck.length + ' solved on the first try.\n'
       + (pct === 100 ? 'Perfect score, Inspector!' : 'Every detective gets better with practice!');
-    showScreen('screenFinish');
   }
 </script>
 </body>
