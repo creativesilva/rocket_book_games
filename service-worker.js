@@ -1,4 +1,4 @@
-const CACHE_NAME = "rocket-book-games-2026-10-05-v14";
+const CACHE_NAME = "rocket-book-games-2026-10-06-v15";
 
 const SHELL_ASSETS = [
   "./",
@@ -22,6 +22,7 @@ const SHELL_ASSETS = [
   "./rainbow_reader_logo.png",
   "./Magnifying_Glass_v1.png",
   "./Finger_Print.png",
+  "./Finger_Print_v2.png",
   "./Digit_Detective_Beat.mp3",
   "./Digit_Detective_Background_v2.png",
   "./Ari_Detective.png",
