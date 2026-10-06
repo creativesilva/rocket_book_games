@@ -201,7 +201,7 @@
     #magnifier {
       position: fixed;
       /* Size to frame a single 2-digit number — snug around the answer */
-      width: min(112px, 29vw);
+      width: min(129px, 33vw);
       z-index: 200;
       touch-action: none;
       cursor: grab;
@@ -677,12 +677,16 @@
       caseCard.classList.remove('flash-bad'); void caseCard.offsetWidth;
       caseCard.classList.add('flash-ok');
       feedbackMsg.textContent = 'GO GO GADGET! 🎉'; feedbackMsg.className = 'feedback-msg ok';
-      updateProgRow(); submitBtn.classList.remove('active');
+      updateProgRow();
+      submitBtn.classList.remove('active');
+      // Slide magnifier back to home, leave correct number visible for 1.5s
+      state = 'idle'; pickerReady = false;
+      positionMagHome(true);
       setTimeout(() => {
         caseCard.classList.remove('flash-ok');
         idx++;
         if (idx >= deck.length) showFinish(); else loadProblem();
-      }, 1200);
+      }, 1500);
     } else {
       results[idx] = 'wrong';
       caseCard.classList.remove('flash-ok'); void caseCard.offsetWidth;
