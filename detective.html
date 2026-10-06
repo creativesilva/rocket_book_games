@@ -182,19 +182,18 @@
     /* Submit */
     #submitBtn {
       position: fixed;
-      left:   max(16px, env(safe-area-inset-left));
-      right:  max(16px, env(safe-area-inset-right));
+      left: 50%; transform: translateX(-50%);
       bottom: max(calc(env(safe-area-inset-bottom) + 14px), 20px);
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #160c04; border: none; border-radius: 16px;
-      padding: 17px; font-size: 17px; font-weight: 900;
-      font-family: inherit; cursor: pointer;
+      padding: 17px 36px; font-size: 17px; font-weight: 900;
+      font-family: inherit; cursor: pointer; white-space: nowrap;
       box-shadow: 0 4px 20px rgba(0,0,0,0.55);
       opacity: 0.28; pointer-events: none;
       transition: opacity 0.22s; z-index: 250;
     }
     #submitBtn.active { opacity: 1; pointer-events: auto; }
-    #submitBtn.active:active { transform: scale(0.97); }
+    #submitBtn.active:active { transform: translateX(-50%) scale(0.97); }
 
     /* ═══ MAGNIFIER ══════════════════════════════════ */
     /* Just the gold-ring PNG — lens is transparent air, no overlay */
@@ -225,19 +224,43 @@
     #magnifier.shake { animation: magShake 0.38s ease; }
 
     /* ═══ FINISH ═════════════════════════════════════ */
-    #screenFinish { justify-content: center; }
-    .finish-icon  { font-size: 72px; margin-bottom: 14px; }
-    .finish-title { font-size: 28px; font-weight: 900; color: var(--gold); text-align: center; margin-bottom: 6px; text-shadow: 0 2px 12px rgba(0,0,0,0.70); }
-    .finish-score {
-      font-size: 15px; color: var(--muted); font-weight: 600; text-align: center;
-      margin-bottom: 38px; line-height: 1.5; max-width: 264px; white-space: pre-line;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.80);
+    #screenFinish {
+      justify-content: flex-start;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding: max(calc(env(safe-area-inset-top) + 54px), 60px) max(16px, env(safe-area-inset-right)) max(calc(env(safe-area-inset-bottom) + 20px), 30px) max(16px, env(safe-area-inset-left));
+      gap: 6px;
     }
+    .finish-title { font-size: 28px; font-weight: 900; color: var(--gold); text-align: center; margin-bottom: 4px; text-shadow: 0 2px 12px rgba(0,0,0,0.70); }
+    .case-report {
+      width: 100%; max-width: 300px;
+      background: rgba(18, 10, 2, 0.82);
+      border: 1px dashed rgba(245, 197, 24, 0.38);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin: 4px auto 14px;
+      text-align: left;
+    }
+    .case-report-hdr {
+      font-size: 10px; font-weight: 900; letter-spacing: 0.18em;
+      color: var(--gold); text-transform: uppercase; text-align: center;
+      padding-bottom: 8px; margin-bottom: 8px;
+      border-bottom: 1px solid rgba(245, 197, 24, 0.25);
+      opacity: 0.9;
+    }
+    .report-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 5px 0; font-size: 13px;
+      border-bottom: 1px solid rgba(245, 234, 216, 0.07);
+    }
+    .report-row:last-child { border-bottom: none; }
+    .report-eq  { color: var(--text); font-weight: 700; letter-spacing: 0.03em; }
+    .report-ok  { color: #4ade80; font-weight: 700; font-size: 12px; }
+    .report-ok2 { color: #fbbf24; font-weight: 700; font-size: 12px; }
     .replay-btn {
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #160c04; border: none; border-radius: 16px;
       padding: 15px 40px; font-size: 17px; font-weight: 900;
-      font-family: inherit; cursor: pointer;
+      font-family: inherit; cursor: pointer; flex-shrink: 0;
       box-shadow: 0 4px 18px rgba(0,0,0,0.50);
     }
     .replay-btn:active { transform: scale(0.97); }
@@ -255,7 +278,7 @@
       .v-num  { font-size: clamp(36px, 8.5vh, 50px); }
       .v-op   { font-size: clamp(20px, 5vh, 28px); width: 30px; }
       .v-line { width: min(155px, 94%); margin: 2px 0 1px; }
-      #submitBtn { padding: 12px; bottom: max(calc(env(safe-area-inset-bottom) + 6px), 10px); }
+      #submitBtn { padding: 12px 28px; bottom: max(calc(env(safe-area-inset-bottom) + 6px), 10px); }
     }
   </style>
 </head>
@@ -319,9 +342,8 @@
     Home
   </button>
   <img src="Ari_Detective.png" alt="" class="ari-finish">
-  <div class="finish-icon"  id="finishIcon">🏆</div>
   <div class="finish-title" id="finishTitle">Case Closed!</div>
-  <div class="finish-score" id="finishScore"></div>
+  <div id="caseReport" class="case-report"></div>
   <button class="replay-btn" onclick="startGame()" type="button">New Case File</button>
 </div>
 
@@ -339,6 +361,7 @@
 
   // ── Background music ──────────────────────────────────────────
   const bgMusic = document.getElementById('bgMusic');
+  bgMusic.volume = 0.9;
   let muted = false;
   function toggleMute() {
     muted = !muted;
@@ -624,12 +647,17 @@
   function goHome() { showScreen('screenHome'); }
 
   // ── Game logic ────────────────────────────────────────────────
-  let deck = [], idx = 0, correctCount = 0, results = [];
+  let liveQueue = [], TOTAL_UNIQUE = 0;
+  let solved = new Set(), probStats = {};
 
   function startGame() {
-    deck = shuffle(ALL_PROBLEMS);
-    idx = 0; correctCount = 0;
-    results = new Array(deck.length).fill('pending');
+    const shuffled = shuffle(ALL_PROBLEMS);
+    liveQueue = shuffled.map((p, i) => ({ ...p, pid: i, attempts: 0 }));
+    TOTAL_UNIQUE = liveQueue.length;
+    solved = new Set(); probStats = {};
+    for (let i = 0; i < TOTAL_UNIQUE; i++) {
+      probStats[i] = { firstTryCorrect: null, attempts: 0, problem: liveQueue[i] };
+    }
     buildProgRow(); loadProblem();
     showScreen('screenGame');
   }
@@ -637,32 +665,32 @@
   function buildProgRow() {
     const row = document.getElementById('progRow');
     row.innerHTML = '';
-    deck.forEach((_, i) => {
+    for (let i = 0; i < TOTAL_UNIQUE; i++) {
       const d = document.createElement('div');
-      d.className = 'prog-dot' + (i === 0 ? ' current' : '');
-      d.id = 'dot' + i; row.appendChild(d);
-    });
+      d.className = 'prog-dot'; d.id = 'pdot' + i;
+      row.appendChild(d);
+    }
+    updateProgRow();
   }
 
   function updateProgRow() {
-    deck.forEach((_, i) => {
-      const d = document.getElementById('dot' + i); if (!d) return;
-      d.className = 'prog-dot '
-        + (results[i] === 'correct' ? 'done-ok'
-        :  results[i] === 'wrong'   ? 'done-bad'
-        :  i === idx                ? 'current' : '');
-    });
+    const currentPid = liveQueue.length > 0 ? liveQueue[0].pid : -1;
+    for (let i = 0; i < TOTAL_UNIQUE; i++) {
+      const d = document.getElementById('pdot' + i); if (!d) continue;
+      d.className = 'prog-dot'
+        + (solved.has(i) ? ' done-ok' : i === currentPid ? ' current' : '');
+    }
   }
 
   function loadProblem() {
-    const p = deck[idx];
-    document.getElementById('caseLabel').textContent     = 'Case #' + (idx + 1) + ' of ' + deck.length;
-    document.getElementById('cardCaseLabel').textContent  = 'Case #' + (idx + 1);
+    const p = liveQueue[0];
+    const caseNum = solved.size + 1;
+    document.getElementById('caseLabel').textContent    = 'Case #' + caseNum + ' of ' + TOTAL_UNIQUE;
+    document.getElementById('cardCaseLabel').textContent = 'Case #' + caseNum;
     document.getElementById('vLeft').textContent  = p.left;
     document.getElementById('vRight').textContent = p.right;
     feedbackMsg.innerHTML = '&nbsp;'; feedbackMsg.className = 'feedback-msg';
     dragHint.style.display = '';
-    const ans = p.total;
     pickerOff = offsetForVal(10); pickerVal = 10; blankVal.textContent = '?';
     updateProgRow();
     unsnap(false);
@@ -670,43 +698,81 @@
 
   function submitAnswer() {
     if (state !== 'snapped' && state !== 'picking') return;
-    const p = deck[idx];
-    if (pickerVal === p.total) {
+    const slot = liveQueue[0];
+    slot.attempts++;
+    if (pickerVal === slot.total) {
       playChime();
-      results[idx] = 'correct'; correctCount++;
+      if (probStats[slot.pid].firstTryCorrect === null) {
+        probStats[slot.pid].firstTryCorrect = slot.attempts === 1;
+      }
+      probStats[slot.pid].attempts = slot.attempts;
+      solved.add(slot.pid);
+      liveQueue.shift();
       caseCard.classList.remove('flash-bad'); void caseCard.offsetWidth;
       caseCard.classList.add('flash-ok');
       feedbackMsg.textContent = 'GO GO GADGET! 🎉'; feedbackMsg.className = 'feedback-msg ok';
       updateProgRow();
       submitBtn.classList.remove('active');
-      // Slide magnifier back to home, leave correct number visible for 1.5s
       state = 'idle'; pickerReady = false;
       positionMagHome(true);
       setTimeout(() => {
         caseCard.classList.remove('flash-ok');
-        idx++;
-        if (idx >= deck.length) showFinish(); else loadProblem();
+        if (solved.size >= TOTAL_UNIQUE) showFinish(); else loadProblem();
       }, 1500);
     } else {
-      results[idx] = 'wrong';
+      if (probStats[slot.pid].firstTryCorrect === null) {
+        probStats[slot.pid].firstTryCorrect = false;
+      }
       caseCard.classList.remove('flash-ok'); void caseCard.offsetWidth;
       caseCard.classList.add('flash-bad');
       magnifier.classList.remove('shake'); void magnifier.offsetWidth;
       magnifier.classList.add('shake');
-      feedbackMsg.textContent = 'Not quite, Inspector! Try again. 🔍';
+      feedbackMsg.textContent = 'Not quite, Detective! Back to the case files... 🔍';
       feedbackMsg.className = 'feedback-msg bad';
-      setTimeout(() => { caseCard.classList.remove('flash-bad'); magnifier.classList.remove('shake'); updateProgRow(); }, 450);
+      submitBtn.classList.remove('active');
+      state = 'idle'; pickerReady = false;
+      positionMagHome(true);
+      liveQueue.shift();
+      const insertPos = Math.min(Math.floor(Math.random() * 3) + 2, liveQueue.length);
+      liveQueue.splice(insertPos, 0, slot);
+      setTimeout(() => {
+        caseCard.classList.remove('flash-bad');
+        magnifier.classList.remove('shake');
+        loadProblem();
+      }, 1300);
     }
   }
 
   function showFinish() {
+    const firstTryCount = Object.values(probStats).filter(s => s.firstTryCorrect === true).length;
+    const pct = Math.round((firstTryCount / TOTAL_UNIQUE) * 100);
+    document.getElementById('finishTitle').textContent =
+      pct === 100 ? 'Case Closed! 🕵️' : pct >= 70 ? 'Good Work, Detective!' : 'Keep Investigating!';
+
+    let html = '<div class="case-report-hdr">📁 Case File Report</div>';
+    html += '<div style="color:var(--muted);font-size:12px;font-weight:600;text-align:center;margin-bottom:10px">'
+          + firstTryCount + ' / ' + TOTAL_UNIQUE + ' cracked on first try</div>';
+    for (let i = 0; i < TOTAL_UNIQUE; i++) {
+      const s = probStats[i];
+      const p = s.problem;
+      const eq = p.left + ' + ' + p.right + ' = ' + p.total;
+      if (s.firstTryCorrect === true) {
+        html += '<div class="report-row"><span class="report-eq">' + eq + '</span>'
+              + '<span class="report-ok">✓ First try</span></div>';
+      } else {
+        html += '<div class="report-row"><span class="report-eq">' + eq + '</span>'
+              + '<span class="report-ok2">✓ ' + s.attempts + ' attempt' + (s.attempts !== 1 ? 's' : '') + '</span></div>';
+      }
+    }
+    document.getElementById('caseReport').innerHTML = html;
+
+    try {
+      const rep = JSON.parse(localStorage.getItem('rocketBookReports') || '[]');
+      rep.push({ game: 'Digit Detective', correct: firstTryCount, total: TOTAL_UNIQUE, date: new Date().toISOString() });
+      localStorage.setItem('rocketBookReports', JSON.stringify(rep.slice(-50)));
+    } catch(e) {}
+
     showScreen('screenFinish');
-    const pct = Math.round((correctCount / deck.length) * 100);
-    document.getElementById('finishIcon').textContent  = pct === 100 ? '🏆' : pct >= 70 ? '🕵️' : '🔍';
-    document.getElementById('finishTitle').textContent = pct === 100 ? 'Case Closed!' : pct >= 70 ? 'Good Work, Detective!' : 'Keep Investigating!';
-    document.getElementById('finishScore').textContent =
-      correctCount + ' of ' + deck.length + ' solved on the first try.\n'
-      + (pct === 100 ? 'Perfect score, Inspector!' : 'Every detective gets better with practice!');
   }
 </script>
 </body>
