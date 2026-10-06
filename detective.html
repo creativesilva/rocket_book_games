@@ -37,7 +37,7 @@
     }
     #bgLayer img {
       width: 100%; height: 100%;
-      object-fit: contain; object-position: center center;
+      object-fit: cover; object-position: center center;
       opacity: 0.75; display: block;
     }
 
@@ -374,7 +374,7 @@
   let _wac = null, _chimeBuf = null;
   function _initWac() {
     if (_wac) return;
-    try { _wac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    try { _wac = new (window.AudioContext || window.webkitAudioContext)(); _wac.resume().catch(() => {}); } catch(e) {}
   }
   async function _loadChime() {
     if (_chimeBuf || !_wac) return;
@@ -552,6 +552,8 @@
   // ── Pointer events ────────────────────────────────────────────
   magnifier.addEventListener('pointerdown', e => {
     e.preventDefault();
+    _initWac();
+    if (_wac && _wac.state === 'suspended') _wac.resume().catch(() => {});
     magnifier.setPointerCapture(e.pointerId);
     if (state === 'snapped' || state === 'picking') {
       state = 'picking';
