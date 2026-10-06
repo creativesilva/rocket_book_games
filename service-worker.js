@@ -1,4 +1,4 @@
-const CACHE_NAME = "rocket-book-games-2026-10-05-v5";
+const CACHE_NAME = "rocket-book-games-2026-10-05-v6";
 
 const SHELL_ASSETS = [
   "./",
@@ -21,7 +21,8 @@ const SHELL_ASSETS = [
   "./fast_and_fluent_logo.png",
   "./rainbow_reader_logo.png",
   "./Magnifying_Glass_v1.png",
-  "./Finger_Print.png"
+  "./Finger_Print.png",
+  "./Digit_Detective_Beat.mp3"
 ];
 
 self.addEventListener("install", (event) => {
