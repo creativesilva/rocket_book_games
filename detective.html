@@ -199,8 +199,8 @@
     /* Just the gold-ring PNG — lens is transparent air, no overlay */
     #magnifier {
       position: fixed;
-      /* Size to frame a single 2-digit number (~90px diameter lens) */
-      width: min(148px, 38vw);
+      /* Size to frame a single 2-digit number — snug around the answer */
+      width: min(112px, 29vw);
       z-index: 200;
       touch-action: none;
       cursor: grab;
@@ -211,18 +211,18 @@
     #magImg {
       width: 100%; display: block;
       pointer-events: none;
-      /* Rotate handle 45° clockwise */
-      transform: rotate(45deg);
+      /* Rotate handle 45° counter-clockwise so handle points lower-right */
+      transform: rotate(-45deg);
       transform-origin: center center;
       filter: drop-shadow(0 8px 22px rgba(0,0,0,0.80));
     }
 
     @keyframes magShake {
-      0%,100%{transform:rotate(45deg) translateX(0);}
-      20%{transform:rotate(45deg) translateX(-9px);}
-      40%{transform:rotate(45deg) translateX(9px);}
-      60%{transform:rotate(45deg) translateX(-5px);}
-      80%{transform:rotate(45deg) translateX(5px);}
+      0%,100%{transform:rotate(-45deg) translateX(0);}
+      20%{transform:rotate(-45deg) translateX(-9px);}
+      40%{transform:rotate(-45deg) translateX(9px);}
+      60%{transform:rotate(-45deg) translateX(-5px);}
+      80%{transform:rotate(-45deg) translateX(5px);}
     }
     #magnifier.shake { animation: magShake 0.38s ease; }
 
@@ -374,6 +374,23 @@
   }
   document.addEventListener('pointerdown', () => { _initWac(); _loadChime(); }, { once: true });
 
+  // ── Mechanical tick (Web Audio — no file, synthesised) ────────
+  function playTick() {
+    if (!_wac) return;
+    const sr = _wac.sampleRate;
+    const buf = _wac.createBuffer(1, Math.floor(sr * 0.022), sr);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const t = i / data.length;
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - t, 2.5) * 0.28;
+    }
+    const src = _wac.createBufferSource();
+    const flt = _wac.createBiquadFilter();
+    flt.type = 'bandpass'; flt.frequency.value = 1100; flt.Q.value = 2;
+    src.buffer = buf; src.connect(flt); flt.connect(_wac.destination);
+    src.start();
+  }
+
   // ── Problems ──────────────────────────────────────────────────
   const ALL_PROBLEMS = [
     { total:11, left:5,  right:6  },
@@ -406,20 +423,20 @@
 
   // ── Magnifier geometry ────────────────────────────────────────
   // PNG lens is at (50%, 33.5%) of unrotated image.
-  // After 45° CW rotation of the image, the lens center shifts:
-  //   d = img_cy - lens_y  (distance lens is above image center)
-  //   new LENS_OX = img_cx - d * sin(45°)
-  //   new LENS_OY = img_cy - d * cos(45°)
-  let LENS_OX = 53, LENS_OY = 71;
+  // Image is rotated -45° (CCW) so handle points lower-right.
+  // Lens offset from image center: (0, -d). After -45° CCW:
+  //   LENS_OX = img_cx + d * sin(45°)   (shifts right)
+  //   LENS_OY = img_cy - d * cos(45°)   (shifts up)
+  let LENS_OX = 53, LENS_OY = 57;
 
   function updateLensGeometry() {
     const w = magnifier.offsetWidth;
     const h = magImg.offsetHeight; // pre-transform layout height
     if (w > 0 && h > 0) {
       const cx = w * 0.50, cy = h * 0.50;
-      const d  = cy - h * 0.335; // lens is above center
+      const d  = cy - h * 0.335; // distance lens is above image center
       const s  = Math.SQRT1_2;   // sin/cos 45° = 0.7071
-      LENS_OX = cx - d * s;
+      LENS_OX = cx + d * s;      // +s for CCW (-45°)
       LENS_OY = cy - d * s;
     }
   }
@@ -456,7 +473,8 @@
 
   // ── Silent picker ─────────────────────────────────────────────
   // No visual — just tracks a value and writes to #blankVal on the card
-  const ITEM_H = 50, MIN_V = 0, MAX_V = 20, CENTER_OFF = 53;
+  // ITEM_H = 80: requires 80px of drag per number step (less sensitive)
+  const ITEM_H = 80, MIN_V = 0, MAX_V = 20, CENTER_OFF = 53;
   let pickerVal = 5, pickerOff = 0;
   let pickStartY = 0, pickStartOff = 0, pickVel = 0, pickLastY = 0, pickLastT = 0;
 
@@ -468,6 +486,7 @@
     o = clampOff(o);
     pickerOff = o;
     const v = Math.max(MIN_V, Math.min(MAX_V, valForOffset(o)));
+    if (v !== pickerVal) { playTick(); }
     pickerVal = v;
     blankVal.textContent = v;
   }
@@ -555,7 +574,7 @@
       setFpOpacity(9999, true);
       positionMagHome(true);
     } else if (state === 'picking') {
-      const projected = pickerOff + pickVel * 90;
+      const projected = pickerOff + pickVel * 140;
       const v = Math.max(MIN_V, Math.min(MAX_V, Math.round((CENTER_OFF - projected) / ITEM_H)));
       applyPickerOffset(offsetForVal(v));
       state = 'snapped';
