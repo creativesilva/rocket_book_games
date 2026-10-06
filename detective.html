@@ -212,18 +212,15 @@
     #magImg {
       width: 100%; display: block;
       pointer-events: none;
-      /* Rotate handle 45° counter-clockwise so handle points lower-right */
-      transform: rotate(-45deg);
-      transform-origin: center center;
       filter: drop-shadow(0 8px 22px rgba(0,0,0,0.80));
     }
 
     @keyframes magShake {
-      0%,100%{transform:rotate(-45deg) translateX(0);}
-      20%{transform:rotate(-45deg) translateX(-9px);}
-      40%{transform:rotate(-45deg) translateX(9px);}
-      60%{transform:rotate(-45deg) translateX(-5px);}
-      80%{transform:rotate(-45deg) translateX(5px);}
+      0%,100%{transform:translateX(0);}
+      20%{transform:translateX(-9px);}
+      40%{transform:translateX(9px);}
+      60%{transform:translateX(-5px);}
+      80%{transform:translateX(5px);}
     }
     #magnifier.shake { animation: magShake 0.38s ease; }
 
@@ -334,7 +331,7 @@
 
 <!-- MAGNIFIER: just the PNG, no lens overlay -->
 <div id="magnifier" style="display:none">
-  <img id="magImg" src="Magnifying_Glass_v1.png" alt="" />
+  <img id="magImg" src="Magnifying_Glass_v2.png" alt="" />
 </div>
 
 <script>
@@ -429,9 +426,10 @@
   function getLensGeom() {
     const w = magnifier.offsetWidth;
     const h = magImg.offsetHeight;
-    if (!w || !h) return { ox: 56, oy: 52 };
-    const d = h * 0.5 - h * 0.335;
-    return { ox: w * 0.5 + d * 0.7071, oy: h * 0.5 - d * 0.7071 };
+    if (!w || !h) return { ox: 44, oy: 57 };
+    // v2 PNG: handle already at lower-right, no rotation needed.
+    // Lens ring center at ~39% x, 44% y of the image.
+    return { ox: w * 0.39, oy: h * 0.44 };
   }
 
   magImg.addEventListener('load', () => { if (gameActive) positionMagHome(false); });
@@ -462,7 +460,7 @@
   }
 
   // ── State machine ─────────────────────────────────────────────
-  let state = 'idle', dragOffX = 0, dragOffY = 0;
+  let state = 'idle', dragOffX = 0, dragOffY = 0, pickerReady = false;
 
   // ── Silent picker ─────────────────────────────────────────────
   // No visual — just tracks a value and writes to #blankVal on the card
@@ -482,6 +480,7 @@
     if (v !== pickerVal) { playTick(); }
     pickerVal = v;
     blankVal.textContent = v;
+    if (!pickerReady) { pickerReady = true; submitBtn.classList.add('active'); }
   }
 
   // ── Fingerprint proximity fade ────────────────────────────────
@@ -506,17 +505,21 @@
   function snapMagnifier(bc) {
     setMagPos(bc.x, bc.y, true);
     state = 'snapped';
+    pickerReady = false;
+    blankVal.textContent = '?';
     setTimeout(() => {
       setFpOpacity(0, true);
       blankVal.classList.add('show');
       dragHint.style.display = 'none';
-      submitBtn.classList.add('active');
+      // submitBtn activates only after user selects a value
     }, 240);
   }
 
   function unsnap(animate) {
     state = 'idle';
-    setFpOpacity(9999, true); // restore fingerprint
+    pickerReady = false;
+    blankVal.textContent = '?';
+    setFpOpacity(9999, true);
     blankVal.classList.remove('show');
     dragHint.style.display = '';
     submitBtn.classList.remove('active');
@@ -588,6 +591,20 @@
     applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, pickerVal + (e.deltaY > 0 ? 1 : -1)))));
   }, { passive: false });
 
+  document.addEventListener('keydown', e => {
+    if (state !== 'snapped' && state !== 'picking') return;
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      applyPickerOffset(offsetForVal(Math.min(MAX_V, pickerVal + 1)));
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      applyPickerOffset(offsetForVal(Math.max(MIN_V, pickerVal - 1)));
+    } else if ((e.key === 'Enter' || e.key === ' ') && pickerReady) {
+      e.preventDefault();
+      submitAnswer();
+    }
+  });
+
   // ── Screen management ─────────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -646,7 +663,7 @@
     feedbackMsg.innerHTML = '&nbsp;'; feedbackMsg.className = 'feedback-msg';
     dragHint.style.display = '';
     const ans = p.total;
-    applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, ans <= 10 ? ans + 5 : ans - 5))));
+    pickerOff = offsetForVal(10); pickerVal = 10; blankVal.textContent = '?';
     updateProgRow();
     unsnap(false);
   }
