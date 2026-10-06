@@ -78,12 +78,14 @@
     /* ═══ HOME ═══════════════════════════════════════ */
     #screenHome { justify-content: center; }
     .home-badge {
-      width: 120px; height: 120px; border-radius: 30px;
+      width: 140px; height: 140px; border-radius: 30px;
       background: linear-gradient(145deg, #f5c518, #c9a012);
       display: flex; align-items: center; justify-content: center;
-      font-size: 64px; margin-bottom: 20px;
+      overflow: hidden; margin-bottom: 20px; padding: 0;
       box-shadow: 0 8px 32px rgba(0,0,0,0.60);
     }
+    .home-badge img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ari-finish { width: min(200px, 50vw); height: auto; display: block; margin: 0 auto 6px; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.55)); }
     .home-title { font-size: clamp(30px,8vw,40px); font-weight: 900; text-align: center; line-height: 1.1; margin-bottom: 8px; color: var(--gold); text-shadow: 0 2px 12px rgba(0,0,0,0.70); }
     .home-sub   { font-size: 15px; color: var(--muted); font-weight: 600; text-align: center; margin-bottom: 44px; line-height: 1.45; max-width: 270px; text-shadow: 0 1px 6px rgba(0,0,0,0.80); }
     .start-btn  {
@@ -270,7 +272,7 @@
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
-  <div class="home-badge">🕵️</div>
+  <div class="home-badge"><img src="Ari_Detective.png" alt="Ari Detective"></div>
   <div class="home-title">Digit Detective</div>
   <div class="home-sub">Drag the magnifying glass up to the mystery number to crack the case!</div>
   <button class="start-btn" onclick="startGame()" type="button">Open Case File</button>
@@ -319,6 +321,7 @@
     <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M7 1L1 7L7 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     Home
   </button>
+  <img src="Ari_Detective.png" alt="" class="ari-finish">
   <div class="finish-icon"  id="finishIcon">🏆</div>
   <div class="finish-title" id="finishTitle">Case Closed!</div>
   <div class="finish-score" id="finishScore"></div>
@@ -421,50 +424,41 @@
   const vSum       = document.getElementById('vSum');
 
   // ── Magnifier geometry ────────────────────────────────────────
-  // PNG lens is at (50%, 33.5%) of unrotated image.
-  // Image is rotated -45° (CCW) so handle points lower-right.
-  // Lens offset from image center: (0, -d). After -45° CCW:
-  //   LENS_OX = img_cx + d * sin(45°)   (shifts right)
-  //   LENS_OY = img_cy - d * cos(45°)   (shifts up)
-  let LENS_OX = 53, LENS_OY = 57;
-
-  function updateLensGeometry() {
+  // Always fresh — no cached values so resize never leaves stale geometry.
+  // Lens is at (50%, 33.5%) of the PNG; image is rotate(-45deg) CCW.
+  function getLensGeom() {
     const w = magnifier.offsetWidth;
-    const h = magImg.offsetHeight; // pre-transform layout height
-    if (w > 0 && h > 0) {
-      const cx = w * 0.50, cy = h * 0.50;
-      const d  = cy - h * 0.335; // distance lens is above image center
-      const s  = Math.SQRT1_2;   // sin/cos 45° = 0.7071
-      LENS_OX = cx + d * s;      // +s for CCW (-45°)
-      LENS_OY = cy - d * s;
-    }
+    const h = magImg.offsetHeight;
+    if (!w || !h) return { ox: 56, oy: 52 };
+    const d = h * 0.5 - h * 0.335;
+    return { ox: w * 0.5 + d * 0.7071, oy: h * 0.5 - d * 0.7071 };
   }
 
-  magImg.addEventListener('load', () => { updateLensGeometry(); if (gameActive) positionMagHome(false); });
-  window.addEventListener('resize', () => { updateLensGeometry(); if (gameActive) positionMagHome(false); });
+  magImg.addEventListener('load', () => { if (gameActive) positionMagHome(false); });
+  window.addEventListener('resize', () => { if (gameActive) positionMagHome(false); });
 
   // ── Magnifier position ────────────────────────────────────────
   let magCX = 0, magCY = 0, gameActive = false;
 
-  function getHomePos() {
-    updateLensGeometry();
-    const bc = getBlankCenter();
-    const gap = window.innerHeight < 520 ? 90 : 150;
-    if (bc && bc.y > 80) return { x: bc.x, y: bc.y + gap };
-    return { x: window.innerWidth / 2, y: window.innerHeight * 0.80 };
-  }
-
-  function setMagPos(cx, cy, animate) {
-    magCX = cx; magCY = cy;
+  function setMagPos(lx, ly, animate) {
+    const g = getLensGeom();
+    magCX = lx; magCY = ly;
     magnifier.style.transition = animate
       ? 'left 0.38s cubic-bezier(0.34,1.56,0.64,1), top 0.38s cubic-bezier(0.34,1.56,0.64,1)'
       : 'none';
-    magnifier.style.left = (cx - LENS_OX) + 'px';
-    magnifier.style.top  = (cy - LENS_OY) + 'px';
+    magnifier.style.left = (lx - g.ox) + 'px';
+    magnifier.style.top  = (ly - g.oy) + 'px';
   }
 
   function positionMagHome(animate) {
-    requestAnimationFrame(() => { const p = getHomePos(); setMagPos(p.x, p.y, animate); });
+    // Double rAF: ensures browser has reflowed before measuring positions
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const fp = getBlankCenter();
+      const gap = window.innerHeight < 520 ? 90 : 150;
+      const lx = fp ? fp.x : window.innerWidth / 2;
+      const ly = fp && fp.y > 80 ? fp.y + gap : window.innerHeight * 0.80;
+      setMagPos(lx, ly, animate);
+    }));
   }
 
   // ── State machine ─────────────────────────────────────────────
@@ -507,7 +501,7 @@
   }
 
   // ── Snap / unsnap ─────────────────────────────────────────────
-  const SNAP_DIST = 100;
+  const SNAP_DIST = 130;
 
   function snapMagnifier(bc) {
     setMagPos(bc.x, bc.y, true);
@@ -538,9 +532,17 @@
       pickStartY = e.clientY; pickStartOff = pickerOff;
       pickVel = 0; pickLastY = e.clientY; pickLastT = Date.now();
     } else if (state === 'idle') {
+      // Read the actual rendered position to handle mid-animation grabs
+      const g = getLensGeom();
+      const rect = magnifier.getBoundingClientRect();
+      const lx = rect.left + g.ox;
+      const ly = rect.top  + g.oy;
+      magCX = lx; magCY = ly;
+      magnifier.style.transition = 'none';
       state = 'dragging';
       magnifier.classList.add('dragging');
-      dragOffX = e.clientX - magCX; dragOffY = e.clientY - magCY;
+      dragOffX = e.clientX - lx;
+      dragOffY = e.clientY - ly;
     }
   });
 
@@ -595,7 +597,7 @@
     submitBtn.style.display  = onGame ? '' : 'none';
     gameActive = onGame;
     if (onGame) {
-      updateLensGeometry(); positionMagHome(false);
+      positionMagHome(false);
       bgMusic.play().catch(() => {});
     } else {
       bgMusic.pause(); bgMusic.currentTime = 0;
