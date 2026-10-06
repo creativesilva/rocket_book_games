@@ -134,22 +134,21 @@
     }
 
     /* ── Vertical equation ──────────────────────────── */
-    .v-eq { display: flex; flex-direction: column; align-items: flex-end; gap: 0; width: 100%; }
-    .v-row { display: flex; align-items: center; width: 100%; min-height: clamp(66px, 15vw, 84px); }
+    .v-eq { display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%; }
+    .v-row { display: flex; align-items: center; width: min(190px, 94%); min-height: clamp(66px, 15vw, 84px); }
     .v-op  { font-size: clamp(26px, 7vw, 38px); font-weight: 500; color: #8a5030; width: 38px; text-align: center; flex-shrink: 0; }
-    .v-num { font-size: clamp(52px, 13vw, 70px); font-weight: 900; color: #2a1505; flex: 1; text-align: right; line-height: 1; }
-    .v-line { width: 100%; height: 3px; background: #2a1505; border-radius: 2px; margin: 3px 0 1px; }
+    .v-num { font-size: clamp(52px, 13vw, 70px); font-weight: 900; color: #2a1505; flex: 1; text-align: center; line-height: 1; }
+    .v-line { width: min(190px, 94%); height: 3px; background: #2a1505; border-radius: 2px; margin: 3px 0 1px; }
 
-    /* Sum row — same layout as addend rows so number aligns */
+    /* Sum row */
     #rowSum { min-height: clamp(66px, 15vw, 84px); }
-    #vSum { position: relative; display: flex; align-items: center; justify-content: flex-end; }
+    #vSum { position: relative; display: flex; align-items: center; justify-content: center; }
 
     #fpImg {
-      position: absolute; right: 0;
+      position: absolute; left: 50%; transform: translateX(-50%);
       height: 0.82em; width: auto;
       object-fit: contain;
     }
-    /* blankVal: same font as v-num, right-aligned, always in layout */
     #blankVal {
       opacity: 0; transition: opacity 0.28s;
       position: relative; z-index: 1; line-height: 1;
@@ -253,10 +252,10 @@
       }
       .case-card { padding: 8px 14px 8px; max-width: 340px; }
       .card-case-label { margin-bottom: 6px; }
-      .v-row, #rowSum { min-height: clamp(46px, 10vh, 60px); }
+      .v-row, #rowSum { min-height: clamp(46px, 10vh, 60px); width: min(155px, 94%); }
       .v-num  { font-size: clamp(36px, 8.5vh, 50px); }
       .v-op   { font-size: clamp(20px, 5vh, 28px); width: 30px; }
-      .v-line { margin: 2px 0 1px; }
+      .v-line { width: min(155px, 94%); margin: 2px 0 1px; }
       #submitBtn { padding: 12px; bottom: max(calc(env(safe-area-inset-bottom) + 6px), 10px); }
     }
   </style>
@@ -266,7 +265,7 @@
 <audio id="bgMusic" src="Digit_Detective_Beat.mp3" loop preload="auto"></audio>
 
 <div id="bgLayer">
-  <img src="Digit_Detective_Background.png" alt="">
+  <img src="Digit_Detective_Background_v2.png" alt="">
 </div>
 
 <!-- HOME -->
@@ -451,7 +450,7 @@
     updateLensGeometry();
     const bc = getBlankCenter();
     const gap = window.innerHeight < 520 ? 90 : 150;
-    if (bc && bc.y > 80) return { x: window.innerWidth / 2, y: bc.y + gap };
+    if (bc && bc.y > 80) return { x: bc.x, y: bc.y + gap };
     return { x: window.innerWidth / 2, y: window.innerHeight * 0.80 };
   }
 
@@ -503,7 +502,7 @@
 
   // ── Blank center ──────────────────────────────────────────────
   function getBlankCenter() {
-    const r = vSum.getBoundingClientRect();
+    const r = fpImg.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
