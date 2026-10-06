@@ -1,4 +1,4 @@
-const CACHE_NAME = "rocket-book-games-2026-10-05-v3";
+const CACHE_NAME = "rocket-book-games-2026-10-05-v4";
 
 const SHELL_ASSETS = [
   "./",
