@@ -17,7 +17,6 @@
       --muted: rgba(245,234,216,0.60);
       --ok:    #22c55e;
       --bad:   #ef4444;
-      --lo-r:  78px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -31,16 +30,14 @@
       -webkit-user-select: none; user-select: none;
     }
 
-    /* ── Full-screen background image ───────────────── */
+    /* ── Full-screen background ──────────────────────── */
     #bgLayer {
       position: fixed; inset: 0; z-index: 0;
       background: var(--bg);
     }
     #bgLayer img {
       width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0.75;
-      display: block;
+      object-fit: cover; opacity: 0.75; display: block;
     }
 
     /* ── Screens ────────────────────────────────────── */
@@ -71,10 +68,8 @@
       right: 14px;
       background: rgba(245,197,24,0.13);
       border: 1px solid rgba(245,197,24,0.28);
-      border-radius: 50%;
-      width: 36px; height: 36px;
-      font-size: 16px;
-      cursor: pointer; font-family: inherit;
+      border-radius: 50%; width: 36px; height: 36px;
+      font-size: 16px; cursor: pointer; font-family: inherit;
       display: flex; align-items: center; justify-content: center;
       z-index: 20;
     }
@@ -87,23 +82,22 @@
       background: linear-gradient(145deg, #f5c518, #c9a012);
       display: flex; align-items: center; justify-content: center;
       font-size: 64px; margin-bottom: 20px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.60), 0 0 40px rgba(245,197,24,0.20);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.60);
     }
-    .home-title { font-size: clamp(30px,8vw,40px); font-weight: 900; text-align: center; line-height: 1.1; margin-bottom: 8px; color: var(--gold); text-shadow: 0 2px 12px rgba(0,0,0,0.60); }
-    .home-sub   { font-size: 15px; color: var(--muted); font-weight: 600; text-align: center; margin-bottom: 44px; line-height: 1.45; max-width: 270px; text-shadow: 0 1px 6px rgba(0,0,0,0.70); }
+    .home-title { font-size: clamp(30px,8vw,40px); font-weight: 900; text-align: center; line-height: 1.1; margin-bottom: 8px; color: var(--gold); text-shadow: 0 2px 12px rgba(0,0,0,0.70); }
+    .home-sub   { font-size: 15px; color: var(--muted); font-weight: 600; text-align: center; margin-bottom: 44px; line-height: 1.45; max-width: 270px; text-shadow: 0 1px 6px rgba(0,0,0,0.80); }
     .start-btn  {
       background: linear-gradient(135deg, #f5c518, #c9a012);
       color: #160c04; border: none; border-radius: 18px;
       padding: 18px 46px; font-size: 19px; font-weight: 900;
       font-family: inherit; cursor: pointer;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.50), 0 0 20px rgba(245,197,24,0.25);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.50);
     }
     .start-btn:active { transform: scale(0.96); }
 
     /* ═══ GAME SCREEN ════════════════════════════════ */
     #screenGame {
-      justify-content: flex-start;
-      align-items: center;
+      justify-content: flex-start; align-items: center;
       padding-top:   max(calc(env(safe-area-inset-top) + 54px), 68px);
       padding-left:  max(20px, env(safe-area-inset-left));
       padding-right: max(20px, env(safe-area-inset-right));
@@ -111,101 +105,70 @@
       gap: 8px;
     }
 
-    /* Progress dots */
     .prog-row { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; }
     .prog-dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(245,197,24,0.20); transition: background 0.2s; }
     .prog-dot.done-ok  { background: var(--ok); }
     .prog-dot.done-bad { background: rgba(239,68,68,0.60); }
     .prog-dot.current  { background: var(--gold); }
 
-    /* Case label */
-    .case-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; opacity: 0.9; text-shadow: 0 1px 6px rgba(0,0,0,0.70); }
+    .case-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; color: var(--gold); text-transform: uppercase; opacity: 0.9; text-shadow: 0 1px 6px rgba(0,0,0,0.80); }
 
-    /* ── Case File card ─────────────────────────────── */
+    /* ── Case file card ─────────────────────────────── */
     .case-card {
-      width: 100%;
-      max-width: 300px;
+      width: 100%; max-width: 300px;
       background: #f9f5e8;
       border: 2px solid rgba(245,197,24,0.70);
-      border-radius: 20px;
-      padding: 24px 20px 20px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.60), 0 2px 0 rgba(245,197,24,0.30);
+      border-radius: 20px; padding: 22px 18px 18px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.65), 0 2px 0 rgba(245,197,24,0.30);
       transition: border-color 0.25s, box-shadow 0.25s;
       flex-shrink: 0;
     }
     .case-card.glow-snap {
       border-color: rgba(245,197,24,1);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.60), 0 0 28px rgba(245,197,24,0.50);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.65), 0 0 28px rgba(245,197,24,0.55);
     }
     .card-case-label {
       font-size: 10px; font-weight: 900; letter-spacing: 0.14em;
       color: #c9a012; text-transform: uppercase;
-      text-align: center; margin-bottom: 14px; opacity: 0.8;
+      text-align: center; margin-bottom: 12px; opacity: 0.8;
     }
 
     /* ── Vertical equation ──────────────────────────── */
-    .v-eq {
-      display: flex; flex-direction: column;
-      align-items: flex-end;
-      gap: 0; width: 100%;
-    }
-    .v-row {
-      display: flex; align-items: center;
-      width: 100%;
-      min-height: clamp(68px, 16vw, 86px);
-    }
-    .v-op {
-      font-size: clamp(28px, 7vw, 40px);
-      font-weight: 500; color: #8a5030;
-      width: 40px; text-align: center; flex-shrink: 0;
-    }
-    .v-num {
-      font-size: clamp(54px, 13vw, 72px);
-      font-weight: 900; color: #2a1505;
-      flex: 1; text-align: right; line-height: 1;
-    }
-    .v-line {
-      width: 100%; height: 3px;
-      background: #2a1505; border-radius: 2px;
-      margin: 4px 0 2px;
-    }
+    .v-eq { display: flex; flex-direction: column; align-items: flex-end; gap: 0; width: 100%; }
+    .v-row { display: flex; align-items: center; width: 100%; min-height: clamp(66px, 15vw, 84px); }
+    .v-op  { font-size: clamp(26px, 7vw, 38px); font-weight: 500; color: #8a5030; width: 38px; text-align: center; flex-shrink: 0; }
+    .v-num { font-size: clamp(52px, 13vw, 70px); font-weight: 900; color: #2a1505; flex: 1; text-align: right; line-height: 1; }
+    .v-line { width: 100%; height: 3px; background: #2a1505; border-radius: 2px; margin: 3px 0 1px; }
 
-    /* Sum row: same layout as v-row so number aligns perfectly */
-    #rowSum { min-height: clamp(68px, 16vw, 86px); }
+    /* Sum row — same layout as addend rows so number aligns */
+    #rowSum { min-height: clamp(66px, 15vw, 84px); }
+    #vSum { position: relative; display: flex; align-items: center; justify-content: flex-end; }
 
-    /* vSum holds the fingerprint image and the revealed number */
-    #vSum {
-      position: relative;
-      display: flex; align-items: center; justify-content: flex-end;
-    }
     #fpImg {
       position: absolute; right: 0;
       height: 0.82em; width: auto;
       object-fit: contain;
-      transition: opacity 0.30s;
     }
+    /* blankVal: same font as v-num, right-aligned, always in layout */
     #blankVal {
-      opacity: 0;
-      transition: opacity 0.30s;
-      position: relative; z-index: 1;
-      line-height: 1;
+      opacity: 0; transition: opacity 0.28s;
+      position: relative; z-index: 1; line-height: 1;
     }
     #blankVal.show { opacity: 1; }
 
-    /* Hint + feedback */
+    /* Hints */
     .drag-hint {
       font-size: 14px; color: rgba(245,197,24,0.90); font-weight: 700;
       letter-spacing: 0.04em; text-align: center;
       animation: hintFade 2s ease-in-out infinite;
-      min-height: 20px;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.70);
+      min-height: 20px; text-shadow: 0 1px 6px rgba(0,0,0,0.80);
     }
-    @keyframes hintFade { 0%,100%{opacity:0.9;} 50%{opacity:0.28;} }
+    @keyframes hintFade { 0%,100%{opacity:0.9;} 50%{opacity:0.22;} }
 
     .feedback-msg {
       font-size: 16px; font-weight: 800; text-align: center;
       min-height: 24px; letter-spacing: 0.02em;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.60);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.70);
     }
     .feedback-msg.ok  { color: var(--ok); }
     .feedback-msg.bad { color: var(--bad); }
@@ -225,88 +188,43 @@
       color: #160c04; border: none; border-radius: 16px;
       padding: 17px; font-size: 17px; font-weight: 900;
       font-family: inherit; cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.50);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.55);
       opacity: 0.28; pointer-events: none;
-      transition: opacity 0.22s;
-      z-index: 250;
+      transition: opacity 0.22s; z-index: 250;
     }
     #submitBtn.active { opacity: 1; pointer-events: auto; }
     #submitBtn.active:active { transform: scale(0.97); }
 
     /* ═══ MAGNIFIER ══════════════════════════════════ */
+    /* Just the gold-ring PNG — lens is transparent air, no overlay */
     #magnifier {
       position: fixed;
-      width: min(260px, 67vw);
+      /* Size to frame a single 2-digit number (~90px diameter lens) */
+      width: min(148px, 38vw);
       z-index: 200;
       touch-action: none;
       cursor: grab;
+      overflow: visible; /* rotated handle extends beyond box */
     }
     #magnifier.dragging { cursor: grabbing; }
 
     #magImg {
       width: 100%; display: block;
-      position: relative; z-index: 2;
       pointer-events: none;
-      filter: drop-shadow(0 12px 32px rgba(0,0,0,0.75));
+      /* Rotate handle 45° clockwise */
+      transform: rotate(45deg);
+      transform-origin: center center;
+      filter: drop-shadow(0 8px 22px rgba(0,0,0,0.80));
     }
-
-    /* Lens overlay: dark while idle, fades to transparent on snap */
-    #lensOverlay {
-      position: absolute;
-      left: calc(50% - var(--lo-r));
-      top:  calc(33.5% - var(--lo-r));
-      width:  calc(var(--lo-r) * 2);
-      height: calc(var(--lo-r) * 2);
-      border-radius: 50%;
-      overflow: hidden;
-      background: rgba(10, 5, 1, 0.88);
-      transition: background 0.30s;
-      z-index: 1;
-      isolation: isolate;
-    }
-
-    /* Search icon when idle */
-    #lensIdle {
-      position: absolute; inset: 0; z-index: 20;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 56px;
-      transition: opacity 0.22s;
-    }
-
-    /* Picker: hidden when snapped (lens is transparent) */
-    #pickerVp { position: absolute; inset: 0; overflow: hidden; z-index: 1; transition: opacity 0.25s; }
-    #pickerList { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
-    .p-item {
-      height: 50px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 700;
-      color: rgba(245,234,216,0.28);
-      user-select: none;
-    }
-    .p-item.sel { color: var(--gold); font-size: 40px; font-weight: 900; }
-
-    #selBar {
-      position: absolute; left: 0; right: 0;
-      top: calc(var(--lo-r) - 25px);
-      height: 50px;
-      border-top:    1.5px solid rgba(245,197,24,0.55);
-      border-bottom: 1.5px solid rgba(245,197,24,0.55);
-      background: rgba(245,197,24,0.07);
-      pointer-events: none; z-index: 10;
-      transition: opacity 0.25s;
-    }
-    .p-fade { position: absolute; left: 0; right: 0; height: 46px; pointer-events: none; z-index: 9; transition: opacity 0.25s; }
-    .p-fade.top    { top: 0;    background: linear-gradient(to bottom, rgba(10,5,1,0.92), transparent); }
-    .p-fade.bottom { bottom: 0; background: linear-gradient(to top,   rgba(10,5,1,0.92), transparent); }
 
     @keyframes magShake {
-      0%,100%{transform:translateX(0);}
-      20%{transform:translateX(-10px);}
-      40%{transform:translateX(10px);}
-      60%{transform:translateX(-6px);}
-      80%{transform:translateX(6px);}
+      0%,100%{transform:rotate(45deg) translateX(0);}
+      20%{transform:rotate(45deg) translateX(-9px);}
+      40%{transform:rotate(45deg) translateX(9px);}
+      60%{transform:rotate(45deg) translateX(-5px);}
+      80%{transform:rotate(45deg) translateX(5px);}
     }
-    #magnifier.shake { animation: magShake 0.40s ease; }
+    #magnifier.shake { animation: magShake 0.38s ease; }
 
     /* ═══ FINISH ═════════════════════════════════════ */
     #screenFinish { justify-content: center; }
@@ -315,7 +233,7 @@
     .finish-score {
       font-size: 15px; color: var(--muted); font-weight: 600; text-align: center;
       margin-bottom: 38px; line-height: 1.5; max-width: 264px; white-space: pre-line;
-      text-shadow: 0 1px 6px rgba(0,0,0,0.70);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.80);
     }
     .replay-btn {
       background: linear-gradient(135deg, #f5c518, #c9a012);
@@ -333,19 +251,13 @@
         padding-bottom: max(calc(env(safe-area-inset-bottom) + 68px), 76px);
         gap: 4px;
       }
-      .case-card {
-        padding: 10px 16px 10px;
-        max-width: 360px;
-      }
-      .card-case-label { margin-bottom: 8px; }
-      .v-row, #rowSum { min-height: clamp(48px, 11vh, 62px); }
-      .v-num { font-size: clamp(38px, 9vh, 52px); }
-      .v-op  { font-size: clamp(22px, 5vh, 30px); width: 32px; }
+      .case-card { padding: 8px 14px 8px; max-width: 340px; }
+      .card-case-label { margin-bottom: 6px; }
+      .v-row, #rowSum { min-height: clamp(46px, 10vh, 60px); }
+      .v-num  { font-size: clamp(36px, 8.5vh, 50px); }
+      .v-op   { font-size: clamp(20px, 5vh, 28px); width: 30px; }
       .v-line { margin: 2px 0 1px; }
-      #submitBtn {
-        padding: 13px;
-        bottom: max(calc(env(safe-area-inset-bottom) + 8px), 12px);
-      }
+      #submitBtn { padding: 12px; bottom: max(calc(env(safe-area-inset-bottom) + 6px), 10px); }
     }
   </style>
 </head>
@@ -353,7 +265,6 @@
 
 <audio id="bgMusic" src="Digit_Detective_Beat.mp3" loop preload="auto"></audio>
 
-<!-- Background image layer -->
 <div id="bgLayer">
   <img src="Digit_Detective_Background.png" alt="">
 </div>
@@ -379,7 +290,6 @@
 
   <div class="case-card" id="caseCard">
     <div class="card-case-label" id="cardCaseLabel">Case #1</div>
-
     <div class="v-eq">
       <div class="v-row">
         <div class="v-op"></div>
@@ -390,7 +300,6 @@
         <div class="v-num" id="vRight">—</div>
       </div>
       <div class="v-line"></div>
-      <!-- Sum row mirrors v-row so number aligns with addends above -->
       <div class="v-row" id="rowSum">
         <div class="v-op"></div>
         <div class="v-num" id="vSum">
@@ -417,29 +326,19 @@
   <button class="replay-btn" onclick="startGame()" type="button">New Case File</button>
 </div>
 
-<!-- Submit -->
 <button id="submitBtn" style="display:none" onclick="submitAnswer()" type="button">
   🔍 Case Solved!
 </button>
 
-<!-- MAGNIFIER -->
+<!-- MAGNIFIER: just the PNG, no lens overlay -->
 <div id="magnifier" style="display:none">
-  <div id="lensOverlay">
-    <div id="lensIdle">🔍</div>
-    <div id="pickerVp">
-      <div id="pickerList"></div>
-    </div>
-    <div id="selBar"></div>
-    <div class="p-fade top"></div>
-    <div class="p-fade bottom"></div>
-  </div>
   <img id="magImg" src="Magnifying_Glass_v1.png" alt="" />
 </div>
 
 <script>
   try { screen.orientation.lock('portrait').catch(()=>{}); } catch(e) {}
 
-  // ── Audio ─────────────────────────────────────────────────────
+  // ── Background music ──────────────────────────────────────────
   const bgMusic = document.getElementById('bgMusic');
   let muted = false;
   function toggleMute() {
@@ -447,6 +346,33 @@
     bgMusic.muted = muted;
     document.getElementById('muteBtn').textContent = muted ? '🔇' : '🔊';
   }
+
+  // ── Correct-answer chime (same Web Audio pattern as Fast & Fluent) ──
+  const CHIME_SRC = 'chime.m4a';
+  let _wac = null, _chimeBuf = null;
+  function _initWac() {
+    if (_wac) return;
+    try { _wac = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  async function _loadChime() {
+    if (_chimeBuf || !_wac) return;
+    try {
+      const raw = await (await fetch(CHIME_SRC)).arrayBuffer();
+      _chimeBuf = await _wac.decodeAudioData(raw);
+    } catch(e) {}
+  }
+  const _chimeFb = Array.from({ length: 4 }, () => { const a = new Audio(CHIME_SRC); a.load(); return a; });
+  let _chimeFbIdx = 0;
+  function playChime() {
+    if (_wac && _chimeBuf) {
+      const src = _wac.createBufferSource();
+      src.buffer = _chimeBuf; src.connect(_wac.destination); src.start(0);
+    } else {
+      const a = _chimeFb[_chimeFbIdx++ % _chimeFb.length];
+      a.currentTime = 0; a.play().catch(() => {});
+    }
+  }
+  document.addEventListener('pointerdown', () => { _initWac(); _loadChime(); }, { once: true });
 
   // ── Problems ──────────────────────────────────────────────────
   const ALL_PROBLEMS = [
@@ -461,24 +387,15 @@
     { total:18, left:8,  right:10 },
     { total:18, left:9,  right:9  },
   ];
-
   function shuffle(arr) {
     const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   }
 
   // ── DOM refs ──────────────────────────────────────────────────
   const magnifier  = document.getElementById('magnifier');
   const magImg     = document.getElementById('magImg');
-  const lensOverlay= document.getElementById('lensOverlay');
-  const lensIdle   = document.getElementById('lensIdle');
-  const pickerVp   = document.getElementById('pickerVp');
-  const selBar     = document.getElementById('selBar');
-  const pickerList = document.getElementById('pickerList');
   const caseCard   = document.getElementById('caseCard');
   const dragHint   = document.getElementById('dragHint');
   const feedbackMsg= document.getElementById('feedbackMsg');
@@ -486,13 +403,25 @@
   const fpImg      = document.getElementById('fpImg');
   const blankVal   = document.getElementById('blankVal');
   const vSum       = document.getElementById('vSum');
-  const pFades     = document.querySelectorAll('.p-fade');
 
   // ── Magnifier geometry ────────────────────────────────────────
-  let LENS_OX = 130, LENS_OY = 108, MAG_H = 321;
+  // PNG lens is at (50%, 33.5%) of unrotated image.
+  // After 45° CW rotation of the image, the lens center shifts:
+  //   d = img_cy - lens_y  (distance lens is above image center)
+  //   new LENS_OX = img_cx - d * sin(45°)
+  //   new LENS_OY = img_cy - d * cos(45°)
+  let LENS_OX = 53, LENS_OY = 71;
+
   function updateLensGeometry() {
-    const w = magnifier.offsetWidth, h = magnifier.offsetHeight;
-    if (h > 0) { LENS_OX = w * 0.50; LENS_OY = h * 0.335; MAG_H = h; }
+    const w = magnifier.offsetWidth;
+    const h = magImg.offsetHeight; // pre-transform layout height
+    if (w > 0 && h > 0) {
+      const cx = w * 0.50, cy = h * 0.50;
+      const d  = cy - h * 0.335; // lens is above center
+      const s  = Math.SQRT1_2;   // sin/cos 45° = 0.7071
+      LENS_OX = cx - d * s;
+      LENS_OY = cy - d * s;
+    }
   }
 
   magImg.addEventListener('load', () => { updateLensGeometry(); if (gameActive) positionMagHome(false); });
@@ -504,8 +433,9 @@
   function getHomePos() {
     updateLensGeometry();
     const bc = getBlankCenter();
-    if (bc && bc.y > 100) return { x: window.innerWidth / 2, y: bc.y + 160 };
-    return { x: window.innerWidth / 2, y: window.innerHeight * 0.78 };
+    const gap = window.innerHeight < 520 ? 90 : 150;
+    if (bc && bc.y > 80) return { x: window.innerWidth / 2, y: bc.y + gap };
+    return { x: window.innerWidth / 2, y: window.innerHeight * 0.80 };
   }
 
   function setMagPos(cx, cy, animate) {
@@ -521,10 +451,11 @@
     requestAnimationFrame(() => { const p = getHomePos(); setMagPos(p.x, p.y, animate); });
   }
 
-  // ── State machine: idle / dragging / snapped / picking ────────
+  // ── State machine ─────────────────────────────────────────────
   let state = 'idle', dragOffX = 0, dragOffY = 0;
 
-  // ── Picker ────────────────────────────────────────────────────
+  // ── Silent picker ─────────────────────────────────────────────
+  // No visual — just tracks a value and writes to #blankVal on the card
   const ITEM_H = 50, MIN_V = 0, MAX_V = 20, CENTER_OFF = 53;
   let pickerVal = 5, pickerOff = 0;
   let pickStartY = 0, pickStartOff = 0, pickVel = 0, pickLastY = 0, pickLastT = 0;
@@ -533,74 +464,54 @@
   function valForOffset(o) { return Math.round((CENTER_OFF - o) / ITEM_H); }
   function clampOff(o)     { return Math.max(offsetForVal(MAX_V), Math.min(offsetForVal(MIN_V), o)); }
 
-  function applyPickerOffset(o, snap) {
+  function applyPickerOffset(o) {
     o = clampOff(o);
     pickerOff = o;
-    pickerList.style.transition = snap ? 'transform 0.22s cubic-bezier(0.25,1,0.5,1)' : 'none';
-    pickerList.style.transform  = 'translateY(' + o + 'px)';
     const v = Math.max(MIN_V, Math.min(MAX_V, valForOffset(o)));
     pickerVal = v;
-    pickerList.querySelectorAll('.p-item').forEach(el => el.classList.toggle('sel', +el.dataset.v === v));
     blankVal.textContent = v;
   }
 
-  function buildPickerItems() {
-    pickerList.innerHTML = '';
-    for (let i = MIN_V; i <= MAX_V; i++) {
-      const d = document.createElement('div');
-      d.className = 'p-item'; d.dataset.v = i; d.textContent = i;
-      pickerList.appendChild(d);
-    }
+  // ── Fingerprint proximity fade ────────────────────────────────
+  const FP_FADE_START = 200, FP_FADE_END = 50;
+  function setFpOpacity(dist, withTransition) {
+    const op = dist >= FP_FADE_START ? 1
+      : dist <= FP_FADE_END ? 0
+      : (dist - FP_FADE_END) / (FP_FADE_START - FP_FADE_END);
+    fpImg.style.transition = withTransition ? 'opacity 0.30s' : 'none';
+    fpImg.style.opacity = op.toFixed(3);
   }
 
-  // ── Blank center (now measured on vSum element) ───────────────
+  // ── Blank center ──────────────────────────────────────────────
   function getBlankCenter() {
     const r = vSum.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   }
 
   // ── Snap / unsnap ─────────────────────────────────────────────
-  const SNAP_DIST = 110;
-
-  function setLensSnapped(snapped) {
-    if (snapped) {
-      lensOverlay.style.background = 'transparent';
-      lensIdle.style.opacity = '0';
-      pickerVp.style.opacity = '0';
-      selBar.style.opacity = '0';
-      pFades.forEach(el => el.style.opacity = '0');
-      fpImg.style.opacity = '0';
-      blankVal.classList.add('show');
-    } else {
-      lensOverlay.style.background = '';
-      lensIdle.style.opacity = '1';
-      pickerVp.style.opacity = '1';
-      selBar.style.opacity = '1';
-      pFades.forEach(el => el.style.opacity = '1');
-      fpImg.style.opacity = '1';
-      blankVal.classList.remove('show');
-    }
-  }
+  const SNAP_DIST = 100;
 
   function snapMagnifier(bc) {
     setMagPos(bc.x, bc.y, true);
     state = 'snapped';
     setTimeout(() => {
-      setLensSnapped(true);
+      setFpOpacity(0, true);
+      blankVal.classList.add('show');
       dragHint.style.display = 'none';
       submitBtn.classList.add('active');
-    }, 260);
+    }, 240);
   }
 
   function unsnap(animate) {
     state = 'idle';
-    setLensSnapped(false);
+    setFpOpacity(9999, true); // restore fingerprint
+    blankVal.classList.remove('show');
     dragHint.style.display = '';
     submitBtn.classList.remove('active');
     positionMagHome(animate);
   }
 
-  // ── Pointer events on magnifier ───────────────────────────────
+  // ── Pointer events ────────────────────────────────────────────
   magnifier.addEventListener('pointerdown', e => {
     e.preventDefault();
     magnifier.setPointerCapture(e.pointerId);
@@ -620,10 +531,14 @@
       const cx = e.clientX - dragOffX, cy = e.clientY - dragOffY;
       setMagPos(cx, cy, false);
       const bc = getBlankCenter();
-      if (bc) caseCard.classList.toggle('glow-snap', Math.hypot(cx - bc.x, cy - bc.y) < SNAP_DIST + 40);
+      if (bc) {
+        const dist = Math.hypot(cx - bc.x, cy - bc.y);
+        caseCard.classList.toggle('glow-snap', dist < SNAP_DIST + 50);
+        setFpOpacity(dist, false);
+      }
     } else if (state === 'picking') {
       const dy = e.clientY - pickStartY;
-      applyPickerOffset(pickStartOff + dy, false);
+      applyPickerOffset(pickStartOff + dy);
       const now = Date.now(), dt = now - pickLastT;
       if (dt > 0) pickVel = (e.clientY - pickLastY) / dt;
       pickLastY = e.clientY; pickLastT = now;
@@ -637,11 +552,12 @@
       const bc = getBlankCenter();
       if (bc && Math.hypot(magCX - bc.x, magCY - bc.y) < SNAP_DIST) { snapMagnifier(bc); return; }
       state = 'idle';
+      setFpOpacity(9999, true);
       positionMagHome(true);
     } else if (state === 'picking') {
       const projected = pickerOff + pickVel * 90;
       const v = Math.max(MIN_V, Math.min(MAX_V, Math.round((CENTER_OFF - projected) / ITEM_H)));
-      applyPickerOffset(offsetForVal(v), true);
+      applyPickerOffset(offsetForVal(v));
       state = 'snapped';
     }
   });
@@ -649,7 +565,7 @@
   magnifier.addEventListener('wheel', e => {
     if (state !== 'snapped' && state !== 'picking') return;
     e.preventDefault();
-    applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, pickerVal + (e.deltaY > 0 ? 1 : -1)))), true);
+    applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, pickerVal + (e.deltaY > 0 ? 1 : -1)))));
   }, { passive: false });
 
   // ── Screen management ─────────────────────────────────────────
@@ -677,7 +593,7 @@
     deck = shuffle(ALL_PROBLEMS);
     idx = 0; correctCount = 0;
     results = new Array(deck.length).fill('pending');
-    buildPickerItems(); buildProgRow(); loadProblem();
+    buildProgRow(); loadProblem();
     showScreen('screenGame');
   }
 
@@ -693,8 +609,7 @@
 
   function updateProgRow() {
     deck.forEach((_, i) => {
-      const d = document.getElementById('dot' + i);
-      if (!d) return;
+      const d = document.getElementById('dot' + i); if (!d) return;
       d.className = 'prog-dot '
         + (results[i] === 'correct' ? 'done-ok'
         :  results[i] === 'wrong'   ? 'done-bad'
@@ -711,7 +626,7 @@
     feedbackMsg.innerHTML = '&nbsp;'; feedbackMsg.className = 'feedback-msg';
     dragHint.style.display = '';
     const ans = p.total;
-    applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, ans <= 10 ? ans + 5 : ans - 5))), false);
+    applyPickerOffset(offsetForVal(Math.max(MIN_V, Math.min(MAX_V, ans <= 10 ? ans + 5 : ans - 5))));
     updateProgRow();
     unsnap(false);
   }
@@ -720,6 +635,7 @@
     if (state !== 'snapped' && state !== 'picking') return;
     const p = deck[idx];
     if (pickerVal === p.total) {
+      playChime();
       results[idx] = 'correct'; correctCount++;
       caseCard.classList.remove('flash-bad'); void caseCard.offsetWidth;
       caseCard.classList.add('flash-ok');
