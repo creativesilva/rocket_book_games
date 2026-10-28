@@ -204,9 +204,10 @@
       display: flex;
     }
 
-    /* Home screen: spread items evenly in the full-height card */
+    /* Home screen: center items with fixed gap so tall phones don't get a huge bottom void */
     #fastHomeScreen {
-      justify-content: space-evenly;
+      justify-content: center;
+      gap: 16px;
       padding-top: 0;
     }
 
