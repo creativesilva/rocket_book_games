@@ -349,6 +349,39 @@ html.standalone-app .app {
   .rotate-overlay {
     display: none !important;
   }
+
+  /* Brain Games: menu tiles and game cards */
+  .menu-grid  { max-width: 440px !important; }
+  .menu-tile  { padding: 16px 18px !important; }
+  .menu-tile .tile-icon  { font-size: 32px !important; }
+  .menu-tile .tile-title { font-size: 18px !important; }
+  .menu-tile .tile-desc  { font-size: 13px !important; }
+  .game-card  { max-width: 460px !important; }
+  .game-word  { font-size: clamp(44px, 6vw, 72px) !important; }
+  .game-definition { font-size: 20px !important; }
+  .choices    { max-width: 440px !important; }
+  .choice-btn { font-size: 20px !important; padding: 18px 20px !important; }
+  .hf-word    { font-size: clamp(64px, 9vw, 108px) !important; }
+  .hf-zone    { min-height: 170px !important; }
+
+  /* Math Mountain: SVG, equation rows, numpad */
+  .mountain-wrap svg { max-width: 400px !important; }
+  .v-row, #rowSum    { width: min(240px, 94%) !important; }
+  .v-line            { width: min(240px, 94%) !important; }
+  .v-num             { font-size: clamp(60px, 7.5vw, 94px) !important; }
+  .numpad-wrap       { max-height: 360px !important; }
+
+  /* Number Blaster + Math Mountain shared numpad keys */
+  .problem-text { font-size: clamp(50px, 7vw, 88px) !important; }
+  .nk           { font-size: clamp(24px, 3.2vw, 36px) !important; }
+
+  /* Digit Detective: fullscreen game (not inside .app) */
+  .home-title   { font-size: clamp(38px, 5vw, 54px) !important; }
+  .home-sub     { font-size: 18px !important; max-width: 380px !important; margin-bottom: 36px !important; }
+  .case-card    { max-width: 460px !important; }
+  .finish-title { font-size: clamp(32px, 4.5vw, 50px) !important; }
+  .case-report  { max-width: 460px !important; }
+  .ari-finish   { width: min(260px, 30vw) !important; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -423,4 +456,29 @@ html.standalone-app .app {
   .card-name {
     font-size: clamp(17px, 2vw, 22px) !important;
   }
+
+  /* Brain Games */
+  .menu-grid  { max-width: 500px !important; }
+  .game-card  { max-width: 520px !important; }
+  .game-word  { font-size: clamp(50px, 5.5vw, 82px) !important; }
+  .choices    { max-width: 500px !important; }
+  .hf-word    { font-size: clamp(72px, 8vw, 120px) !important; }
+
+  /* Math Mountain */
+  .mountain-wrap svg { max-width: 460px !important; }
+  .v-row, #rowSum    { width: min(270px, 94%) !important; }
+  .v-line            { width: min(270px, 94%) !important; }
+  .v-num             { font-size: clamp(68px, 6.5vw, 108px) !important; }
+
+  /* Number Blaster */
+  .problem-text { font-size: clamp(58px, 6vw, 100px) !important; }
+  .nk           { font-size: clamp(26px, 2.8vw, 40px) !important; }
+
+  /* Digit Detective */
+  .home-title   { font-size: clamp(44px, 4.5vw, 62px) !important; }
+  .home-sub     { font-size: 20px !important; max-width: 440px !important; }
+  .case-card    { max-width: 520px !important; }
+  .finish-title { font-size: clamp(36px, 4vw, 56px) !important; }
+  .case-report  { max-width: 520px !important; }
+  .ari-finish   { width: min(290px, 28vw) !important; }
 }
